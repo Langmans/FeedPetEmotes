@@ -8,6 +8,13 @@ E.Locales.ruRU = {
     strings = {
         FEED = "кормит питомца, %s ест %s. ",
         FEED_NO_FOOD = "кормит питомца %s. ",
+
+        OPTION_ENABLED = "Отправлять эмоции",
+        OPTION_ENABLED_NOTE = "Отправлять /emote каждый раз, когда вы кормите питомца. То же, что /fpe on и /fpe off.",
+        OPTION_PET_NAME = "Всегда называть питомца по имени",
+        OPTION_PET_NAME_NOTE = "Называть питомца по имени вместо «он» или «она». То же, что /fpe name on и off.",
+        OPTION_DEBUG = "Отладка",
+        OPTION_DEBUG_NOTE = "Показывать в чате, что видит аддон во время кормления. То же, что /fpe debug.",
     },
 
     pronouns = {

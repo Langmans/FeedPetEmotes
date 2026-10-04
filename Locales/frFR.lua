@@ -8,6 +8,14 @@ E.Locales.frFR = {
     strings = {
         FEED = "donne à %s à manger un(e) %s. ",
         FEED_NO_FOOD = "nourrit %s. ",
+
+        OPTION_ENABLED = "Envoyer les emotes",
+        OPTION_ENABLED_NOTE = "Envoie un /emote chaque fois que vous nourrissez votre familier. "
+            .. "Comme /fpe on et /fpe off.",
+        OPTION_PET_NAME = "Toujours utiliser le nom du familier",
+        OPTION_PET_NAME_NOTE = "Nomme le familier au lieu de dire il ou elle. Comme /fpe name on et off.",
+        OPTION_DEBUG = "Trace de débogage",
+        OPTION_DEBUG_NOTE = "Affiche dans le chat ce que l'addon voit pendant que vous nourrissez. Comme /fpe debug.",
     },
 
     pronouns = {

@@ -8,6 +8,13 @@ E.Locales.deDE = {
     strings = {
         FEED = "füttert %s mit %s. ",
         FEED_NO_FOOD = "füttert %s. ",
+
+        OPTION_ENABLED = "Emotes senden",
+        OPTION_ENABLED_NOTE = "Bei jedem Füttern deines Begleiters ein /emote senden. Wie /fpe on und /fpe off.",
+        OPTION_PET_NAME = "Immer den Namen des Begleiters verwenden",
+        OPTION_PET_NAME_NOTE = "Den Begleiter beim Namen nennen statt er oder sie. Wie /fpe name on und off.",
+        OPTION_DEBUG = "Debug-Ausgabe",
+        OPTION_DEBUG_NOTE = "Im Chat zeigen, was das Addon beim Füttern sieht. Wie /fpe debug.",
     },
 
     pronouns = {

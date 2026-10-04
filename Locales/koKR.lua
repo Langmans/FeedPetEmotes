@@ -7,6 +7,13 @@ E.Locales.koKR = {
     strings = {
         FEED = " %s에게 %s를 먹이며 말합니다. ",
         FEED_NO_FOOD = " %s에게 먹이를 줍니다. ",
+
+        OPTION_ENABLED = "감정 표현 보내기",
+        OPTION_ENABLED_NOTE = "소환수에게 먹이를 줄 때마다 /emote를 보냅니다. /fpe on, /fpe off와 같습니다.",
+        OPTION_PET_NAME = "항상 소환수 이름 사용",
+        OPTION_PET_NAME_NOTE = "그/그녀 대신 소환수의 이름을 부릅니다. /fpe name on, off와 같습니다.",
+        OPTION_DEBUG = "디버그 추적",
+        OPTION_DEBUG_NOTE = "먹이를 줄 때 애드온이 보는 내용을 대화창에 표시합니다. /fpe debug와 같습니다.",
     },
 
     emotes = {

@@ -8,6 +8,13 @@ E.Locales.esES = {
     strings = {
         FEED = "alimenta a %s con %s. ",
         FEED_NO_FOOD = "alimenta a %s. ",
+
+        OPTION_ENABLED = "Enviar emotes",
+        OPTION_ENABLED_NOTE = "Envía un /emote cada vez que alimentas a tu mascota. Igual que /fpe on y /fpe off.",
+        OPTION_PET_NAME = "Usar siempre el nombre de la mascota",
+        OPTION_PET_NAME_NOTE = "Nombra a la mascota en lugar de decir él o ella. Igual que /fpe name on y off.",
+        OPTION_DEBUG = "Registro de depuración",
+        OPTION_DEBUG_NOTE = "Muestra en el chat lo que ve el addon mientras alimentas. Igual que /fpe debug.",
     },
 
     pronouns = {

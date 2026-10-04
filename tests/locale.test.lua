@@ -82,6 +82,23 @@ test("every locale's feed sentences take the right number of arguments", functio
     end
 end)
 
+test("every locale translates the options panel", function()
+    local E = NewClient().E
+    for _, code in ipairs(ALL_LOCALES) do
+        for key in pairs(E.Locales.enUS.strings) do
+            if key:match("^OPTION_") then
+                local text = rawget(E.Locales[code].strings, key)
+                ok(type(text) == "string" and text ~= "", code .. " " .. key)
+            end
+        end
+    end
+end)
+
+test("the options panel uses the client's language", function()
+    local client = NewClient({ locale = "deDE" }):login()
+    eq(client.E.L.OPTION_ENABLED, "Emotes senden")
+end)
+
 test("every locale's emote lists hold non-empty strings under known keys", function()
     local E = NewClient().E
     local knownGroups, knownFamilies = {}, {}
