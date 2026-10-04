@@ -105,11 +105,23 @@ test("every locale's emote lists hold non-empty strings under known keys", funct
     end
 end)
 
-test("enUS and deDE cover all 17 Forever families", function()
+test("every locale has at least three lines for every family", function()
     local E = NewClient().E
-    for _, code in ipairs({ "enUS", "deDE" }) do
-        for _, name in ipairs(FOREVER_FAMILIES) do
-            ok(E.Locales[code].emotes.family[E.Family[name]], code .. " has no lines for " .. name)
+    local short = {}
+    for _, code in ipairs(ALL_LOCALES) do
+        for name, id in pairs(E.Family) do
+            local lines = E.Locales[code].emotes.family[id]
+            local count = lines and #lines or 0
+            if count < 3 then short[#short + 1] = code .. " " .. name .. " (" .. count .. ")" end
         end
+    end
+    table.sort(short)
+    eq(#short, 0, "too few family lines: " .. table.concat(short, ", "))
+end)
+
+test("E.Family holds the 17 Forever families", function()
+    local E = NewClient().E
+    for _, name in ipairs(FOREVER_FAMILIES) do
+        ok(E.Family[name], name .. " missing from E.Family")
     end
 end)
