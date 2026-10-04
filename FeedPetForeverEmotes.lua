@@ -90,7 +90,7 @@ end)
 SLASH_FEEDPETFOREVEREMOTES1 = "/fpfe"
 SLASH_FEEDPETFOREVEREMOTES2 = "/feedpetforeveremotes"
 SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
-    local cmd = (message or ""):match("^%s*(%S*)"):lower()
+    local cmd = ((message or ""):match("^%s*(%S*)") or ""):lower()
     if cmd == "on" or cmd == "off" then
         FeedPetForeverEmotesDB.enabled = cmd == "on"
         print("Emotes " .. (FeedPetForeverEmotesDB.enabled and "on." or "off."))

@@ -1,0 +1,7 @@
+{
+    "flavors": ["forever", "classic_era", "classic"],
+    "library": ["annotations/"],
+    "diagnostics": {
+        "enable": ["need-check-nil"]
+    }
+}
