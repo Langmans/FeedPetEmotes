@@ -16,6 +16,7 @@ local _, E = ...
 
 local enUS = E.Locales.enUS
 local current = E.Locales[GetLocale()] or enUS
+E.LocaleCode = E.Locales[GetLocale()] and GetLocale() or "enUS"
 
 setmetatable(enUS.strings, {
     __index = function(_, key)

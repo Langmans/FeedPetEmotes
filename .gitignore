@@ -3,3 +3,7 @@
 
 # Personal todo list, kept local.
 TODO.md
+
+# Test tooling: installed packages and the generated coverage report.
+node_modules/
+coverage/

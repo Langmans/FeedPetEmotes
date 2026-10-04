@@ -47,6 +47,35 @@ the strings that stay English, and list the file in the `.toc` before
 
 - `/fpfe on` / `/fpfe off` — toggle emotes (saved per character)
 - `/fpfe test` — local preview in your chat frame; nothing is sent
+- `/fpfe selftest` — prints what the client reports: build and locale, the
+  chat send function, whether Feed Pet is known, the pet's family ID and sex,
+  and the last food and cast the addon saw. Sends nothing; meant to be pasted
+  into a bug report, so it is always English.
+- `/fpfe debug` — toggles a trace of the feeding path in chat (food picked,
+  cast seen, why an emote was or was not sent). Off again after a reload.
+
+## Development
+
+Needs Node.js. `npm install` once, then:
+
+- `npm test` — runs `tests/*.test.lua` against a simulated WoW client
+  (`tests/wow.lua`) in fengari, a Lua VM in JavaScript, and prints line
+  coverage per file; `coverage/lcov.info` is written for editor plugins.
+  `npm test feeding` runs only the files whose name contains `feeding`.
+- `npm run lint` — StyLua formatting check, then WoW Lua LS diagnostics
+  (taken from its VS Code extension; skipped if that is not installed).
+- `npm run format` — formats all Lua with StyLua.
+- `npm run check` — lint, then tests.
+
+fengari is Lua 5.3 and WoW runs 5.1; the addon sticks to the shared subset and
+WoW Lua LS flags WoW-incompatible API use. What the simulation cannot show —
+whether Forever lets an addon send the emote, what `UnitCreatureFamily`
+really returns — is what `/fpfe selftest` is for.
+
+Coverage counts the first line of each statement as found by luaparse, with
+two adjustments for how Lua reports lines: a function counts on its closing
+`end` (where the closure is created), and `local a, b` without values does not
+count (it has no instruction of its own).
 
 ## Credits
 

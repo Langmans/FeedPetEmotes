@@ -1,0 +1,115 @@
+-- Locale selection, the enUS fallback chain and the shape of every locale file.
+
+local ALL_LOCALES = { "enUS", "deDE", "esES", "esMX", "frFR", "koKR", "ruRU" }
+
+-- The 17 families tameable on Forever.
+local FOREVER_FAMILIES = {
+    "WOLF",
+    "CAT",
+    "SPIDER",
+    "BEAR",
+    "BOAR",
+    "CROCOLISK",
+    "CARRION_BIRD",
+    "CRAB",
+    "GORILLA",
+    "RAPTOR",
+    "TALLSTRIDER",
+    "SCORPID",
+    "TURTLE",
+    "BAT",
+    "HYENA",
+    "BIRD_OF_PREY",
+    "WIND_SERPENT",
+}
+
+local function countFormats(text)
+    local _, n = text:gsub("%%s", "")
+    return n
+end
+
+test("an unknown client locale falls back to enUS", function()
+    local E = NewClient({ locale = "zhCN" }).E
+    eq(E.LocaleCode, "enUS")
+    eq(E.Format("FEED_NO_FOOD", "Fluffy"), "feeds Fluffy. ")
+    eq(E.Emotes, E.Locales.enUS.emotes)
+end)
+
+test("a translated string comes from the client's locale", function()
+    local E = NewClient({ locale = "deDE" }).E
+    eq(E.LocaleCode, "deDE")
+    eq(E.Format("FEED", "Fluffy", "Zähes Dörrfleisch"), "füttert Fluffy mit Zähes Dörrfleisch. ")
+end)
+
+test("an untranslated string falls back to enUS", function()
+    local E = NewClient({ locale = "deDE" }).E
+    eq(E.L.CHAT_PREFIX, "Feed Pet: Forever Emotes:")
+end)
+
+test("a key missing from enUS returns the key instead of looping", function()
+    eq(NewClient({ locale = "enUS" }).E.L.NO_SUCH_KEY, "NO_SUCH_KEY")
+    eq(NewClient({ locale = "frFR" }).E.L.NO_SUCH_KEY, "NO_SUCH_KEY")
+end)
+
+test("English picks a or an from the food name", function()
+    local E = NewClient().E
+    eq(E.Format("FEED", "Fluffy", "Mystery Meat"), "feeds Fluffy a Mystery Meat. ")
+    eq(E.Format("FEED", "Fluffy", "Apple"), "feeds Fluffy an Apple. ")
+    eq(E.Format("FEED", "Fluffy", "egg"), "feeds Fluffy an egg. ")
+end)
+
+test("esMX uses the esES file", function()
+    local E = NewClient({ locale = "esMX" }).E
+    eq(E.LocaleCode, "esMX")
+    eq(E.Locales.esMX, E.Locales.esES)
+    eq(E.Format("FEED_NO_FOOD", "Fluffy"), "alimenta a Fluffy. ")
+end)
+
+test("every locale's feed sentences take the right number of arguments", function()
+    local E = NewClient().E
+    for _, code in ipairs(ALL_LOCALES) do
+        local strings = E.Locales[code].strings
+        if type(strings.FEED) == "string" then eq(countFormats(strings.FEED), 2, code .. " FEED") end
+        eq(countFormats(strings.FEED_NO_FOOD), 1, code .. " FEED_NO_FOOD")
+    end
+end)
+
+test("every locale's emote lists hold non-empty strings under known keys", function()
+    local E = NewClient().E
+    local knownGroups, knownFamilies = {}, {}
+    for _, group in pairs(E.FoodGroups) do
+        knownGroups[group] = true
+    end
+    for _, id in pairs(E.Family) do
+        knownFamilies[id] = true
+    end
+    local function checkList(list, where)
+        ok(type(list) == "table" and #list > 0, where .. " is an empty list")
+        for i, line in ipairs(list) do
+            ok(type(line) == "string" and line ~= "", where .. "[" .. i .. "] is not a line")
+        end
+    end
+    for _, code in ipairs(ALL_LOCALES) do
+        local emotes = E.Locales[code].emotes
+        checkList(emotes.any, code .. ".any")
+        checkList(emotes.male, code .. ".male")
+        checkList(emotes.female, code .. ".female")
+        for group, list in pairs(emotes.food) do
+            ok(knownGroups[group], code .. ": food group " .. tostring(group) .. " has no items")
+            checkList(list, code .. ".food." .. group)
+        end
+        for id, list in pairs(emotes.family) do
+            ok(knownFamilies[id], code .. ": family id " .. tostring(id) .. " is not in E.Family")
+            checkList(list, code .. ".family." .. id)
+        end
+    end
+end)
+
+test("enUS and deDE cover all 17 Forever families", function()
+    local E = NewClient().E
+    for _, code in ipairs({ "enUS", "deDE" }) do
+        for _, name in ipairs(FOREVER_FAMILIES) do
+            ok(E.Locales[code].emotes.family[E.Family[name]], code .. " has no lines for " .. name)
+        end
+    end
+end)

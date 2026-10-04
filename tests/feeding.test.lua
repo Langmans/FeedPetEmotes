@@ -1,0 +1,198 @@
+-- The whole feeding path, from picking the food to the /emote, plus the slash commands.
+
+local function emoteLine(client, sent, prefix)
+    startsWith(sent.text, prefix)
+    return sent.text:sub(#prefix + 1)
+end
+
+test("feeding sends one emote naming the pet and the food", function()
+    local client = NewClient():login()
+    client:feed(12037)
+    eq(#client.sent, 1)
+    eq(client.sent[1].kind, "EMOTE")
+    local line = emoteLine(client, client.sent[1], "feeds Fluffy a Mystery Meat. ")
+    contains(client.E.EmotePool(12037), line)
+end)
+
+test("food picked too long before the cast is not named", function()
+    local client = NewClient():login()
+    client:feed(12037, 5)
+    startsWith(client:lastSent().text, "feeds Fluffy. ")
+end)
+
+test("an item used while no spell is targeting is not taken as food", function()
+    local client = NewClient():login()
+    client:pickItem(12037, false)
+    client:castSucceeded()
+    startsWith(client:lastSent().text, "feeds Fluffy. ")
+end)
+
+test("the picked food is used for one cast only", function()
+    local client = NewClient():login()
+    client:feed(12037)
+    client:castSucceeded()
+    startsWith(client.sent[2].text, "feeds Fluffy. ")
+end)
+
+test("an uncached food name still sends, without the name", function()
+    local client = NewClient():login()
+    client:feed(99999)
+    startsWith(client:lastSent().text, "feeds Fluffy. ")
+end)
+
+test("other spells send nothing", function()
+    local client = NewClient():login()
+    client:pickItem(12037)
+    client:castSucceeded(133)
+    eq(#client.sent, 0)
+end)
+
+test("a cast reported for another unit sends nothing", function()
+    local client = NewClient():login()
+    client:pickItem(12037)
+    client:castSucceeded(nil, "pet")
+    eq(#client.sent, 0)
+end)
+
+test("a secret spell ID is ignored", function()
+    local client = NewClient():login()
+    client.secret[6991] = true
+    client:feed(12037)
+    eq(#client.sent, 0)
+end)
+
+test("no pet name, or a secret one, sends nothing", function()
+    local client = NewClient():login()
+    client.pet.name = nil
+    client:feed(12037)
+    client.pet.name = "Fluffy"
+    client.secret.Fluffy = true
+    client:feed(12037)
+    eq(#client.sent, 0)
+end)
+
+test("nothing happens before the addon's own ADDON_LOADED", function()
+    local client = NewClient()
+    client:fire("ADDON_LOADED", "SomeOtherAddon")
+    client:feed(12037)
+    eq(#client.sent, 0)
+end)
+
+test("the emote uses the old SendChatMessage when C_ChatInfo is missing", function()
+    local client = NewClient({ noChatInfo = true }):login()
+    client:feed(12037)
+    eq(#client.sent, 1)
+end)
+
+test("without any chat send function nothing is sent and debug says why", function()
+    local client = NewClient({ noChat = true }):login()
+    client:slash("debug")
+    client:feed(12037)
+    eq(#client.sent, 0)
+    ok(client:printedContains("no emote: no chat send function"))
+    client:slash("selftest")
+    ok(client:printedContains("send function: missing"))
+end)
+
+test("a food whose item ID is secret is not named", function()
+    local client = NewClient():login()
+    client:slash("debug")
+    client.secret[12037] = true
+    client:feed(12037)
+    ok(client:printedContains("food picked, but its item ID is unavailable"))
+    startsWith(client:lastSent().text, "feeds Fluffy. ")
+end)
+
+test("a client without secret values works", function()
+    local client = NewClient({ noSecretValues = true }):login()
+    client:feed(12037)
+    eq(#client.sent, 1)
+end)
+
+test("a German client sends a German emote", function()
+    local client = NewClient({ locale = "deDE" }):login()
+    client:feed(117)
+    -- The simulated client has English item names only.
+    startsWith(client:lastSent().text, "füttert Fluffy mit Tough Jerky. ")
+end)
+
+test("/fpfe off stops the emotes and is saved; /fpfe on resumes", function()
+    local client = NewClient():login()
+    client:slash("off")
+    eq(FeedPetForeverEmotesDB.enabled, false)
+    client:feed(12037)
+    eq(#client.sent, 0)
+    client:slash("ON")
+    client:feed(12037)
+    eq(#client.sent, 1)
+end)
+
+test("saved settings from a previous session are kept", function()
+    local client = NewClient({ savedDB = { enabled = false } }):login()
+    client:feed(12037)
+    eq(#client.sent, 0)
+end)
+
+test("broken saved settings are repaired", function()
+    NewClient({ savedDB = { enabled = "yes" } }):login()
+    eq(FeedPetForeverEmotesDB.enabled, true)
+end)
+
+test("/fpfe test previews locally and sends nothing", function()
+    local client = NewClient():login()
+    client:slash("test")
+    eq(#client.sent, 0)
+    ok(client:printedContains("Langmans feeds Fluffy a Mystery Meat. "), "no preview printed")
+end)
+
+test("/fpfe test without a pet says so", function()
+    local client = NewClient():login()
+    client.pet = nil
+    client:slash("test")
+    ok(client:printedContains("Summon your pet first."))
+end)
+
+test("/fpfe without a command prints the status", function()
+    local client = NewClient():login()
+    client:slash("")
+    ok(client:printedContains("Emotes are on."))
+end)
+
+test("/fpfe selftest reports pet, family and the feeding path without sending", function()
+    local client = NewClient():login()
+    client:slash("selftest")
+    ok(client:printedContains("Client 1.60.1 (70170), interface 16001, locale enUS, using enUS."))
+    ok(client:printedContains("send function: C_ChatInfo.SendChatMessage; secret values: yes."))
+    ok(client:printedContains("Feed Pet known: true"))
+    ok(client:printedContains("Pet Fluffy: family Cat, id 2, sex 2."))
+    ok(client:printedContains("No food picked since login"))
+    client:feed(12037)
+    client.printed = {}
+    client:slash("selftest")
+    ok(client:printedContains("Last food picked: item 12037 (Mystery Meat)"))
+    ok(client:printedContains("Last Feed Pet cast seen"))
+    eq(#client.sent, 1, "only the real feed sent something")
+end)
+
+test("/fpfe selftest shows secret values and a missing pet", function()
+    local client = NewClient():login()
+    client.secret[2] = true
+    client:slash("selftest")
+    ok(client:printedContains("id <secret>"))
+    client.pet = nil
+    client:slash("selftest")
+    ok(client:printedContains("No pet out"))
+end)
+
+test("/fpfe debug traces the feeding path", function()
+    local client = NewClient():login()
+    client:slash("debug")
+    client:feed(12037)
+    ok(client:printedContains("food picked: item 12037"))
+    ok(client:printedContains("Feed Pet cast seen; food item 12037"))
+    ok(client:printedContains("sending via C_ChatInfo.SendChatMessage"))
+    client:slash("debug")
+    client.printed = {}
+    client:feed(12037)
+    eq(#client.printed, 0, "debug off prints nothing")
+end)
