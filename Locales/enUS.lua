@@ -8,7 +8,9 @@ E.Locales.enUS = {
     strings = {
         -- The /emote text in front of the random line.
         FEED = function(pet, food)
-            local article = food:match("^[AEIOUaeiou]") and "an" or "a"
+            -- food is an item link or a plain name; the article follows the name.
+            local name = food:match("|h%[(.-)%]|h") or food
+            local article = name:match("^[AEIOUaeiou]") and "an" or "a"
             return string.format("feeds %s %s %s. ", pet, article, food)
         end,
         FEED_NO_FOOD = "feeds %s. ",

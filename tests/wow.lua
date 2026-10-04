@@ -14,6 +14,13 @@ local ITEM_NAMES = {
     [117] = "Tough Jerky",
 }
 
+---The chat link the client builds for an item, as C_Item.GetItemInfo's second return.
+---@param itemID number
+---@return string
+function ItemLink(itemID)
+    return string.format("|cffffffff|Hitem:%d::::::::60:::::|h[%s]|h|r", itemID, ITEM_NAMES[itemID])
+end
+
 ---@class TestClient
 ---@field E table the addon namespace
 ---@field sent {text: string, kind: string}[] chat messages sent by the addon
@@ -64,6 +71,10 @@ function NewClient(opts)
     function SpellIsTargeting()
         return client.targeting
     end
+    -- client.cursorItem: the item ID held on the cursor, or nil.
+    function GetCursorInfo()
+        if client.cursorItem then return "item", client.cursorItem end
+    end
     function IsSpellKnown(spellID)
         return spellID == FEED_PET_SPELL
     end
@@ -79,7 +90,8 @@ function NewClient(opts)
 
     C_Item = {
         GetItemInfo = function(itemID)
-            return ITEM_NAMES[itemID]
+            if not ITEM_NAMES[itemID] then return nil end
+            return ITEM_NAMES[itemID], ItemLink(itemID)
         end,
     }
     C_Container = {
@@ -177,6 +189,27 @@ function NewClient(opts)
     function client:feed(itemID, delay)
         self:pickItem(itemID)
         self.time = self.time + (delay or 0.2)
+        self:castSucceeded()
+    end
+
+    ---Picks an item up onto the cursor, as dragging it out of a bag does.
+    function client:pickUp(itemID)
+        self.cursorItem = itemID
+        self:fire("CURSOR_CHANGED", false, 1, 0, 0)
+    end
+
+    ---Empties the cursor: dropped on the pet (or its frame), or put back.
+    function client:release()
+        self.cursorItem = nil
+        self:fire("CURSOR_CHANGED", true, 0, 1, 0)
+    end
+
+    ---Feeding by dragging food onto the pet: pick up, drop, the cast succeeds.
+    function client:dragFeed(itemID, delay)
+        self:pickUp(itemID)
+        self.time = self.time + 1
+        self:release()
+        self.time = self.time + (delay or 0.1)
         self:castSucceeded()
     end
 

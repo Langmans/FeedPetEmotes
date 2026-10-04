@@ -58,6 +58,14 @@ test("English picks a or an from the food name", function()
     eq(E.Format("FEED", "Fluffy", "egg"), "feeds Fluffy an egg. ")
 end)
 
+test("English takes a or an from the name inside an item link", function()
+    local E = NewClient().E
+    local apple = "|cffffffff|Hitem:4536::::::::60:::::|h[Apple]|h|r"
+    local jerky = "|cffffffff|Hitem:117::::::::60:::::|h[Tough Jerky]|h|r"
+    eq(E.Format("FEED", "Fluffy", apple), "feeds Fluffy an " .. apple .. ". ")
+    eq(E.Format("FEED", "Fluffy", jerky), "feeds Fluffy a " .. jerky .. ". ")
+end)
+
 test("esMX uses the esES file", function()
     local E = NewClient({ locale = "esMX" }).E
     eq(E.LocaleCode, "esMX")
