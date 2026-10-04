@@ -16,10 +16,22 @@ both addons can be installed side by side.
   target at that moment, the item is remembered as the food.
 - When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, a line
   is picked from the lists in `Emotes.lua` that match: every pet, the pet's
-  gender, the food's item ID, and the pet's family. If the food is not known the
-  emote just says "feeds <pet>.".
-- Pet family lines are keyed on the English family name, so they only show on
-  an English client.
+  gender, the food's group (looked up by item ID), and the pet's family. If the
+  food is not known the emote just says "feeds <pet>.".
+- Pet families are matched on the CreatureFamily ID (second return of
+  `UnitCreatureFamily`), which is the same on every client language.
+
+## Localization
+
+- `Locales.lua` holds the feed sentence and the chat messages per client
+  locale. `E.L` falls back to enUS through a metatable, so a locale lists only
+  what it translates. A value can be a function when `string.format` is not
+  enough (the English "a"/"an").
+- `Emotes.lua` holds the emote lines per locale: enUS, esES/esMX, frFR, koKR and
+  ruRU, all from Feed-O-Matic. A locale without its own table uses the enUS
+  lines; a locale that lacks one list never mixes in English, it just has fewer
+  lines.
+- deDE has a translated feed sentence but no emote lines of its own yet.
 
 ## Commands
 

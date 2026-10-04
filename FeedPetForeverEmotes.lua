@@ -1,4 +1,5 @@
 local addonName, E = ...
+local L = E.L
 
 local FEED_PET_SPELL = 6991
 -- How long after an item is picked the Feed Pet cast may still claim it as the food.
@@ -11,7 +12,7 @@ local function public(value)
 end
 
 local function print(message)
-    DEFAULT_CHAT_FRAME:AddMessage("|cffffcc66Feed Pet: Forever Emotes:|r " .. message)
+    DEFAULT_CHAT_FRAME:AddMessage("|cffffcc66" .. L.CHAT_PREFIX .. "|r " .. message)
 end
 
 local function append(pool, list)
@@ -30,10 +31,11 @@ local function randomLine(itemID)
     elseif sex == 3 then
         append(pool, emotes.female)
     end
-    local food = itemID and emotes.food[itemID]
-    append(pool, type(food) == "string" and emotes.shared[food] or food)
-    local family = UnitCreatureFamily("pet")
-    if family and public(family) then append(pool, emotes.family[family]) end
+    local group = itemID and E.FoodGroups[itemID]
+    if group then append(pool, emotes.food[group]) end
+    -- The family ID is the same on every client language; the name is not.
+    local _, familyID = UnitCreatureFamily("pet")
+    if familyID and public(familyID) then append(pool, emotes.family[familyID]) end
     return pool[math.random(#pool)]
 end
 
@@ -41,13 +43,7 @@ local function buildEmote(itemID)
     local pet = UnitName("pet")
     if not pet or not public(pet) then return end
     local foodName = itemID and C_Item.GetItemInfo(itemID)
-    local text
-    if foodName then
-        local article = foodName:match("^[AEIOUaeiou]") and "an" or "a"
-        text = string.format("feeds %s %s %s. ", pet, article, foodName)
-    else
-        text = string.format("feeds %s. ", pet)
-    end
+    local text = foodName and E.Format("FEED", pet, foodName) or E.Format("FEED_NO_FOOD", pet)
     return text .. randomLine(itemID)
 end
 
@@ -93,18 +89,12 @@ SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
     local cmd = ((message or ""):match("^%s*(%S*)") or ""):lower()
     if cmd == "on" or cmd == "off" then
         FeedPetForeverEmotesDB.enabled = cmd == "on"
-        print("Emotes " .. (FeedPetForeverEmotesDB.enabled and "on." or "off."))
+        print(FeedPetForeverEmotesDB.enabled and L.EMOTES_ON or L.EMOTES_OFF)
     elseif cmd == "test" then
         -- Local preview only; nothing is sent to chat.
         local text = buildEmote(12037)
-        print(
-            text and ("|cffff8040" .. (UnitName("player") or "You") .. " " .. text .. "|r") or "Summon your pet first."
-        )
+        print(text and ("|cffff8040" .. (UnitName("player") or L.YOU) .. " " .. text .. "|r") or L.NO_PET)
     else
-        print(
-            "Emotes are "
-                .. (FeedPetForeverEmotesDB.enabled and "on" or "off")
-                .. ". Commands: /fpfe on, /fpfe off, /fpfe test (local preview)."
-        )
+        print(E.Format("STATUS", FeedPetForeverEmotesDB.enabled and L.STATUS_ON or L.STATUS_OFF))
     end
 end
