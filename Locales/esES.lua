@@ -1,8 +1,9 @@
 local _, E = ...
 local F = E.Family
 
--- Spanish, for both esES and esMX. Feed sentence and emote lines from
--- Feed-O-Matic, except the families it never covered (Bear onwards).
+-- Spanish, for both esES and esMX. The feed sentence and the first lines of
+-- most lists come from Feed-O-Matic; food-type lines, the families from Bear
+-- onwards and the extra family lines were written for this addon.
 E.Locales.esES = {
     strings = {
         FEED = "alimenta a %s con %s. ",
@@ -31,6 +32,22 @@ E.Locales.esES = {
             },
             chili = { "¡Guau, picante!" },
             watermelon = { "¡Vaya bocaza!" },
+        },
+        foodType = {
+            bread = {
+                "¡Carbohidratos! ¡Gloriosos carbohidratos!",
+                "Recién salido del horno.",
+                "¿Quién necesita carne si hay pan?",
+            },
+            meat = { "Nada como un buen trozo de carne.", "¡Aprobado por carnívoros!", "Poco hecho, como te gusta." },
+            fish = { "¡Recién llegado del puerto!", "Aquí huele a pescado...", "Sin salsa tártara, gracias." },
+            cheese = { "¡Queso para la fiera!", "Un poco apestoso, justo como le gusta.", "¡Di «queso»!" },
+            fruit = {
+                "¡Una manzana al día, y el veterinario en la lejanía!",
+                "Cargando vitaminas.",
+                "¡Elección saludable!",
+            },
+            fungus = { "Qué viaje...", "¿Seguro que son de los comestibles?", "Setas, qué rico." },
         },
         family = {
             [F.BOAR] = { "¡Buen cerdito!", "Oinc oinc, ñam ñam.", "¡Buscador de trufas de servicio!" },

@@ -1,8 +1,9 @@
 local _, E = ...
 local F = E.Family
 
--- Feed sentence and emote lines from Feed-O-Matic, except the families it
--- never covered (Bear onwards).
+-- The feed sentence and the first lines of most lists come from Feed-O-Matic;
+-- food-type lines, the families from Bear onwards and the extra family lines
+-- were written for this addon.
 E.Locales.ruRU = {
     strings = {
         FEED = "кормит питомца, %s ест %s. ",
@@ -36,7 +37,38 @@ E.Locales.ruRU = {
             warpBurger = { "А что насчет запеченых Скатов Пустоты?" },
             crunchy = { "Хрущащий!" },
             minnow = { "Может есть рыбешка побольше?" },
-            fungus = { "Странный вкус..." },
+        },
+        foodType = {
+            bread = {
+                "Углеводы! Прекрасные углеводы!",
+                "Прямо из печи.",
+                "Кому нужно мясо, когда есть хлеб?",
+            },
+            meat = {
+                "Нет ничего лучше хорошего куска мяса.",
+                "Одобрено хищниками!",
+                "С кровью, как ты любишь.",
+            },
+            fish = {
+                "Свежая, прямо с пристани!",
+                "Что-то здесь рыбой пахнет...",
+                "Без соуса тартар, пожалуйста.",
+            },
+            cheese = {
+                "Скажи «сыр»!",
+                "Сыр для зверя!",
+                "Немного вонючий, как раз как надо.",
+            },
+            fruit = {
+                "Кто ест яблоко в день, тому ветеринар не нужен!",
+                "Витамины, витамины.",
+                "Здоровый выбор!",
+            },
+            fungus = {
+                "Странный вкус...",
+                "Ты уверен, что они съедобные?",
+                "Грибочки, какая прелесть.",
+            },
         },
         family = {
             [F.BOAR] = {

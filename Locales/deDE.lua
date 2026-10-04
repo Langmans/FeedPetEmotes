@@ -37,7 +37,26 @@ E.Locales.deDE = {
             warpBurger = { "Und jetzt noch eine Portion Netherrochen-Pommes?" },
             crunchy = { "Knusprig!" },
             minnow = { "Gibt's auch größere Fische?" },
-            fungus = { "Abgefahren..." },
+        },
+        foodType = {
+            bread = {
+                "Kohlenhydrate! Herrliche Kohlenhydrate!",
+                "Frisch aus dem Ofen.",
+                "Wer braucht Fleisch, wenn es Brot gibt?",
+            },
+            meat = {
+                "Nichts geht über ein gutes Stück Fleisch.",
+                "Fleischfresser-geprüft!",
+                "Medium, genau wie du es magst.",
+            },
+            fish = { "Frisch vom Hafen!", "Hier riecht's irgendwie fischig...", "Ohne Remoulade, bitte." },
+            cheese = {
+                "Käse für die Bestie!",
+                "Ein bisschen stinkig, genau wie es sein soll.",
+                "Bitte lächeln: Käse!",
+            },
+            fruit = { "Ein Apfel am Tag, und der Tierarzt bleibt weg!", "Schön Vitamine tanken.", "Gesunde Wahl!" },
+            fungus = { "Abgefahren...", "Bist du sicher, dass die essbar sind?", "Pilze? Na, wenn's schmeckt." },
         },
         family = {
             [F.BOAR] = { "Braves Schweinchen!", "Grunz grunz, mampf mampf.", "Trüffelschwein im Einsatz!" },

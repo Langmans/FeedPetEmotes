@@ -12,11 +12,18 @@ both addons can be installed side by side.
 
 ## How it works
 
-- `C_Container.UseContainerItem` is hooked; when a spell is waiting for an item
-  target at that moment, the item is remembered as the food.
-- When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, a line
-  is picked from the locale's emote lists that match: every pet, the pet's
-  gender, the food's group (looked up by item ID), and the pet's family. If the
+- The food is seen in one of two ways:
+  - **targeted**: `C_Container.UseContainerItem` is hooked; when Feed Pet is
+    waiting for an item target at that moment (cast first, then click food, or
+    the Feed Pet: Forever button), the item is the food.
+  - **cursor**: `CURSOR_CHANGED` is watched; an item picked up (dragged, or
+    clicked in a bag) and let go of shortly before the cast is the food. Where
+    it is dropped may involve no Lua at all, so the cursor is the only witness.
+  A targeted item wins over a cursor item.
+- When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, the
+  emote names the food as an item link, then a line is picked from the
+  locale's emote lists that match: every pet, the pet's gender, the food's own
+  group and its type (both looked up by item ID), and the pet's family. If the
   food is not known the emote just says "feeds <pet>.".
 - Pet families are matched on the CreatureFamily ID (second return of
   `UnitCreatureFamily`), which is the same on every client language.
@@ -28,16 +35,22 @@ frFR, koKR and ruRU. Each holds that locale's `strings` (the feed sentence and
 the chat messages) and `emotes`.
 
 - `Data.lua` loads first and holds what all locales share: the food groups
-  (item ID → group) and the CreatureFamily IDs as `E.Family`.
+  (item ID → a joke about that one food), the food types (item ID → bread,
+  meat, fish, cheese, fruit or fungus, for vendor food on Forever) and the
+  CreatureFamily IDs as `E.Family`. The client cannot tell an item's food
+  type, so `E.FoodTypes` is a hand-made list from Wowhead's Forever vendor
+  food, classified by name.
 - `Locale.lua` loads after the locale files and picks the client's locale.
   `E.L` falls back to enUS through a metatable, so a locale lists only what it
   translates. A value can be a function when `string.format` is not enough (the
   English "a"/"an").
 - A locale without emotes uses the enUS lines; a locale that lacks one list
   never mixes in English, it just has fewer lines.
-- Lines come from Feed-O-Matic, except deDE and the ten families it never had
-  (Bear, Bird of Prey, Tallstrider, Carrion Bird, Wind Serpent, Bat, Crab,
-  Gorilla, Scorpid, Turtle), which were written for this addon.
+- Lines come from Feed-O-Matic where it had them; the rest was written for
+  this addon: all of deDE, the food-type lines, the ten families Feed-O-Matic
+  never had (Bear, Bird of Prey, Tallstrider, Carrion Bird, Wind Serpent, Bat,
+  Crab, Gorilla, Scorpid, Turtle), and the extra lines that give every family
+  at least three per locale.
 
 To add a locale: copy `Locales\enUS.lua`, change the key in `E.Locales`, drop
 the strings that stay English, and list the file in the `.toc` before

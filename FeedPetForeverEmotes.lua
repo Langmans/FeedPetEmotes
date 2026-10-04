@@ -54,6 +54,8 @@ function E.EmotePool(itemID)
     end
     local group = itemID and E.FoodGroups[itemID]
     if group then append(pool, emotes.food[group]) end
+    local foodType = itemID and E.FoodTypes[itemID]
+    if foodType and emotes.foodType then append(pool, emotes.foodType[foodType]) end
     -- The family ID is the same on every client language; the name is not.
     local _, familyID = UnitCreatureFamily("pet")
     if familyID and public(familyID) then append(pool, emotes.family[familyID]) end

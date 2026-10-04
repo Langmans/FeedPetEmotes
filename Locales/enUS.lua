@@ -52,7 +52,19 @@ E.Locales.enUS = {
             warpBurger = { "Now how about some Nether Ray Fries?" },
             crunchy = { "Crunchy!" },
             minnow = { "Can has bigger fish?" },
-            fungus = { "Trippy..." },
+        },
+        -- Per food type (see E.FoodTypes). Only "Trippy..." is Feed-O-Matic's.
+        foodType = {
+            bread = { "Carbs! Glorious carbs!", "Fresh from the oven.", "Who needs meat when there's bread?" },
+            meat = {
+                "Nothing beats a good chunk of meat.",
+                "Carnivore approved!",
+                "Medium rare, just how you like it.",
+            },
+            fish = { "Fresh from the docks!", "Something smells fishy...", "Hold the tartar sauce." },
+            cheese = { "Say cheese!", "Cheese for the beast!", "A little smelly, just how it likes it." },
+            fruit = { "An apple a day keeps the vet away!", "Getting those vitamins in.", "Healthy choice!" },
+            fungus = { "Trippy...", "Are you sure those are the edible ones?", "Fun guy, eating fungi." },
         },
         -- Feed-O-Matic had one line for most of the first ten families (three
         -- for Core Hound) and none for Bear onwards; the rest was written for

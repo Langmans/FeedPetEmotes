@@ -33,11 +33,11 @@ test("a pet of unknown sex gets neither gendered list", function()
     eq(#poolFor(client, nil), #enUS.any)
 end)
 
-test("a food without a group adds nothing", function()
+test("a food with neither a group nor a type adds nothing", function()
     local client = NewClient()
     client.pet.familyID = 999
     local enUS = client.E.Locales.enUS.emotes
-    eq(#poolFor(client, 4536), #enUS.any + #enUS.male)
+    eq(#poolFor(client, 19223), #enUS.any + #enUS.male) -- Darkmoon Dog: faire food, left out
 end)
 
 test("every mushroom maps to the fungus lines", function()

@@ -1,8 +1,9 @@
 local _, E = ...
 local F = E.Family
 
--- Feed sentence and emote lines from Feed-O-Matic, except the families it
--- never covered (Bear onwards).
+-- The feed sentence and the first lines of most lists come from Feed-O-Matic;
+-- food-type lines, the families from Bear onwards and the extra family lines
+-- were written for this addon.
 E.Locales.frFR = {
     strings = {
         FEED = "donne à %s à manger un(e) %s. ",
@@ -35,6 +36,26 @@ E.Locales.frFR = {
             cherryPie = { "C'est si bon, ca en ferait hurler un muet." },
             crunchy = { "Crrrrrr!" },
             minnow = { "On dirait de la friture, T'as pas un plus gros poisson?" },
+        },
+        foodType = {
+            bread = {
+                "Des glucides ! De glorieux glucides !",
+                "Tout chaud sorti du four.",
+                "Qui a besoin de viande quand il y a du pain ?",
+            },
+            meat = {
+                "Rien ne vaut un bon morceau de viande.",
+                "Approuvé par les carnivores !",
+                "Saignant, comme tu l'aimes.",
+            },
+            fish = { "Tout droit du port !", "Ça sent le poisson par ici...", "Sans sauce tartare, merci." },
+            cheese = { "Ah, le fromage !", "Du fromage pour la bête !", "Un peu fort, juste comme il faut." },
+            fruit = { "Une pomme par jour éloigne le vétérinaire !", "Plein de vitamines.", "Un choix sain !" },
+            fungus = {
+                "Ça va le faire planer...",
+                "Tu es sûr qu'ils sont comestibles ?",
+                "Des champignons, quel délice.",
+            },
         },
         family = {
             [F.BOAR] = { "Bon cochon!", "Groin groin, miam miam.", "Chercheur de truffes en service !" },

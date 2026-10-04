@@ -12,6 +12,7 @@ local ITEM_NAMES = {
     [4608] = "Raw Black Truffle",
     [4536] = "Shiny Red Apple",
     [117] = "Tough Jerky",
+    [4540] = "Tough Hunk of Bread",
 }
 
 ---The chat link the client builds for an item, as C_Item.GetItemInfo's second return.
