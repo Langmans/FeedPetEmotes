@@ -135,6 +135,27 @@ test("known food does not wait for the bags", function()
     eq(#client.sent, 2)
 end)
 
+test("counting the bags builds no item info tables", function()
+    local client = NewClient():login()
+    client:stock(4540, 3)
+    client:stock(117, 2)
+    client.calls.GetContainerItemInfo = 0
+    client:eat(4540)
+    eq(client.calls.GetContainerItemInfo, 0)
+end)
+
+test("counting the bags reuses the same two tables", function()
+    local client = NewClient():login()
+    local tracker = client.E.FoodTracker
+    client:stock(4540, 3)
+    local first = tracker.bagCounts
+    client:stock(4540, 2)
+    local second = tracker.bagCounts
+    client:stock(4540, 1)
+    ok(first ~= second, "the previous count is kept apart from the new one")
+    ok(tracker.bagCounts == first, "the third scan reuses the first table")
+end)
+
 test("an eaten item with a secret item ID is ignored", function()
     local client = NewClient():login()
     client.secret[4540] = true

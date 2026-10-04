@@ -31,7 +31,8 @@ local EATEN_WINDOW = 1
 ---@field targetedAt number?
 ---@field cursorFood number?
 ---@field cursorReleasedAt number?
----@field bagCounts table<number, number>?
+---@field bagCounts table<number, number>
+---@field previousCounts table<number, number>
 ---@field eatenFood number?
 ---@field eatenAt number?
 ---@field onEaten fun(itemID: number?)?
@@ -46,7 +47,10 @@ local Tracker = {
     cursorFood = nil,
     cursorReleasedAt = nil, -- nil while the item is still on the cursor
     -- eaten
-    bagCounts = nil, -- itemID -> count in the bags, as of the last bag update
+    -- itemID -> count in the bags, as of the last bag update. Two tables that
+    -- swap roles on every update, so counting builds no new tables.
+    bagCounts = {},
+    previousCounts = {},
     eatenFood = nil,
     eatenAt = nil,
     onEaten = nil, -- callback of a cast waiting for the bags
@@ -57,19 +61,28 @@ local Tracker = {
 }
 E.FoodTracker = Tracker
 
----Item counts over all carried bags; items with a secret ID or count are left out.
----@return table<number, number>
-local function countBags()
-    local counts = {}
+-- The items found in one scan (itemID -> true); reused, emptied per scan.
+local inBags = {}
+
+---Fills `counts` (emptied first) with every carried item's count; items with a
+---secret ID or count are left out. Runs on every bag update, so it builds no
+---tables: GetContainerItemID returns a plain number where GetContainerItemInfo
+---builds a table (with an item link string) per slot, and GetItemCount totals
+---an item over all carried bags in one call.
+---@param counts table<number, number>
+local function countBags(counts)
+    wipe(inBags)
+    wipe(counts)
     for bag = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or 4 do
         for slot = 1, C_Container.GetContainerNumSlots(bag) do
-            local item = C_Container.GetContainerItemInfo(bag, slot)
-            if item and Public(item.itemID) and Public(item.stackCount) then
-                counts[item.itemID] = (counts[item.itemID] or 0) + item.stackCount
-            end
+            local itemID = C_Container.GetContainerItemID(bag, slot)
+            if itemID and Public(itemID) then inBags[itemID] = true end
         end
     end
-    return counts
+    for itemID in pairs(inBags) do
+        local count = C_Item.GetItemCount(itemID)
+        if Public(count) then counts[itemID] = count end
+    end
 end
 
 ---A bag item was used; it is the food only while a spell waits for an item target.
@@ -109,14 +122,17 @@ end
 ---Compare the bags with the previous count; a waiting cast takes the item
 ---that went down.
 function Tracker:OnBagsUpdated()
-    local counts = countBags()
-    for itemID, before in pairs(self.bagCounts or {}) do
+    -- The count from the last update becomes the previous one; the table that
+    -- held the one before is refilled.
+    local previous, counts = self.bagCounts, self.previousCounts
+    countBags(counts)
+    for itemID, before in pairs(previous) do
         if (counts[itemID] or 0) < before then
             self.eatenFood, self.eatenAt = itemID, GetTime()
             Debug("item gone from bags: item " .. itemID)
         end
     end
-    self.bagCounts = counts
+    self.bagCounts, self.previousCounts = counts, previous
     if self.onEaten and self.eatenFood then
         local onEaten, itemID = self.onEaten, self.eatenFood
         self.onEaten, self.eatenFood = nil, nil

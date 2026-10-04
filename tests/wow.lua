@@ -91,10 +91,21 @@ function NewClient(opts)
         end
     end
 
+    -- How often each API was called, for tests about the cost of a bag scan.
+    client.calls = { GetContainerItemInfo = 0 }
+
     C_Item = {
         GetItemInfo = function(itemID)
             if not ITEM_NAMES[itemID] then return nil end
             return ITEM_NAMES[itemID], ItemLink(itemID)
+        end,
+        -- Carried bags only, like the real default (includeBank false).
+        GetItemCount = function(itemID)
+            local total = 0
+            for _, item in ipairs(client.bag) do
+                if item.itemID == itemID then total = total + item.count end
+            end
+            return total
         end,
     }
     C_Container = {
@@ -102,12 +113,24 @@ function NewClient(opts)
         GetContainerNumSlots = function(bag)
             return bag == 0 and #client.bag or 0
         end,
+        GetContainerItemID = function(bag, slot)
+            local item = bag == 0 and client.bag[slot]
+            return item and item.itemID or nil
+        end,
+        -- The real API builds a new table for every call.
         GetContainerItemInfo = function(bag, slot)
+            client.calls.GetContainerItemInfo = client.calls.GetContainerItemInfo + 1
             local item = bag == 0 and client.bag[slot]
             if not item then return nil end
             return { itemID = item.itemID, stackCount = item.count }
         end,
     }
+    function wipe(tbl)
+        for key in pairs(tbl) do
+            tbl[key] = nil
+        end
+        return tbl
+    end
     NUM_BAG_SLOTS = 4
     C_Timer = {
         After = function(seconds, callback)
