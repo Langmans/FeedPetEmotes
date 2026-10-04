@@ -12,14 +12,19 @@ both addons can be installed side by side.
 
 ## How it works
 
-- The food is seen in one of two ways:
+- The food is seen in one of three ways, in this order of priority:
   - **targeted**: `C_Container.UseContainerItem` is hooked; when Feed Pet is
     waiting for an item target at that moment (cast first, then click food, or
     the Feed Pet: Forever button), the item is the food.
   - **cursor**: `CURSOR_CHANGED` is watched; an item picked up (dragged, or
     clicked in a bag) and let go of shortly before the cast is the food. Where
     it is dropped may involve no Lua at all, so the cursor is the only witness.
-  A targeted item wins over a cursor item.
+  - **eaten**: item counts in the bags are kept per `BAG_UPDATE_DELAYED`; the
+    item whose count dropped is the food. This catches bag buttons that hand a
+    targeted click to the client without any Lua call (Feed Pet cast from the
+    spellbook with EllesmereUIBags). The bags may update just after the cast
+    is reported, so a cast with no other sign of its food waits up to a second
+    for them, then sends with or without the food.
 - When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, the
   emote names the food as an item link, then a line is picked from the
   locale's emote lists that match: every pet, the pet's gender, the food's own

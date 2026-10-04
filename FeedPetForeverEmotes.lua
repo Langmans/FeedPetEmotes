@@ -5,8 +5,10 @@ local FEED_PET_SPELL = 6991
 -- How long after an item is picked (or let go of) the Feed Pet cast may still
 -- claim it as the food.
 local FOOD_WINDOW = 3
+-- How long an item that left the bags counts as eaten, before or after the cast.
+local EATEN_WINDOW = 1
 
--- The food is seen in one of two ways, and the cast event then claims it:
+-- The food is seen in one of three ways, and the cast event then claims it:
 -- - targeted: Feed Pet is cast first and waits for an item; clicking food in a
 --   bag or a secure target-bag/target-slot button (Feed Pet: Forever) ends up
 --   in C_Container.UseContainerItem.
@@ -14,9 +16,18 @@ local FOOD_WINDOW = 3
 --   dropped on the pet or its frame. Where it is dropped may involve no Lua at
 --   all, so CURSOR_CHANGED is watched instead: the item that was last on the
 --   cursor, let go of shortly before the cast, is the food.
--- A targeted item wins, since it is chosen while Feed Pet is already waiting.
+-- - eaten: some bag buttons hand a targeted click to the client without any
+--   Lua call (seen with Feed Pet cast from the spellbook and EllesmereUIBags).
+--   What remains is the food leaving the bags: item counts are kept per
+--   BAG_UPDATE_DELAYED, and the item whose count dropped is the food. The
+--   bags may update just before or just after the cast is reported, so a cast
+--   with no other food known waits up to EATEN_WINDOW for them.
+-- The order is also the priority: targeted, cursor, eaten.
 local lastFood, lastFoodTime
 local cursorFood, cursorReleasedAt
+local bagCounts -- itemID -> count in the bags, as of the last BAG_UPDATE_DELAYED
+local eatenFood, eatenAt
+local waitingCast -- true while a Feed Pet cast waits for the bags
 -- Only for /fpfe selftest: what the hook and the cast event last saw.
 local seenFood, seenFoodTime, seenCastTime
 
@@ -145,45 +156,43 @@ local function onCursorChanged()
     end
 end
 
+---Item counts over all carried bags; items with a secret ID or count are left out.
+---@return table<number, number>
+local function countBags()
+    local counts = {}
+    for bag = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or 4 do
+        for slot = 1, C_Container.GetContainerNumSlots(bag) do
+            local item = C_Container.GetContainerItemInfo(bag, slot)
+            if item and public(item.itemID) and public(item.stackCount) then
+                counts[item.itemID] = (counts[item.itemID] or 0) + item.stackCount
+            end
+        end
+    end
+    return counts
+end
+
 ---The food this Feed Pet cast used, if it can be told; forgets it either way.
 ---@return number? itemID
----@return string? how "targeted" or "cursor"
+---@return string? how "targeted", "cursor" or "eaten"
 local function claimFood()
     local now, itemID, how = GetTime(), nil, nil
     if lastFood and now - lastFoodTime <= FOOD_WINDOW then
         itemID, how = lastFood, "targeted"
     elseif cursorFood and (not cursorReleasedAt or now - cursorReleasedAt <= FOOD_WINDOW) then
         itemID, how = cursorFood, "cursor"
+    elseif eatenFood and now - eatenAt <= EATEN_WINDOW then
+        itemID, how = eatenFood, "eaten"
     end
-    lastFood, cursorFood = nil, nil
+    lastFood, cursorFood, eatenFood = nil, nil, nil
     if itemID then
         seenFood, seenFoodTime = itemID, now
     end
     return itemID, how
 end
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("ADDON_LOADED")
-frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
-    if event == "ADDON_LOADED" then
-        if arg1 ~= addonName then return end
-        frame:UnregisterEvent("ADDON_LOADED")
-        if type(FeedPetForeverEmotesDBPC) ~= "table" then FeedPetForeverEmotesDBPC = {} end
-        if type(FeedPetForeverEmotesDBPC.enabled) ~= "boolean" then FeedPetForeverEmotesDBPC.enabled = true end
-        if type(FeedPetForeverEmotesDBPC.petName) ~= "boolean" then FeedPetForeverEmotesDBPC.petName = false end
-        frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
-        frame:RegisterEvent("CURSOR_CHANGED")
-        return
-    end
-    if event == "CURSOR_CHANGED" then
-        onCursorChanged()
-        return
-    end
-    -- UNIT_SPELLCAST_SUCCEEDED: unit, castGUID, spellID
-    if not public(arg3) or arg3 ~= FEED_PET_SPELL then return end
-    seenCastTime = GetTime()
-    local itemID, source = claimFood()
-    debug("Feed Pet cast seen; food " .. (itemID and ("item " .. itemID .. " (" .. source .. ")") or "unknown"))
+---Sends the emote for one feeding, unless emotes are off.
+---@param itemID number?
+local function sendEmote(itemID)
     if not FeedPetForeverEmotesDBPC.enabled then return end
     local text = E.BuildEmote(itemID)
     if not text then
@@ -197,6 +206,73 @@ frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
     end
     debug("sending via " .. how)
     sendChat(text, "EMOTE")
+end
+
+-- Eaten food: compare the bags with the previous count; a waiting cast takes
+-- the item that went down.
+local function onBagsUpdated()
+    local counts = countBags()
+    for itemID, before in pairs(bagCounts or {}) do
+        if (counts[itemID] or 0) < before then
+            eatenFood, eatenAt = itemID, GetTime()
+            debug("item gone from bags: item " .. itemID)
+        end
+    end
+    bagCounts = counts
+    if waitingCast and eatenFood then
+        waitingCast = false
+        local itemID = eatenFood
+        eatenFood = nil
+        seenFood, seenFoodTime = itemID, GetTime()
+        debug("food eaten: item " .. itemID)
+        sendEmote(itemID)
+    end
+end
+
+-- No other sign of the food: wait for the bags, then send with or without it.
+local function waitForBags()
+    debug("Feed Pet cast seen; food unknown, waiting for the bags")
+    waitingCast = true
+    C_Timer.After(EATEN_WINDOW, function()
+        if not waitingCast then return end
+        waitingCast = false
+        debug("no food left the bags; sending without it")
+        sendEmote(nil)
+    end)
+end
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("ADDON_LOADED")
+frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
+    if event == "ADDON_LOADED" then
+        if arg1 ~= addonName then return end
+        frame:UnregisterEvent("ADDON_LOADED")
+        if type(FeedPetForeverEmotesDBPC) ~= "table" then FeedPetForeverEmotesDBPC = {} end
+        if type(FeedPetForeverEmotesDBPC.enabled) ~= "boolean" then FeedPetForeverEmotesDBPC.enabled = true end
+        if type(FeedPetForeverEmotesDBPC.petName) ~= "boolean" then FeedPetForeverEmotesDBPC.petName = false end
+        frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+        frame:RegisterEvent("CURSOR_CHANGED")
+        frame:RegisterEvent("BAG_UPDATE_DELAYED")
+        return
+    end
+    if event == "CURSOR_CHANGED" then
+        onCursorChanged()
+        return
+    end
+    if event == "BAG_UPDATE_DELAYED" then
+        onBagsUpdated()
+        return
+    end
+    -- UNIT_SPELLCAST_SUCCEEDED: unit, castGUID, spellID
+    if not public(arg3) or arg3 ~= FEED_PET_SPELL then return end
+    seenCastTime = GetTime()
+    local itemID, source = claimFood()
+    if not itemID then
+        waitForBags()
+        return
+    end
+    debug("Feed Pet cast seen; food item " .. itemID .. " (" .. source .. ")")
+    sendEmote(itemID)
 end)
 
 -- Diagnostics are English on purpose: they are meant to be pasted into a bug report.

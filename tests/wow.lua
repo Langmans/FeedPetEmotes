@@ -42,7 +42,9 @@ function NewClient(opts)
         time = 100,
         targeting = false,
         secret = {},
-        bagItem = nil,
+        -- Bag 0 only: slot -> { itemID, count }.
+        bag = {},
+        timers = {},
         frames = {},
     }
 
@@ -97,8 +99,19 @@ function NewClient(opts)
     }
     C_Container = {
         UseContainerItem = function() end,
-        GetContainerItemInfo = function()
-            return client.bagItem and { itemID = client.bagItem, stackCount = 1 } or nil
+        GetContainerNumSlots = function(bag)
+            return bag == 0 and #client.bag or 0
+        end,
+        GetContainerItemInfo = function(bag, slot)
+            local item = bag == 0 and client.bag[slot]
+            if not item then return nil end
+            return { itemID = item.itemID, stackCount = item.count }
+        end,
+    }
+    NUM_BAG_SLOTS = 4
+    C_Timer = {
+        After = function(seconds, callback)
+            client.timers[#client.timers + 1] = { at = client.time + seconds, callback = callback }
         end,
     }
 
@@ -175,12 +188,64 @@ function NewClient(opts)
         return self
     end
 
+    ---The bag slot holding itemID, added (empty) if there is none.
+    function client:slotOf(itemID)
+        for slot, item in ipairs(self.bag) do
+            if item.itemID == itemID then return slot end
+        end
+        self.bag[#self.bag + 1] = { itemID = itemID, count = 0 }
+        return #self.bag
+    end
+
+    ---Puts `count` of an item in the bags; the client then reports the change.
+    function client:stock(itemID, count)
+        self.bag[self:slotOf(itemID)].count = count
+        self:fire("BAG_UPDATE_DELAYED")
+    end
+
+    ---One of an item disappears from the bags, as when the pet eats it.
+    function client:eat(itemID)
+        local slot = self:slotOf(itemID)
+        self.bag[slot].count = self.bag[slot].count - 1
+        if self.bag[slot].count <= 0 then table.remove(self.bag, slot) end
+        self:fire("BAG_UPDATE_DELAYED")
+    end
+
+    ---Moves the clock on and runs the C_Timer callbacks that came due.
+    function client:advance(seconds)
+        self.time = self.time + seconds
+        local due = {}
+        for i = #self.timers, 1, -1 do
+            if self.timers[i].at <= self.time then table.insert(due, 1, table.remove(self.timers, i)) end
+        end
+        for _, timer in ipairs(due) do
+            timer.callback()
+        end
+    end
+
     ---Picks an item from the bags, as clicking it or a secure target-bag button does.
     function client:pickItem(itemID, whileTargeting)
-        self.bagItem = itemID
+        local slot = self:slotOf(itemID)
+        if self.bag[slot].count == 0 then self.bag[slot].count = 1 end
         self.targeting = whileTargeting ~= false
-        C_Container.UseContainerItem(0, 1)
+        C_Container.UseContainerItem(0, slot)
         self.targeting = false
+    end
+
+    ---Feed Pet cast from the spellbook, then food clicked in a bag whose button
+    ---does not go through C_Container.UseContainerItem: the only trace is the
+    ---food disappearing from the bags, before or after the cast is reported.
+    function client:spellbookFeed(itemID, eatenBeforeCast)
+        self:stock(itemID, 3)
+        self.targeting = true
+        self.targeting = false
+        self.time = self.time + 0.2
+        if eatenBeforeCast then self:eat(itemID) end
+        self:castSucceeded()
+        if not eatenBeforeCast then
+            self:advance(0.1)
+            self:eat(itemID)
+        end
     end
 
     function client:castSucceeded(spellID, unit)
@@ -219,7 +284,14 @@ function NewClient(opts)
         SlashCmdList.FEEDPETFOREVEREMOTES(message)
     end
 
+    ---Lets pending timers run out first: a cast with unknown food waits up to a
+    ---second for the bags before it sends.
+    function client:settle()
+        self:advance(1.1)
+    end
+
     function client:lastSent()
+        self:settle()
         return self.sent[#self.sent]
     end
 
