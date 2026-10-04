@@ -10,6 +10,23 @@ A companion to Gideon's Feed Pet: Forever, but it works with any way of feeding
 anything itself. The folder name differs from `FeedPetForever` on purpose, so
 both addons can be installed side by side.
 
+## Files
+
+In `.toc` order; all share the addon namespace `E`.
+
+- `Data.lua` — food groups, food types and pet family IDs.
+- `Locales\*.lua` — one file per locale: strings, pronouns and emote lines.
+- `Locale.lua` — picks the client's locale; `E.L`, `E.Emotes`, `E.Format`.
+- `Core.lua` — helpers (`E.Public`, `E.Print`, `E.Debug`, `E.SendFunction`)
+  and the saved settings (`E.LoadSettings`, `E.db`).
+- `Emote.lua` — the emote text: `E.EmotePool`, `E.FillPlaceholders`,
+  `E.BuildEmote`. No state.
+- `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
+  a Feed Pet cast used (see below).
+- `Commands.lua` — `/fpfe` and the selftest.
+- `FeedPetForeverEmotes.lua` — wiring: the event frame (one method per event)
+  and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
+
 ## How it works
 
 - The food is seen in one of three ways, in this order of priority:
