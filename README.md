@@ -74,6 +74,11 @@ Most emote lines come from [Fizzwidget Feed-O-Matic](https://github.com/fizzwidg
 by Gazmik Fizzwidget, including its community translations. The rest were
 written for this addon.
 
+## License
+
+MIT, see [LICENSE](LICENSE). The emote lines from Feed-O-Matic are not
+covered by it; they remain the work of their authors.
+
 ---
 
 ## Technical documentation
