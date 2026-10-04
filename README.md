@@ -76,11 +76,11 @@ written for this addon.
 
 ---
 
-# Technical documentation
+## Technical documentation
 
 The rest of this file is for people who want to change the addon.
 
-## Files
+### Files
 
 In `.toc` order; all share the addon namespace `E`.
 
@@ -101,7 +101,7 @@ In `.toc` order; all share the addon namespace `E`.
 The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
 `petName` and `debug`, all booleans.
 
-## How it works
+### How it works
 
 - The food is seen in one of three ways, in this order of priority:
   - **targeted**: `C_Container.UseContainerItem` is hooked; when Feed Pet is
@@ -119,7 +119,7 @@ The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
     item whose count dropped is the food. This catches every route that hands
     the item to the client without a Lua call the addon can see: on Forever,
     the Feed Pet: Forever button and Feed Pet cast from the spellbook followed
-    by a click in the bags (EllesmereUIBags). The bags may update just after the cast
+    by a click in the bags of a bag addon. The bags may update just after the cast
     is reported, so a cast with no other sign of its food waits up to a second
     for them, then sends with or without the food.
 - When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, the
@@ -133,7 +133,7 @@ The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
   Pet is known, the pet's family ID and sex, and the last food and cast the
   addon saw. It is always English, since it is meant for bug reports.
 
-## Localization
+### Localization
 
 One file per locale in `Locales\`: enUS, deDE, esES (also used for esMX),
 frFR, koKR and ruRU. Each holds that locale's `strings` (the feed sentence and
@@ -172,7 +172,7 @@ To add a locale: copy `Locales\enUS.lua`, change the key in `E.Locales`, drop
 the strings that stay English, and list the file in the `.toc` before
 `Locale.lua`.
 
-## Development
+### Development
 
 Needs Node.js. `npm install` once, then:
 
@@ -194,10 +194,3 @@ Coverage counts the first line of each statement as found by luaparse, with
 two adjustments for how Lua reports lines: a function counts on its closing
 `end` (where the closure is created), and `local a, b` without values does not
 count (it has no instruction of its own).
-
-To work on the addon in place, link the repository into the client's AddOns
-folder. A directory junction needs no administrator rights, unlike a symlink:
-
-```
-mklink /J "<WoW>\_classic_beta_\Interface\AddOns\FeedPetEmotes" "<this folder>"
-```
