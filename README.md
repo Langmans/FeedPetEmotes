@@ -5,10 +5,80 @@ Feed-O-Matic did in 2006:
 
 > Langmans feeds Fluffy a Mystery Meat. Tastes like well-aged gnome.
 
-A companion to Gideon's Feed Pet: Forever, but it works with any way of feeding
-(that addon's button, a macro, or clicking food by hand). It does not feed
-anything itself. The folder name differs from `FeedPetForever` on purpose, so
-both addons can be installed side by side.
+It works with any way of feeding: Gideon's Feed Pet: Forever button, a macro,
+casting Feed Pet from the spellbook and clicking food, or dragging food onto
+your pet. It does not feed anything itself, so it is a companion to Feed Pet:
+Forever rather than a replacement, and both can be installed side by side.
+
+## What it says
+
+- The emote names the food your pet ate (as a clickable item link) and adds a
+  random line.
+- Lines fit the situation: some for every pet, some for the kind of food
+  (bread, meat, fish, cheese, fruit, mushrooms, and a few special foods), and
+  three or more for each of the 17 pet families you can tame, from "Nice
+  kitty!" to "Clever girl...".
+- Lines that talk about your pet say "he" or "she" when the game tells the
+  pet's sex, and use the pet's name otherwise.
+
+## Install
+
+1. Download this repository (Code > Download ZIP) and unzip it.
+2. Put the folder in your WoW client's `Interface\AddOns` and make sure it is
+   called `FeedPetEmotes` (rename `FeedPetEmotes-main` if needed).
+3. Restart the game, or `/reload` if it was running, and check that "Feed Pet
+   Emotes" is enabled in the AddOns list on the character screen.
+
+Made for WoW: Forever (1.60).
+
+## Settings
+
+Open the options panel with `/fpe config`, or through Esc > Options > AddOns >
+Feed Pet Emotes. All settings are saved per character.
+
+- **Send emotes**: switch the emotes on or off.
+- **Always use the pet's name**: name the pet instead of saying he or she.
+- **Debug trace**: print in chat what the addon sees while you feed (see
+  [Reporting a problem](#reporting-a-problem)).
+
+The same settings, and a few extras, are available as chat commands
+(`/feedpetemotes` works too):
+
+- `/fpe` shows whether emotes are on, plus the list of commands.
+- `/fpe config` (or `/fpe options`) opens the options panel.
+- `/fpe on` and `/fpe off` switch the emotes on or off.
+- `/fpe name on` and `/fpe name off` switch "always use the pet's name".
+- `/fpe test` shows an example emote in your own chat window only; nothing
+  is sent.
+- `/fpe selftest` prints what your game client reports to the addon.
+- `/fpe debug` switches the debug trace on or off.
+
+## Languages
+
+The emotes follow your game's language: English, German, French, Spanish,
+Korean and Russian. Other languages get English. The chat messages of the
+addon itself are English for now.
+
+## Reporting a problem
+
+If an emote does not appear, or names the wrong food:
+
+1. Summon your pet and type `/fpe debug`.
+2. Feed your pet the way that goes wrong.
+3. Type `/fpe selftest`.
+4. Copy the chat lines into an issue on this repository.
+
+## Credits
+
+Most emote lines come from [Fizzwidget Feed-O-Matic](https://github.com/fizzwidget/feed-o-matic)
+by Gazmik Fizzwidget, including its community translations. The rest were
+written for this addon.
+
+---
+
+# Technical documentation
+
+The rest of this file is for people who want to change the addon.
 
 ## Files
 
@@ -27,6 +97,9 @@ In `.toc` order; all share the addon namespace `E`.
 - `Commands.lua` — `/fpe` and the selftest.
 - `FeedPetEmotes.lua` — wiring: the event frame (one method per event)
   and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
+
+The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
+`petName` and `debug`, all booleans.
 
 ## How it works
 
@@ -56,6 +129,9 @@ In `.toc` order; all share the addon namespace `E`.
   food is not known the emote just says "feeds <pet>.".
 - Pet families are matched on the CreatureFamily ID (second return of
   `UnitCreatureFamily`), which is the same on every client language.
+- `/fpe selftest` prints build, locale, the chat send function, whether Feed
+  Pet is known, the pet's family ID and sex, and the last food and cast the
+  addon saw. It is always English, since it is meant for bug reports.
 
 ## Localization
 
@@ -96,23 +172,6 @@ To add a locale: copy `Locales\enUS.lua`, change the key in `E.Locales`, drop
 the strings that stay English, and list the file in the `.toc` before
 `Locale.lua`.
 
-## Commands
-
-- `/fpe config` (or `/fpe options`) — opens the options panel (Esc > Options >
-  AddOns > Feed Pet Emotes), with checkboxes for the three settings below:
-  emotes on/off, always the pet's name, debug trace
-- `/fpe on` / `/fpe off` — toggle emotes (saved per character)
-- `/fpe name on` / `/fpe name off` — always name the pet instead of saying
-  he or she (saved per character)
-- `/fpe test` — local preview in your chat frame; nothing is sent
-- `/fpe selftest` — prints what the client reports: build and locale, the
-  chat send function, whether Feed Pet is known, the pet's family ID and sex,
-  and the last food and cast the addon saw. Sends nothing; meant to be pasted
-  into a bug report, so it is always English.
-- `/fpe debug` — toggles a trace of the feeding path in chat (food picked,
-  cast seen, why an emote was or was not sent). Saved per character, so it
-  stays on across reloads until switched off.
-
 ## Development
 
 Needs Node.js. `npm install` once, then:
@@ -136,23 +195,9 @@ two adjustments for how Lua reports lines: a function counts on its closing
 `end` (where the closure is created), and `local a, b` without values does not
 count (it has no instruction of its own).
 
-## Credits
-
-Emote lines come from [Fizzwidget Feed-O-Matic](https://github.com/fizzwidget/feed-o-matic)
-by Gazmik Fizzwidget.
-
-## Install
-
-The folder is linked into the WoW: Forever beta client:
+To work on the addon in place, link the repository into the client's AddOns
+folder. A directory junction needs no administrator rights, unlike a symlink:
 
 ```
-C:\Games\Blizzard\World of Warcraft\_classic_beta_\Interface\AddOns\FeedPetEmotes
-  -> %USERPROFILE%\Documents\My Games\WoW AddOns\FeedPetEmotes
-```
-
-It is a directory junction rather than a symlink, since creating a symlink on
-this machine needs administrator rights:
-
-```
-mklink /J "<beta>\Interface\AddOns\FeedPetEmotes" "<this folder>"
+mklink /J "<WoW>\_classic_beta_\Interface\AddOns\FeedPetEmotes" "<this folder>"
 ```
