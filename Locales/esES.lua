@@ -10,6 +10,10 @@ E.Locales.esES = {
         FEED_NO_FOOD = "alimenta a %s. ",
     },
 
+    pronouns = {
+        ["él"] = { male = "él", female = "ella" },
+    },
+
     emotes = {
         any = {
             "¡Ñam!",
@@ -41,7 +45,7 @@ E.Locales.esES = {
             },
             meat = { "Nada como un buen trozo de carne.", "¡Aprobado por carnívoros!", "Poco hecho, como te gusta." },
             fish = { "¡Recién llegado del puerto!", "Aquí huele a pescado...", "Sin salsa tártara, gracias." },
-            cheese = { "¡Queso para la fiera!", "Un poco apestoso, justo como le gusta.", "¡Di «queso»!" },
+            cheese = { "¡Queso para la fiera!", "Un poco apestoso, justo como le gusta a {él}.", "¡Di «queso»!" },
             fruit = {
                 "¡Una manzana al día, y el veterinario en la lejanía!",
                 "Cargando vitaminas.",

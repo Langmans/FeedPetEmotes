@@ -18,11 +18,20 @@ E.Locales.enUS = {
         CHAT_PREFIX = "Feed Pet: Forever Emotes:",
         EMOTES_ON = "Emotes on.",
         EMOTES_OFF = "Emotes off.",
-        STATUS = "Emotes are %s. Commands: /fpfe on, /fpfe off, /fpfe test (local preview), /fpfe selftest, /fpfe debug.",
+        STATUS = "Emotes are %s. Commands: /fpfe on, /fpfe off, /fpfe name on, /fpfe name off, "
+            .. "/fpfe test (local preview), /fpfe selftest, /fpfe debug.",
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",
         YOU = "You",
+        PET_NAME_ON = "Emotes name your pet instead of saying he or she.",
+        PET_NAME_OFF = "Emotes say he or she when your pet's sex is known, its name otherwise.",
+    },
+
+    -- Placeholders for emote lines: {he} becomes he or she from the pet's sex,
+    -- or the pet's name when that is unknown (see E.FillPlaceholders).
+    pronouns = {
+        he = { male = "he", female = "she" },
     },
 
     emotes = {
@@ -62,7 +71,7 @@ E.Locales.enUS = {
                 "Medium rare, just how you like it.",
             },
             fish = { "Fresh from the docks!", "Something smells fishy...", "Hold the tartar sauce." },
-            cheese = { "Say cheese!", "Cheese for the beast!", "A little smelly, just how it likes it." },
+            cheese = { "Say cheese!", "Cheese for the beast!", "A little smelly, just how {he} likes it." },
             fruit = { "An apple a day keeps the vet away!", "Getting those vitamins in.", "Healthy choice!" },
             fungus = { "Trippy...", "Are you sure those are the edible ones?", "Fun guy, eating fungi." },
         },
@@ -81,7 +90,7 @@ E.Locales.enUS = {
             },
             [F.RAPTOR] = { "Down, dino!", "Clever girl...", "Easy, killer!" },
             [F.DEVILSAUR] = { "Down, dino!", "Big bites for a big dino!", "Don't eat me next!" },
-            [F.CROCOLISK] = { "Crikey, it snapped that up fast!", "Snap snap!", "Mind the teeth!" },
+            [F.CROCOLISK] = { "Crikey, {he} snapped that up fast!", "Snap snap!", "Mind the teeth!" },
             [F.CORE_HOUND] = {
                 "What a good little puppy!",
                 "Aww, they're sharing.",
@@ -98,7 +107,7 @@ E.Locales.enUS = {
             [F.CARRION_BIRD] = { "Fresh, for a change!", "Not dead enough for you?", "A vulture with standards!" },
             [F.WIND_SERPENT] = { "Zap! Gone!", "Don't shock the hand that feeds you!", "Slurped right up!" },
             [F.BAT] = { "Good little screecher!", "At least it's not blood.", "Eat up, little night flyer." },
-            [F.CRAB] = { "Snip snap!", "Does it eat sideways too?", "Pinch, pinch, gone!" },
+            [F.CRAB] = { "Snip snap!", "Does {he} eat sideways too?", "Pinch, pinch, gone!" },
             [F.GORILLA] = { "Who's a good ape?", "No bananas? Fine, this will do.", "Ook ook!" },
             [F.SCORPID] = { "Watch that stinger!", "Good... thing?", "Pinch and sting, what a combo!" },
             [F.TURTLE] = { "Slow and steady eats the snack.", "Take your time. Really.", "Shell yeah!" },

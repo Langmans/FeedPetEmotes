@@ -63,6 +63,15 @@ test("/fpfe debug and selftest show the dragged food", function()
     ok(client:printedContains("Last food picked: item 4536 (Shiny Red Apple)"))
 end)
 
+test("{pet} in a line becomes the pet's name", function()
+    local client = NewClient():login()
+    client.pet.familyID = 999
+    client.pet.sex = 1
+    client.E.Emotes.any = { "Just how {pet} likes it, {pet}!" }
+    client:castSucceeded()
+    eq(client:lastSent().text, "feeds Fluffy. Just how Fluffy likes it, Fluffy!")
+end)
+
 test("food picked too long before the cast is not named", function()
     local client = NewClient():login()
     client:feed(12037, 5)

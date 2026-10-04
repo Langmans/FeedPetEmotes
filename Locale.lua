@@ -28,6 +28,10 @@ if current ~= enUS then setmetatable(current.strings, { __index = enUS.strings }
 
 E.L = current.strings
 E.Emotes = current.emotes or enUS.emotes
+-- Pronoun placeholders go with the emote lines they appear in, never through
+-- the enUS fallback: an English "he" in a German line would be wrong, the
+-- pet's name is not.
+E.Pronouns = current.emotes and current.pronouns or not current.emotes and enUS.pronouns or {}
 
 ---Formats a locale entry that is either a format string or a function.
 ---@param key string

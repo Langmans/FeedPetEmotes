@@ -46,6 +46,17 @@ the chat messages) and `emotes`.
   English "a"/"an").
 - A locale without emotes uses the enUS lines; a locale that lacks one list
   never mixes in English, it just has fewer lines.
+- Placeholders in emote lines (`E.FillPlaceholders`):
+  - `{pet}` is always the pet's name.
+  - Any other `{token}` is a pronoun from the locale's own `pronouns` table,
+    e.g. enUS `{he}` → he/she, deDE `{er}` → er/sie, frFR `{Il}` → Il/Elle.
+    It follows `UnitSex("pet")` (2 male, 3 female). When the sex is unknown
+    (1, or a secret value), with `/fpfe name on`, or for a token the locale
+    does not define, it becomes the pet's name: "A little smelly, just how
+    Kaldor likes it." Pronouns never fall back to enUS, so a German line never
+    gets an English "he".
+  - A test rejects any token that is neither `{pet}` nor in that locale's
+    `pronouns`.
 - Lines come from Feed-O-Matic where it had them; the rest was written for
   this addon: all of deDE, the food-type lines, the ten families Feed-O-Matic
   never had (Bear, Bird of Prey, Tallstrider, Carrion Bird, Wind Serpent, Bat,
@@ -59,6 +70,8 @@ the strings that stay English, and list the file in the `.toc` before
 ## Commands
 
 - `/fpfe on` / `/fpfe off` — toggle emotes (saved per character)
+- `/fpfe name on` / `/fpfe name off` — always name the pet instead of saying
+  he or she (saved per character)
 - `/fpfe test` — local preview in your chat frame; nothing is sent
 - `/fpfe selftest` — prints what the client reports: build and locale, the
   chat send function, whether Feed Pet is known, the pet's family ID and sex,

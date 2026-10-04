@@ -10,6 +10,10 @@ E.Locales.frFR = {
         FEED_NO_FOOD = "nourrit %s. ",
     },
 
+    pronouns = {
+        Il = { male = "Il", female = "Elle" },
+    },
+
     emotes = {
         any = {
             "Miam!",
@@ -106,7 +110,7 @@ E.Locales.frFR = {
                 "Au moins, ce n'est pas du sang.",
                 "Mange bien, petite créature de la nuit.",
             },
-            [F.CRAB] = { "Clic, clac !", "Il mange de travers, lui aussi ?", "Pince, pince, disparu !" },
+            [F.CRAB] = { "Clic, clac !", "{Il} mange aussi de travers ?", "Pince, pince, disparu !" },
             [F.GORILLA] = { "C'est qui le bon gorille ?", "Pas de bananes ? Bon, ça ira.", "Ouh ouh ah ah !" },
             [F.SCORPID] = { "Attention au dard !", "Gentille... bestiole ?", "Pincer et piquer, quel combo !" },
             [F.TURTLE] = {

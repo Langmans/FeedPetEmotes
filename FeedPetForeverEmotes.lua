@@ -76,7 +76,35 @@ function E.BuildEmote(itemID)
     food = link or food
     local text = food and E.Format("FEED", pet, food) or E.Format("FEED_NO_FOOD", pet)
     local pool = E.EmotePool(itemID)
-    return text .. pool[math.random(#pool)]
+    return text .. E.FillPlaceholders(pool[math.random(#pool)], pet)
+end
+
+---"male", "female", or nil when the pet's sex is unknown or the player asked
+---for the pet's name instead (/fpfe name on).
+---@return string?
+local function pronounSex()
+    if FeedPetForeverEmotesDB.petName then return nil end
+    local sex = UnitSex("pet")
+    if not public(sex) then return nil end
+    return sex == 2 and "male" or sex == 3 and "female" or nil
+end
+
+---Replaces the placeholders in an emote line.
+---{pet} is always the pet's name. Any other {token} is one of the locale's
+---pronouns (E.Pronouns, e.g. {he} -> he/she); without a known sex, or for a
+---token the locale does not define, it becomes the pet's name, which reads
+---right in every language. Function replacements, so a % in the name is
+---never read as a capture reference.
+---@param line string
+---@param pet string
+---@return string
+function E.FillPlaceholders(line, pet)
+    local sex = pronounSex()
+    local filled = line:gsub("{([^}]+)}", function(token)
+        local words = token ~= "pet" and sex and E.Pronouns[token]
+        return words and words[sex] or pet
+    end)
+    return filled
 end
 
 local function sendFunction()
@@ -142,6 +170,7 @@ frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
         frame:UnregisterEvent("ADDON_LOADED")
         if type(FeedPetForeverEmotesDB) ~= "table" then FeedPetForeverEmotesDB = {} end
         if type(FeedPetForeverEmotesDB.enabled) ~= "boolean" then FeedPetForeverEmotesDB.enabled = true end
+        if type(FeedPetForeverEmotesDB.petName) ~= "boolean" then FeedPetForeverEmotesDB.petName = false end
         frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
         frame:RegisterEvent("CURSOR_CHANGED")
         return
@@ -194,6 +223,11 @@ local function selftest()
     )
     local isKnown = C_SpellBook and C_SpellBook.IsSpellKnown or IsSpellKnown
     print("Feed Pet known: " .. (isKnown and tostring(isKnown(FEED_PET_SPELL)) or "cannot check"))
+    print(
+        "Pronouns: "
+            .. (FeedPetForeverEmotesDB.petName and "always the pet's name" or "from the pet's sex, else its name")
+            .. "."
+    )
 
     if not UnitExists("pet") then
         print("No pet out; summon one and run /fpfe selftest again.")
@@ -246,7 +280,8 @@ end
 SLASH_FEEDPETFOREVEREMOTES1 = "/fpfe"
 SLASH_FEEDPETFOREVEREMOTES2 = "/feedpetforeveremotes"
 SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
-    local cmd = ((message or ""):match("^%s*(%S*)") or ""):lower()
+    local cmd, arg = (message or ""):lower():match("^%s*(%S*)%s*(%S*)")
+    cmd, arg = cmd or "", arg or ""
     if cmd == "on" or cmd == "off" then
         FeedPetForeverEmotesDB.enabled = cmd == "on"
         print(FeedPetForeverEmotesDB.enabled and L.EMOTES_ON or L.EMOTES_OFF)
@@ -254,6 +289,9 @@ SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
         -- Local preview only; nothing is sent to chat.
         local text = E.BuildEmote(12037)
         print(text and ("|cffff8040" .. (UnitName("player") or L.YOU) .. " " .. text .. "|r") or L.NO_PET)
+    elseif cmd == "name" and (arg == "on" or arg == "off") then
+        FeedPetForeverEmotesDB.petName = arg == "on"
+        print(FeedPetForeverEmotesDB.petName and L.PET_NAME_ON or L.PET_NAME_OFF)
     elseif cmd == "selftest" then
         selftest()
     elseif cmd == "debug" then

@@ -10,6 +10,10 @@ E.Locales.deDE = {
         FEED_NO_FOOD = "füttert %s. ",
     },
 
+    pronouns = {
+        er = { male = "er", female = "sie" },
+    },
+
     emotes = {
         any = {
             "Mjam!",
@@ -107,7 +111,7 @@ E.Locales.deDE = {
                 "Einfach weggeschlürft!",
             },
             [F.BAT] = { "Braver kleiner Kreischer!", "Immerhin kein Blut.", "Iss schön, kleiner Nachtflieger." },
-            [F.CRAB] = { "Schnipp, schnapp!", "Frisst der auch seitwärts?", "Zwick, zwick, weg!" },
+            [F.CRAB] = { "Schnipp, schnapp!", "Frisst {er} auch seitwärts?", "Zwick, zwick, weg!" },
             [F.GORILLA] = { "Wer ist ein braver Affe?", "Keine Bananen? Na gut, das geht auch.", "Uh uh ah ah!" },
             [F.SCORPID] = { "Vorsicht mit dem Stachel!", "Gutes... Ding?", "Zwicken und stechen, was für eine Kombi!" },
             [F.TURTLE] = { "Immer mit der Ruhe.", "Lass dir Zeit. Wirklich.", "Panzerstark!" },
