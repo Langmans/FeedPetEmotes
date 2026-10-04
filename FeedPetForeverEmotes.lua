@@ -16,14 +16,20 @@ end
 
 local function append(pool, list)
     if type(list) ~= "table" then return end
-    for _, line in ipairs(list) do pool[#pool + 1] = line end
+    for _, line in ipairs(list) do
+        pool[#pool + 1] = line
+    end
 end
 
 local function randomLine(itemID)
     local emotes, pool = E.Emotes, {}
     append(pool, emotes.any)
     local sex = UnitSex("pet")
-    if sex == 2 then append(pool, emotes.male) elseif sex == 3 then append(pool, emotes.female) end
+    if sex == 2 then
+        append(pool, emotes.male)
+    elseif sex == 3 then
+        append(pool, emotes.female)
+    end
     local food = itemID and emotes.food[itemID]
     append(pool, type(food) == "string" and emotes.shared[food] or food)
     local family = UnitCreatureFamily("pet")
@@ -91,9 +97,14 @@ SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
     elseif cmd == "test" then
         -- Local preview only; nothing is sent to chat.
         local text = buildEmote(12037)
-        print(text and ("|cffff8040" .. (UnitName("player") or "You") .. " " .. text .. "|r") or "Summon your pet first.")
+        print(
+            text and ("|cffff8040" .. (UnitName("player") or "You") .. " " .. text .. "|r") or "Summon your pet first."
+        )
     else
-        print("Emotes are " .. (FeedPetForeverEmotesDB.enabled and "on" or "off")
-            .. ". Commands: /fpfe on, /fpfe off, /fpfe test (local preview).")
+        print(
+            "Emotes are "
+                .. (FeedPetForeverEmotesDB.enabled and "on" or "off")
+                .. ". Commands: /fpfe on, /fpfe off, /fpfe test (local preview)."
+        )
     end
 end

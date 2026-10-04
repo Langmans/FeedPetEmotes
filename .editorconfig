@@ -8,7 +8,4 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-# Read by the Lua language server's formatter (EmmyLuaCodeStyle).
-[*.lua]
-quote_style = double
-max_line_length = 120
+# Lua formatting is configured in stylua.toml.
