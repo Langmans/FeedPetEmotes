@@ -77,7 +77,7 @@ written for this addon.
 ## License
 
 MIT, see [LICENSE](LICENSE). The emote lines from Feed-O-Matic are not
-covered by it; they remain the work of their authors.
+covered by it; they remain the work of their authors (see [NOTICE](NOTICE)).
 
 ---
 
