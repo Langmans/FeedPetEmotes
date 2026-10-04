@@ -17,5 +17,6 @@ Locale.lua
 Core.lua
 Emote.lua
 FoodTracker.lua
+Options.lua
 Commands.lua
 FeedPetEmotes.lua

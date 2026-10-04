@@ -30,6 +30,8 @@ end
 ---@field time number
 ---@field targeting boolean whether a spell is waiting for an item target
 ---@field secret table<any, boolean> values issecretvalue reports as secret
+---@field optionsPanel table? the panel registered with the game's settings
+---@field optionsOpened number how often the settings were opened on that panel
 
 ---@param opts {locale: string?, savedDB: table?, noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?}?
 ---@return TestClient
@@ -166,8 +168,17 @@ function NewClient(opts)
         end
     end
 
-    function CreateFrame()
-        local frame = { events = {}, unitEvents = {} }
+    -- Layout calls only matter to the real UI; they do nothing here.
+    local function noop() end
+    local function newRegion()
+        return { SetPoint = noop, SetText = noop, SetFontObject = noop }
+    end
+
+    ---A frame records its events and scripts; a CheckButton also its checked
+    ---state, and comes with the label UICheckButtonTemplate gives it.
+    function CreateFrame(kind, _, parent)
+        local frame = newRegion()
+        frame.kind, frame.parent, frame.events, frame.unitEvents, frame.scripts = kind, parent, {}, {}, {}
         function frame:RegisterEvent(event)
             self.events[event] = true
         end
@@ -177,12 +188,46 @@ function NewClient(opts)
         function frame:RegisterUnitEvent(event, unit)
             self.unitEvents[event] = unit
         end
-        function frame:SetScript(_, handler)
-            self.onEvent = handler
+        function frame:SetScript(script, handler)
+            self.scripts[script] = handler
+            if script == "OnEvent" then self.onEvent = handler end
+        end
+        function frame:CreateFontString()
+            return newRegion()
+        end
+        if kind == "CheckButton" then
+            frame.Text = newRegion()
+            function frame:SetChecked(checked)
+                self.checked = checked and true or false
+            end
+            -- Like the older clients: 1 or nil rather than a boolean.
+            function frame:GetChecked()
+                return self.checked and 1 or nil
+            end
         end
         client.frames[#client.frames + 1] = frame
         return frame
     end
+
+    -- The game's settings window: which panel was registered, how often it was opened.
+    client.optionsOpened = 0
+    local category = {
+        GetID = function()
+            return 42
+        end,
+    }
+    Settings = {
+        RegisterCanvasLayoutCategory = function(panel, name)
+            client.optionsPanel, client.optionsName = panel, name
+            return category
+        end,
+        RegisterAddOnCategory = function(registered)
+            client.optionsRegistered = registered == category
+        end,
+        OpenToCategory = function(id)
+            if id == 42 then client.optionsOpened = client.optionsOpened + 1 end
+        end,
+    }
 
     SlashCmdList = {}
     -- Seeded under the name the .toc declares, as the client would.

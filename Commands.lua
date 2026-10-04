@@ -96,6 +96,8 @@ SlashCmdList.FEEDPETEMOTES = function(message)
     elseif cmd == "name" and (arg == "on" or arg == "off") then
         db.petName = arg == "on"
         Print(db.petName and L.PET_NAME_ON or L.PET_NAME_OFF)
+    elseif cmd == "config" or cmd == "options" then
+        E.OpenOptions()
     elseif cmd == "selftest" then
         selftest()
     elseif cmd == "debug" then

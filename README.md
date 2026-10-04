@@ -23,6 +23,7 @@ In `.toc` order; all share the addon namespace `E`.
   `E.BuildEmote`. No state.
 - `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
   a Feed Pet cast used (see below).
+- `Options.lua` — the options panel in the game's settings (`E.OpenOptions`).
 - `Commands.lua` — `/fpe` and the selftest.
 - `FeedPetEmotes.lua` — wiring: the event frame (one method per event)
   and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
@@ -97,6 +98,9 @@ the strings that stay English, and list the file in the `.toc` before
 
 ## Commands
 
+- `/fpe config` (or `/fpe options`) — opens the options panel (Esc > Options >
+  AddOns > Feed Pet Emotes), with checkboxes for the three settings below:
+  emotes on/off, always the pet's name, debug trace
 - `/fpe on` / `/fpe off` — toggle emotes (saved per character)
 - `/fpe name on` / `/fpe name off` — always name the pet instead of saying
   he or she (saved per character)

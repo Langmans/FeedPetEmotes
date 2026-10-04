@@ -18,14 +18,23 @@ E.Locales.enUS = {
         CHAT_PREFIX = "Feed Pet Emotes:",
         EMOTES_ON = "Emotes on.",
         EMOTES_OFF = "Emotes off.",
-        STATUS = "Emotes are %s. Commands: /fpe on, /fpe off, /fpe name on, /fpe name off, "
-            .. "/fpe test (local preview), /fpe selftest, /fpe debug.",
+        STATUS = "Emotes are %s. Commands: /fpe config (options panel), /fpe on, /fpe off, "
+            .. "/fpe name on, /fpe name off, /fpe test (local preview), /fpe selftest, /fpe debug.",
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",
         YOU = "You",
         PET_NAME_ON = "Emotes name your pet instead of saying he or she.",
         PET_NAME_OFF = "Emotes say he or she when your pet's sex is known, its name otherwise.",
+
+        -- The options panel (Options.lua).
+        OPTIONS_TITLE = "Feed Pet Emotes",
+        OPTION_ENABLED = "Send emotes",
+        OPTION_ENABLED_NOTE = "Send an /emote every time you feed your pet. Same as /fpe on and /fpe off.",
+        OPTION_PET_NAME = "Always use the pet's name",
+        OPTION_PET_NAME_NOTE = "Name the pet instead of saying he or she. Same as /fpe name on and off.",
+        OPTION_DEBUG = "Debug trace",
+        OPTION_DEBUG_NOTE = "Print in chat what the addon sees while you feed. Same as /fpe debug.",
     },
 
     -- Placeholders for emote lines: {he} becomes he or she from the pet's sex,
