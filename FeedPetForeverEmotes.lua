@@ -39,9 +39,9 @@ local function print(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cffffcc66" .. L.CHAT_PREFIX .. "|r " .. message)
 end
 
--- /fpfe debug traces the feeding path in chat; off on every load.
+-- /fpfe debug traces the feeding path in chat; the setting is saved per character.
 local function debug(message)
-    if E.debug then print("|cff88ccff[debug]|r " .. message) end
+    if FeedPetForeverEmotesDBPC and FeedPetForeverEmotesDBPC.debug then print("|cff88ccff[debug]|r " .. message) end
 end
 
 local function append(pool, list)
@@ -250,6 +250,7 @@ frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
         if type(FeedPetForeverEmotesDBPC) ~= "table" then FeedPetForeverEmotesDBPC = {} end
         if type(FeedPetForeverEmotesDBPC.enabled) ~= "boolean" then FeedPetForeverEmotesDBPC.enabled = true end
         if type(FeedPetForeverEmotesDBPC.petName) ~= "boolean" then FeedPetForeverEmotesDBPC.petName = false end
+        if type(FeedPetForeverEmotesDBPC.debug) ~= "boolean" then FeedPetForeverEmotesDBPC.debug = false end
         frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
         frame:RegisterEvent("CURSOR_CHANGED")
         frame:RegisterEvent("BAG_UPDATE_DELAYED")
@@ -371,8 +372,8 @@ SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
     elseif cmd == "selftest" then
         selftest()
     elseif cmd == "debug" then
-        E.debug = not E.debug
-        print("Debug " .. (E.debug and "on." or "off."))
+        FeedPetForeverEmotesDBPC.debug = not FeedPetForeverEmotesDBPC.debug
+        print("Debug " .. (FeedPetForeverEmotesDBPC.debug and "on." or "off."))
     else
         print(E.Format("STATUS", FeedPetForeverEmotesDBPC.enabled and L.STATUS_ON or L.STATUS_OFF))
     end

@@ -83,7 +83,8 @@ the strings that stay English, and list the file in the `.toc` before
   and the last food and cast the addon saw. Sends nothing; meant to be pasted
   into a bug report, so it is always English.
 - `/fpfe debug` — toggles a trace of the feeding path in chat (food picked,
-  cast seen, why an emote was or was not sent). Off again after a reload.
+  cast seen, why an emote was or was not sent). Saved per character, so it
+  stays on across reloads until switched off.
 
 ## Development
 
