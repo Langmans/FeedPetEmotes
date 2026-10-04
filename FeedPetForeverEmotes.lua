@@ -83,7 +83,7 @@ end
 ---for the pet's name instead (/fpfe name on).
 ---@return string?
 local function pronounSex()
-    if FeedPetForeverEmotesDB.petName then return nil end
+    if FeedPetForeverEmotesDBPC.petName then return nil end
     local sex = UnitSex("pet")
     if not public(sex) then return nil end
     return sex == 2 and "male" or sex == 3 and "female" or nil
@@ -168,9 +168,9 @@ frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
     if event == "ADDON_LOADED" then
         if arg1 ~= addonName then return end
         frame:UnregisterEvent("ADDON_LOADED")
-        if type(FeedPetForeverEmotesDB) ~= "table" then FeedPetForeverEmotesDB = {} end
-        if type(FeedPetForeverEmotesDB.enabled) ~= "boolean" then FeedPetForeverEmotesDB.enabled = true end
-        if type(FeedPetForeverEmotesDB.petName) ~= "boolean" then FeedPetForeverEmotesDB.petName = false end
+        if type(FeedPetForeverEmotesDBPC) ~= "table" then FeedPetForeverEmotesDBPC = {} end
+        if type(FeedPetForeverEmotesDBPC.enabled) ~= "boolean" then FeedPetForeverEmotesDBPC.enabled = true end
+        if type(FeedPetForeverEmotesDBPC.petName) ~= "boolean" then FeedPetForeverEmotesDBPC.petName = false end
         frame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
         frame:RegisterEvent("CURSOR_CHANGED")
         return
@@ -184,7 +184,7 @@ frame:SetScript("OnEvent", function(_, event, arg1, _, arg3)
     seenCastTime = GetTime()
     local itemID, source = claimFood()
     debug("Feed Pet cast seen; food " .. (itemID and ("item " .. itemID .. " (" .. source .. ")") or "unknown"))
-    if not FeedPetForeverEmotesDB.enabled then return end
+    if not FeedPetForeverEmotesDBPC.enabled then return end
     local text = E.BuildEmote(itemID)
     if not text then
         debug("no emote: the pet's name is unavailable")
@@ -216,7 +216,7 @@ local function selftest()
     print(
         string.format(
             "Emotes %s; send function: %s; secret values: %s.",
-            FeedPetForeverEmotesDB.enabled and "on" or "off",
+            FeedPetForeverEmotesDBPC.enabled and "on" or "off",
             how,
             issecretvalue and "yes" or "no"
         )
@@ -225,7 +225,7 @@ local function selftest()
     print("Feed Pet known: " .. (isKnown and tostring(isKnown(FEED_PET_SPELL)) or "cannot check"))
     print(
         "Pronouns: "
-            .. (FeedPetForeverEmotesDB.petName and "always the pet's name" or "from the pet's sex, else its name")
+            .. (FeedPetForeverEmotesDBPC.petName and "always the pet's name" or "from the pet's sex, else its name")
             .. "."
     )
 
@@ -283,21 +283,21 @@ SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
     local cmd, arg = (message or ""):lower():match("^%s*(%S*)%s*(%S*)")
     cmd, arg = cmd or "", arg or ""
     if cmd == "on" or cmd == "off" then
-        FeedPetForeverEmotesDB.enabled = cmd == "on"
-        print(FeedPetForeverEmotesDB.enabled and L.EMOTES_ON or L.EMOTES_OFF)
+        FeedPetForeverEmotesDBPC.enabled = cmd == "on"
+        print(FeedPetForeverEmotesDBPC.enabled and L.EMOTES_ON or L.EMOTES_OFF)
     elseif cmd == "test" then
         -- Local preview only; nothing is sent to chat.
         local text = E.BuildEmote(12037)
         print(text and ("|cffff8040" .. (UnitName("player") or L.YOU) .. " " .. text .. "|r") or L.NO_PET)
     elseif cmd == "name" and (arg == "on" or arg == "off") then
-        FeedPetForeverEmotesDB.petName = arg == "on"
-        print(FeedPetForeverEmotesDB.petName and L.PET_NAME_ON or L.PET_NAME_OFF)
+        FeedPetForeverEmotesDBPC.petName = arg == "on"
+        print(FeedPetForeverEmotesDBPC.petName and L.PET_NAME_ON or L.PET_NAME_OFF)
     elseif cmd == "selftest" then
         selftest()
     elseif cmd == "debug" then
         E.debug = not E.debug
         print("Debug " .. (E.debug and "on." or "off."))
     else
-        print(E.Format("STATUS", FeedPetForeverEmotesDB.enabled and L.STATUS_ON or L.STATUS_OFF))
+        print(E.Format("STATUS", FeedPetForeverEmotesDBPC.enabled and L.STATUS_ON or L.STATUS_OFF))
     end
 end

@@ -17,10 +17,13 @@ const { lua, lauxlib, lualib, to_luastring, to_jsstring } = fengari;
 const testsDir = dirname(fileURLToPath(import.meta.url));
 const root = join(testsDir, "..").replace(/\\/g, "/");
 
-const toc = readFileSync(join(root, "FeedPetForeverEmotes.toc"), "utf8")
+const tocText = readFileSync(join(root, "FeedPetForeverEmotes.toc"), "utf8");
+const toc = tocText
     .split(/\r?\n/)
     .filter((line) => line.trim() && !line.startsWith("#"))
     .map((line) => line.trim().replace(/\\/g, "/"));
+// The client creates this global from the saved file; tests seed and read it by this name.
+const savedPerCharacter = (tocText.match(/^## SavedVariablesPerCharacter:\s*(\S+)/m) || [])[1] || "";
 
 const filter = process.argv[2];
 const files = readdirSync(testsDir)
@@ -49,6 +52,8 @@ for (const file of files) {
         lua.lua_rawseti(L, -2, i + 1);
     });
     lua.lua_setglobal(L, to_luastring("TOC_FILES"));
+    lua.lua_pushstring(L, to_luastring(savedPerCharacter));
+    lua.lua_setglobal(L, to_luastring("TOC_SAVED_PER_CHARACTER"));
 
     const chunks = ["tests/framework.lua", "tests/wow.lua", `tests/${file}`];
     let loadError = null;

@@ -149,7 +149,8 @@ function NewClient(opts)
     end
 
     SlashCmdList = {}
-    FeedPetForeverEmotesDB = opts.savedDB
+    -- Seeded under the name the .toc declares, as the client would.
+    _G[TOC_SAVED_PER_CHARACTER] = opts.savedDB
 
     local E = {}
     for _, file in ipairs(TOC_FILES) do
@@ -231,6 +232,12 @@ function NewClient(opts)
     end
 
     return client
+end
+
+---The per-character saved settings, under the name the .toc declares.
+---@return table
+function Saved()
+    return _G[TOC_SAVED_PER_CHARACTER]
 end
 
 -- fengari is Lua 5.3; WoW's Lua 5.1 has a global unpack.
