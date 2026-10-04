@@ -15,7 +15,7 @@ both addons can be installed side by side.
 - `C_Container.UseContainerItem` is hooked; when a spell is waiting for an item
   target at that moment, the item is remembered as the food.
 - When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, a line
-  is picked from the lists in `Emotes.lua` that match: every pet, the pet's
+  is picked from the locale's emote lists that match: every pet, the pet's
   gender, the food's group (looked up by item ID), and the pet's family. If the
   food is not known the emote just says "feeds <pet>.".
 - Pet families are matched on the CreatureFamily ID (second return of
@@ -23,14 +23,25 @@ both addons can be installed side by side.
 
 ## Localization
 
-- `Locales.lua` holds the feed sentence and the chat messages per client
-  locale. `E.L` falls back to enUS through a metatable, so a locale lists only
-  what it translates. A value can be a function when `string.format` is not
-  enough (the English "a"/"an").
-- `Emotes.lua` holds the emote lines per locale: enUS, esES/esMX, frFR, koKR and
-  ruRU from Feed-O-Matic, plus deDE written for this addon. A locale without its
-  own table uses the enUS lines; a locale that lacks one list never mixes in
-  English, it just has fewer lines.
+One file per locale in `Locales\`: enUS, deDE, esES (also used for esMX),
+frFR, koKR and ruRU. Each holds that locale's `strings` (the feed sentence and
+the chat messages) and `emotes`.
+
+- `Data.lua` loads first and holds what all locales share: the food groups
+  (item ID → group) and the CreatureFamily IDs as `E.Family`.
+- `Locale.lua` loads after the locale files and picks the client's locale.
+  `E.L` falls back to enUS through a metatable, so a locale lists only what it
+  translates. A value can be a function when `string.format` is not enough (the
+  English "a"/"an").
+- A locale without emotes uses the enUS lines; a locale that lacks one list
+  never mixes in English, it just has fewer lines.
+- Lines come from Feed-O-Matic, except deDE and the ten families it never had
+  (Bear, Bird of Prey, Tallstrider, Carrion Bird, Wind Serpent, Bat, Crab,
+  Gorilla, Scorpid, Turtle), which were written for this addon.
+
+To add a locale: copy `Locales\enUS.lua`, change the key in `E.Locales`, drop
+the strings that stay English, and list the file in the `.toc` before
+`Locale.lua`.
 
 ## Commands
 

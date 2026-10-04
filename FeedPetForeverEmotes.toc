@@ -6,6 +6,12 @@
 ## SavedVariablesPerCharacter: FeedPetForeverEmotesDB
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastTraining
 
-Locales.lua
-Emotes.lua
+Data.lua
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\frFR.lua
+Locales\koKR.lua
+Locales\ruRU.lua
+Locale.lua
 FeedPetForeverEmotes.lua
