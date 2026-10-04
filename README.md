@@ -28,10 +28,9 @@ both addons can be installed side by side.
   what it translates. A value can be a function when `string.format` is not
   enough (the English "a"/"an").
 - `Emotes.lua` holds the emote lines per locale: enUS, esES/esMX, frFR, koKR and
-  ruRU, all from Feed-O-Matic. A locale without its own table uses the enUS
-  lines; a locale that lacks one list never mixes in English, it just has fewer
-  lines.
-- deDE has a translated feed sentence but no emote lines of its own yet.
+  ruRU from Feed-O-Matic, plus deDE written for this addon. A locale without its
+  own table uses the enUS lines; a locale that lacks one list never mixes in
+  English, it just has fewer lines.
 
 ## Commands
 

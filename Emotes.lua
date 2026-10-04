@@ -85,6 +85,54 @@ emotes.enUS = {
     },
 }
 
+-- Feed-O-Matic never had German lines; these follow the English ones.
+emotes.deDE = {
+    any = {
+        "Mjam!",
+        "Mmh, lecker.",
+        "He! Pass auf die Finger auf!",
+        "Om nom nom nom...",
+        "Ein Happs und weg!",
+        "Mmh, köstlich.",
+        "Rülps!",
+        "Juhu, Platz in der Tasche!",
+    },
+    male = { "Guter Junge!", "Braver Junge!", "Schluss mit Herrn Griesgram!" },
+    female = { "Gutes Mädchen!", "Braves Mädchen!", "Schluss mit Frau Griesgram!" },
+    food = {
+        zesty = { "Mmh, würzig!" },
+        mystery = {
+            "Schmeckt wie Hühnchen.",
+            "Schmeckt nach Weitschreiter!",
+            "Schmeckt nach gut abgehangenem Gnom.",
+            "Schmeckt nach... Spinne?",
+        },
+        chili = { "Uff, ist das scharf!" },
+        watermelon = { "Was für ein großes Maul!" },
+        cherryPie = { "So lecker, da weint selbst ein gestandener Mann." },
+        warpBurger = { "Und jetzt noch eine Portion Netherrochen-Pommes?" },
+        crunchy = { "Knusprig!" },
+        minnow = { "Gibt's auch größere Fische?" },
+        fungus = { "Abgefahren..." },
+    },
+    family = {
+        [BOAR] = { "Braves Schweinchen!" },
+        [CAT] = { "Feine Mieze!" },
+        [HYENA] = { "Guter Hund!" },
+        [WOLF] = { "Guter Hund!" },
+        [SPIDER] = { "Musst du das wirklich erst einwickeln, bevor du es frisst?" },
+        [RAPTOR] = { "Platz, Dino!" },
+        [DEVILSAUR] = { "Platz, Dino!" },
+        [CROCOLISK] = { "Mann, das war aber schnell weggeschnappt!" },
+        [CORE_HOUND] = {
+            "Was für ein braves Hündchen!",
+            "Ach, die teilen sich das.",
+            "He, streitet euch nicht darum!",
+        },
+        [CHIMAERA] = { "He, streitet euch nicht darum!" },
+    },
+}
+
 emotes.esES = {
     any = {
         "¡Ñam!",
