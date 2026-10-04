@@ -200,6 +200,21 @@ test("no pet name, or a secret one, sends nothing", function()
     eq(#client.sent, 0)
 end)
 
+test("every registered event has a handler method on its frame", function()
+    local client = NewClient():login()
+    local missing = {}
+    for _, frame in ipairs(client.frames) do
+        for event in pairs(frame.events) do
+            if type(frame[event]) ~= "function" then missing[#missing + 1] = event end
+        end
+        for event in pairs(frame.unitEvents) do
+            if type(frame[event]) ~= "function" then missing[#missing + 1] = event end
+        end
+    end
+    table.sort(missing)
+    eq(#missing, 0, "no handler for " .. table.concat(missing, ", "))
+end)
+
 test("nothing happens before the addon's own ADDON_LOADED", function()
     local client = NewClient()
     client:fire("ADDON_LOADED", "SomeOtherAddon")
