@@ -15,11 +15,11 @@ E.Locales.enUS = {
         end,
         FEED_NO_FOOD = "feeds %s. ",
 
-        CHAT_PREFIX = "Feed Pet: Forever Emotes:",
+        CHAT_PREFIX = "Feed Pet Emotes:",
         EMOTES_ON = "Emotes on.",
         EMOTES_OFF = "Emotes off.",
-        STATUS = "Emotes are %s. Commands: /fpfe on, /fpfe off, /fpfe name on, /fpfe name off, "
-            .. "/fpfe test (local preview), /fpfe selftest, /fpfe debug.",
+        STATUS = "Emotes are %s. Commands: /fpe on, /fpe off, /fpe name on, /fpe name off, "
+            .. "/fpe test (local preview), /fpe selftest, /fpe debug.",
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",

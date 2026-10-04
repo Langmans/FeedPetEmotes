@@ -56,7 +56,7 @@ local Tracker = {
     eatenFood = nil,
     eatenAt = nil,
     onEaten = nil, -- callback of a cast waiting for the bags
-    -- For /fpfe selftest: what was last seen.
+    -- For /fpe selftest: what was last seen.
     seenFood = nil,
     seenFoodTime = nil,
     seenCastTime = nil,

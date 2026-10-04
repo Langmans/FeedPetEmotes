@@ -43,7 +43,7 @@ end)
 
 test("an untranslated string falls back to enUS", function()
     local E = NewClient({ locale = "deDE" }).E
-    eq(E.L.CHAT_PREFIX, "Feed Pet: Forever Emotes:")
+    eq(E.L.CHAT_PREFIX, "Feed Pet Emotes:")
 end)
 
 test("a key missing from enUS returns the key instead of looping", function()

@@ -1,4 +1,4 @@
-# Feed Pet: Forever Emotes
+# Feed Pet Emotes
 
 Sends a random `/emote` every time you feed your hunter pet, the way Fizzwidget
 Feed-O-Matic did in 2006:
@@ -23,8 +23,8 @@ In `.toc` order; all share the addon namespace `E`.
   `E.BuildEmote`. No state.
 - `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
   a Feed Pet cast used (see below).
-- `Commands.lua` — `/fpfe` and the selftest.
-- `FeedPetForeverEmotes.lua` — wiring: the event frame (one method per event)
+- `Commands.lua` — `/fpe` and the selftest.
+- `FeedPetEmotes.lua` — wiring: the event frame (one method per event)
   and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
 
 ## How it works
@@ -79,7 +79,7 @@ the chat messages) and `emotes`.
   - Any other `{token}` is a pronoun from the locale's own `pronouns` table,
     e.g. enUS `{he}` → he/she, deDE `{er}` → er/sie, frFR `{Il}` → Il/Elle.
     It follows `UnitSex("pet")` (2 male, 3 female). When the sex is unknown
-    (1, or a secret value), with `/fpfe name on`, or for a token the locale
+    (1, or a secret value), with `/fpe name on`, or for a token the locale
     does not define, it becomes the pet's name: "A little smelly, just how
     Kaldor likes it." Pronouns never fall back to enUS, so a German line never
     gets an English "he".
@@ -97,15 +97,15 @@ the strings that stay English, and list the file in the `.toc` before
 
 ## Commands
 
-- `/fpfe on` / `/fpfe off` — toggle emotes (saved per character)
-- `/fpfe name on` / `/fpfe name off` — always name the pet instead of saying
+- `/fpe on` / `/fpe off` — toggle emotes (saved per character)
+- `/fpe name on` / `/fpe name off` — always name the pet instead of saying
   he or she (saved per character)
-- `/fpfe test` — local preview in your chat frame; nothing is sent
-- `/fpfe selftest` — prints what the client reports: build and locale, the
+- `/fpe test` — local preview in your chat frame; nothing is sent
+- `/fpe selftest` — prints what the client reports: build and locale, the
   chat send function, whether Feed Pet is known, the pet's family ID and sex,
   and the last food and cast the addon saw. Sends nothing; meant to be pasted
   into a bug report, so it is always English.
-- `/fpfe debug` — toggles a trace of the feeding path in chat (food picked,
+- `/fpe debug` — toggles a trace of the feeding path in chat (food picked,
   cast seen, why an emote was or was not sent). Saved per character, so it
   stays on across reloads until switched off.
 
@@ -125,7 +125,7 @@ Needs Node.js. `npm install` once, then:
 fengari is Lua 5.3 and WoW runs 5.1; the addon sticks to the shared subset and
 WoW Lua LS flags WoW-incompatible API use. What the simulation cannot show —
 whether Forever lets an addon send the emote, what `UnitCreatureFamily`
-really returns — is what `/fpfe selftest` is for.
+really returns — is what `/fpe selftest` is for.
 
 Coverage counts the first line of each statement as found by luaparse, with
 two adjustments for how Lua reports lines: a function counts on its closing
@@ -142,13 +142,13 @@ by Gazmik Fizzwidget.
 The folder is linked into the WoW: Forever beta client:
 
 ```
-C:\Games\Blizzard\World of Warcraft\_classic_beta_\Interface\AddOns\FeedPetForeverEmotes
-  -> %USERPROFILE%\Documents\My Games\WoW AddOns\FeedPetForeverEmotes
+C:\Games\Blizzard\World of Warcraft\_classic_beta_\Interface\AddOns\FeedPetEmotes
+  -> %USERPROFILE%\Documents\My Games\WoW AddOns\FeedPetEmotes
 ```
 
 It is a directory junction rather than a symlink, since creating a symlink on
 this machine needs administrator rights:
 
 ```
-mklink /J "<beta>\Interface\AddOns\FeedPetForeverEmotes" "<this folder>"
+mklink /J "<beta>\Interface\AddOns\FeedPetEmotes" "<this folder>"
 ```

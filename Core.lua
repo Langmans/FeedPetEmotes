@@ -18,14 +18,14 @@ function E.Print(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cffffcc66" .. E.L.CHAT_PREFIX .. "|r " .. message)
 end
 
----/fpfe debug traces the feeding path in chat; the setting is saved per character.
+---/fpe debug traces the feeding path in chat; the setting is saved per character.
 ---@param message string
 function E.Debug(message)
     if E.db and E.db.debug then E.Print("|cff88ccff[debug]|r " .. message) end
 end
 
 ---The function that sends a chat message on this client, and its name for
----/fpfe selftest; nil and "missing" when there is none.
+---/fpe selftest; nil and "missing" when there is none.
 ---@return function?
 ---@return string
 function E.SendFunction()
@@ -38,18 +38,18 @@ end
 
 -- Saved per character; a missing or broken value gets its default.
 local DEFAULTS = {
-    enabled = true, -- /fpfe on|off
-    petName = false, -- /fpfe name on|off
-    debug = false, -- /fpfe debug
+    enabled = true, -- /fpe on|off
+    petName = false, -- /fpe name on|off
+    debug = false, -- /fpe debug
 }
 
----Creates or repairs the saved settings (FeedPetForeverEmotesDBPC, declared in
+---Creates or repairs the saved settings (FeedPetEmotesDBPC, declared in
 ---the .toc) and makes them E.db. Called on ADDON_LOADED, when the client has
 ---filled in the saved table.
 function E.LoadSettings()
-    if type(FeedPetForeverEmotesDBPC) ~= "table" then FeedPetForeverEmotesDBPC = {} end
+    if type(FeedPetEmotesDBPC) ~= "table" then FeedPetEmotesDBPC = {} end
     for key, default in pairs(DEFAULTS) do
-        if type(FeedPetForeverEmotesDBPC[key]) ~= type(default) then FeedPetForeverEmotesDBPC[key] = default end
+        if type(FeedPetEmotesDBPC[key]) ~= type(default) then FeedPetEmotesDBPC[key] = default end
     end
-    E.db = FeedPetForeverEmotesDBPC
+    E.db = FeedPetEmotesDBPC
 end

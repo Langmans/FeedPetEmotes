@@ -34,7 +34,7 @@ function E.EmotePool(itemID)
 end
 
 ---"male", "female", or nil when the pet's sex is unknown or the player asked
----for the pet's name instead (/fpfe name on).
+---for the pet's name instead (/fpe name on).
 ---@return string?
 local function pronounSex()
     if E.db.petName then return nil end

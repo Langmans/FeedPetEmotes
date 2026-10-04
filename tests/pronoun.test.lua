@@ -1,5 +1,5 @@
 -- Pronoun placeholders: {he} and friends follow UnitSex, fall back to the pet's
--- name when the sex is unknown, and /fpfe name forces the name.
+-- name when the sex is unknown, and /fpe name forces the name.
 
 local function sentLine(client)
     client:castSucceeded()
@@ -36,7 +36,7 @@ test("a secret sex is treated as unknown", function()
     eq(sentLine(client), "Just how Fluffy likes it.")
 end)
 
-test("/fpfe name on always names the pet; off goes back to pronouns", function()
+test("/fpe name on always names the pet; off goes back to pronouns", function()
     local client = NewClient():login()
     onlyLine(client, "Just how {he} likes it.")
     client:slash("name on")
@@ -96,7 +96,7 @@ test("every pronoun has a male and a female word", function()
     end
 end)
 
-test("/fpfe selftest says how pronouns are chosen", function()
+test("/fpe selftest says how pronouns are chosen", function()
     local client = NewClient():login()
     client:slash("selftest")
     ok(client:printedContains("Pronouns: from the pet's sex"))

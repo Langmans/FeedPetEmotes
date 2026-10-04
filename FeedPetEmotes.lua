@@ -2,7 +2,7 @@ local addonName, E = ...
 
 -- Wiring: the events and the hook feed E.FoodTracker, and a Feed Pet cast
 -- turns the food it claims into an emote. How food is recognised lives in
--- FoodTracker.lua, how the text is built in Emote.lua, /fpfe in Commands.lua.
+-- FoodTracker.lua, how the text is built in Emote.lua, /fpe in Commands.lua.
 
 local Debug, Public, Tracker = E.Debug, E.Public, E.FoodTracker
 

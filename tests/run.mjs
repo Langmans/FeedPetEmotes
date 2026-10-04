@@ -17,7 +17,7 @@ const { lua, lauxlib, lualib, to_luastring, to_jsstring } = fengari;
 const testsDir = dirname(fileURLToPath(import.meta.url));
 const root = join(testsDir, "..").replace(/\\/g, "/");
 
-const tocText = readFileSync(join(root, "FeedPetForeverEmotes.toc"), "utf8");
+const tocText = readFileSync(join(root, "FeedPetEmotes.toc"), "utf8");
 const toc = tocText
     .split(/\r?\n/)
     .filter((line) => line.trim() && !line.startsWith("#"))

@@ -1,6 +1,6 @@
 local _, E = ...
 
--- /fpfe and its subcommands, including the selftest. Settings are read from
+-- /fpe and its subcommands, including the selftest. Settings are read from
 -- E.db, which exists once the addon has loaded (before anyone can type).
 
 local L, Print, Public = E.L, E.Print, E.Public
@@ -33,7 +33,7 @@ local function selftest()
     Print("Pronouns: " .. (db.petName and "always the pet's name" or "from the pet's sex, else its name") .. ".")
 
     if not UnitExists("pet") then
-        Print("No pet out; summon one and run /fpfe selftest again.")
+        Print("No pet out; summon one and run /fpe selftest again.")
     else
         local name = UnitName("pet")
         local family, familyID = UnitCreatureFamily("pet")
@@ -71,7 +71,7 @@ local function selftest()
             )
         )
     else
-        Print("No food picked since login; feed your pet once and run /fpfe selftest again.")
+        Print("No food picked since login; feed your pet once and run /fpe selftest again.")
     end
     if tracker.seenCastTime then
         Print(string.format("Last Feed Pet cast seen %.0fs ago.", GetTime() - tracker.seenCastTime))
@@ -80,9 +80,9 @@ local function selftest()
     end
 end
 
-SLASH_FEEDPETFOREVEREMOTES1 = "/fpfe"
-SLASH_FEEDPETFOREVEREMOTES2 = "/feedpetforeveremotes"
-SlashCmdList.FEEDPETFOREVEREMOTES = function(message)
+SLASH_FEEDPETEMOTES1 = "/fpe"
+SLASH_FEEDPETEMOTES2 = "/feedpetemotes"
+SlashCmdList.FEEDPETEMOTES = function(message)
     local db = E.db
     local cmd, arg = (message or ""):lower():match("^%s*(%S*)%s*(%S*)")
     cmd, arg = cmd or "", arg or ""

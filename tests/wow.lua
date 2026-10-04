@@ -191,7 +191,7 @@ function NewClient(opts)
     local E = {}
     for _, file in ipairs(TOC_FILES) do
         local chunk = assert(loadfile(ROOT .. "/" .. file))
-        chunk("FeedPetForeverEmotes", E)
+        chunk("FeedPetEmotes", E)
     end
     client.E = E
 
@@ -207,7 +207,7 @@ function NewClient(opts)
     ---What the client does after the addon files ran: ADDON_LOADED for each addon.
     function client:login()
         self:fire("ADDON_LOADED", "SomeOtherAddon")
-        self:fire("ADDON_LOADED", "FeedPetForeverEmotes")
+        self:fire("ADDON_LOADED", "FeedPetEmotes")
         return self
     end
 
@@ -304,7 +304,7 @@ function NewClient(opts)
     end
 
     function client:slash(message)
-        SlashCmdList.FEEDPETFOREVEREMOTES(message)
+        SlashCmdList.FEEDPETEMOTES(message)
     end
 
     ---Lets pending timers run out first: a cast with unknown food waits up to a

@@ -1,5 +1,5 @@
 {
-    "name": "feedpetforeveremotes",
+    "name": "feedpetemotes",
     "private": true,
     "description": "Development tooling only; the addon itself has no dependencies.",
     "type": "module",
