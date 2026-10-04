@@ -2,15 +2,17 @@ local _, E = ...
 
 -- Which food a Feed Pet cast used. The food is seen in one of three ways, and
 -- the cast then claims it (Claim), in this order of priority:
--- - targeted: Feed Pet is cast first and waits for an item; clicking food in a
---   bag or a secure target-bag/target-slot button (Feed Pet: Forever) ends up
---   in C_Container.UseContainerItem (OnTargeted, from a hook).
+-- - targeted: Feed Pet is cast first and waits for an item; in the Classic UI
+--   source a bag click or a secure target-bag/target-slot button ends up in
+--   C_Container.UseContainerItem (OnTargeted, from a hook). On Forever this
+--   hook does not fire for either; there the eaten route catches them.
 -- - cursor: the food is picked up (dragged, or clicked in a bag) and dropped on
 --   the pet or its frame. Where it is dropped may involve no Lua at all, so the
 --   cursor is watched instead: the item last on it, let go of shortly before the
 --   cast, is the food (OnCursorChanged).
 -- - eaten: some bag buttons hand a targeted click to the client without any
---   Lua call (seen with Feed Pet cast from the spellbook and EllesmereUIBags).
+--   Lua call (on Forever: the Feed Pet: Forever button, and Feed Pet cast
+--   from the spellbook with a click in EllesmereUIBags).
 --   What remains is the food leaving the bags: item counts are kept per
 --   BAG_UPDATE_DELAYED, and the item whose count dropped is the food
 --   (OnBagsUpdated). The bags may update just before or just after the cast is

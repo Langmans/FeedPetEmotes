@@ -31,15 +31,21 @@ In `.toc` order; all share the addon namespace `E`.
 
 - The food is seen in one of three ways, in this order of priority:
   - **targeted**: `C_Container.UseContainerItem` is hooked; when Feed Pet is
-    waiting for an item target at that moment (cast first, then click food, or
-    the Feed Pet: Forever button), the item is the food.
+    waiting for an item target at that moment, the item is the food. In the
+    Classic UI source both a bag click on a targeting spell and a secure
+    button's `target-bag`/`target-slot` go through that function. On Forever
+    the hook does not fire for either (its UI code is not public; it calls
+    something else or holds its own reference to the function), so there the
+    eaten route below does the work. The hook stays for clients where it
+    does fire: there it is the quickest route, with no wait for the bags.
   - **cursor**: `CURSOR_CHANGED` is watched; an item picked up (dragged, or
     clicked in a bag) and let go of shortly before the cast is the food. Where
     it is dropped may involve no Lua at all, so the cursor is the only witness.
   - **eaten**: item counts in the bags are kept per `BAG_UPDATE_DELAYED`; the
-    item whose count dropped is the food. This catches bag buttons that hand a
-    targeted click to the client without any Lua call (Feed Pet cast from the
-    spellbook with EllesmereUIBags). The bags may update just after the cast
+    item whose count dropped is the food. This catches every route that hands
+    the item to the client without a Lua call the addon can see: on Forever,
+    the Feed Pet: Forever button and Feed Pet cast from the spellbook followed
+    by a click in the bags (EllesmereUIBags). The bags may update just after the cast
     is reported, so a cast with no other sign of its food waits up to a second
     for them, then sends with or without the food.
 - When `UNIT_SPELLCAST_SUCCEEDED` reports Feed Pet (6991) for the player, the
