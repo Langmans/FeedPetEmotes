@@ -14,6 +14,14 @@ E.Locales.koKR = {
         OPTION_PET_NAME_NOTE = "그/그녀 대신 소환수의 이름을 부릅니다. /fpe name on, off와 같습니다.",
         OPTION_DEBUG = "디버그 추적",
         OPTION_DEBUG_NOTE = "먹이를 줄 때 애드온이 보는 내용을 대화창에 표시합니다. /fpe debug와 같습니다.",
+        OPTION_CUSTOM_TITLE = "나만의 문구",
+        OPTION_CUSTOM_NOTE = "기본 문구처럼 무작위로 선택됩니다. 자리 표시자: %s. "
+            .. "/fpe add, /fpe list, /fpe remove와 같습니다.",
+        OPTION_CUSTOM_ONLY = "내 문구만 사용",
+        OPTION_CUSTOM_ONLY_NOTE = "나만의 문구가 있는 동안 기본 문구를 쓰지 않습니다. /fpe only on, off와 같습니다.",
+        OPTION_CUSTOM_ADD = "추가",
+        OPTION_CUSTOM_REMOVE = "삭제",
+        OPTION_CUSTOM_NONE = "아직 문구가 없습니다. 위에 입력하고 Enter 또는 추가를 누르세요.",
     },
 
     emotes = {

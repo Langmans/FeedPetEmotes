@@ -31,6 +31,13 @@ local function selftest()
     local isKnown = C_SpellBook and C_SpellBook.IsSpellKnown or IsSpellKnown
     Print("Feed Pet known: " .. (isKnown and tostring(isKnown(E.FEED_PET_SPELL)) or "cannot check"))
     Print("Pronouns: " .. (db.petName and "always the pet's name" or "from the pet's sex, else its name") .. ".")
+    Print(
+        string.format(
+            "Own lines: %d (%s).",
+            #db.customLines,
+            db.customOnly and "used instead of the built-in lines" or "mixed with the built-in lines"
+        )
+    )
 
     if not UnitExists("pet") then
         Print("No pet out; summon one and run /fpe selftest again.")
@@ -80,12 +87,28 @@ local function selftest()
     end
 end
 
+---/fpe list: the player's own lines, numbered for /fpe remove.
+local function listCustomLines()
+    local lines = E.db.customLines
+    if #lines == 0 then
+        Print(L.CUSTOM_NONE)
+        return
+    end
+    Print(E.Format("CUSTOM_LIST", #lines, E.db.customOnly and L.CUSTOM_LIST_ONLY or L.CUSTOM_LIST_MIXED))
+    for i, line in ipairs(lines) do
+        Print(i .. ". " .. line)
+    end
+end
+
 SLASH_FEEDPETEMOTES1 = "/fpe"
 SLASH_FEEDPETEMOTES2 = "/feedpetemotes"
 SlashCmdList.FEEDPETEMOTES = function(message)
     local db = E.db
-    local cmd, arg = (message or ""):lower():match("^%s*(%S*)%s*(%S*)")
-    cmd, arg = cmd or "", arg or ""
+    -- rest keeps its case: it is the line for /fpe add.
+    local cmd, rest = (message or ""):match("^%s*(%S*)%s*(.-)%s*$")
+    cmd = (cmd or ""):lower()
+    rest = rest or ""
+    local arg = rest:lower():match("^%S*")
     if cmd == "on" or cmd == "off" then
         db.enabled = cmd == "on"
         Print(db.enabled and L.EMOTES_ON or L.EMOTES_OFF)
@@ -96,6 +119,18 @@ SlashCmdList.FEEDPETEMOTES = function(message)
     elseif cmd == "name" and (arg == "on" or arg == "off") then
         db.petName = arg == "on"
         Print(db.petName and L.PET_NAME_ON or L.PET_NAME_OFF)
+    elseif cmd == "add" then
+        local added, result = E.AddCustomLine(rest)
+        Print(added and E.Format("CUSTOM_ADDED", #db.customLines, result) or result)
+    elseif cmd == "list" then
+        listCustomLines()
+    elseif cmd == "remove" then
+        local index = tonumber(arg)
+        local line = E.RemoveCustomLine(index)
+        Print(line and E.Format("CUSTOM_REMOVED", line) or E.Format("CUSTOM_NO_SUCH", arg))
+    elseif cmd == "only" and (arg == "on" or arg == "off") then
+        db.customOnly = arg == "on"
+        Print(db.customOnly and L.CUSTOM_ONLY_ON or L.CUSTOM_ONLY_OFF)
     elseif cmd == "config" or cmd == "options" then
         E.OpenOptions()
     elseif cmd == "selftest" then

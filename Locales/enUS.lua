@@ -19,13 +19,29 @@ E.Locales.enUS = {
         EMOTES_ON = "Emotes on.",
         EMOTES_OFF = "Emotes off.",
         STATUS = "Emotes are %s. Commands: /fpe config (options panel), /fpe on, /fpe off, "
-            .. "/fpe name on, /fpe name off, /fpe test (local preview), /fpe selftest, /fpe debug.",
+            .. "/fpe name on, /fpe name off, /fpe add <line>, /fpe list, /fpe remove <number>, "
+            .. "/fpe only on, /fpe only off, /fpe test (local preview), /fpe selftest, /fpe debug.",
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",
         YOU = "You",
         PET_NAME_ON = "Emotes name your pet instead of saying he or she.",
         PET_NAME_OFF = "Emotes say he or she when your pet's sex is known, its name otherwise.",
+
+        -- Your own lines (CustomLines.lua; /fpe add, list, remove, only).
+        CUSTOM_ADDED = "Line %d added: %s",
+        CUSTOM_REMOVED = "Line removed: %s",
+        CUSTOM_NO_SUCH = "There is no line %s; /fpe list shows the numbers.",
+        CUSTOM_NONE = "You have no lines of your own yet. Add one with /fpe add <line>.",
+        CUSTOM_LIST = "Your lines (%d), %s:",
+        CUSTOM_LIST_ONLY = "used instead of the built-in lines",
+        CUSTOM_LIST_MIXED = "mixed with the built-in lines",
+        CUSTOM_ONLY_ON = "Only your own lines are used; while you have none, the built-in lines are.",
+        CUSTOM_ONLY_OFF = "Your own lines are mixed with the built-in lines.",
+        CUSTOM_EMPTY = "Type the line after /fpe add, e.g. /fpe add {pet} wolfs it down.",
+        CUSTOM_TOO_LONG = "That line is too long for an emote: at most %d bytes (letters outside A-Z count double).",
+        CUSTOM_BAR = "A line cannot contain the | character.",
+        CUSTOM_DUPLICATE = "You already have that line.",
 
         -- The options panel (Options.lua).
         OPTIONS_TITLE = "Feed Pet Emotes",
@@ -35,6 +51,16 @@ E.Locales.enUS = {
         OPTION_PET_NAME_NOTE = "Name the pet instead of saying he or she. Same as /fpe name on and off.",
         OPTION_DEBUG = "Debug trace",
         OPTION_DEBUG_NOTE = "Print in chat what the addon sees while you feed. Same as /fpe debug.",
+        OPTION_CUSTOM_TITLE = "Your own lines",
+        -- %s is the list of placeholders, e.g. "{pet}, {food}, {he}".
+        OPTION_CUSTOM_NOTE = "Picked at random like the built-in lines. Placeholders: %s. "
+            .. "Same as /fpe add, /fpe list and /fpe remove.",
+        OPTION_CUSTOM_ONLY = "Only use my own lines",
+        OPTION_CUSTOM_ONLY_NOTE = "Leave out the built-in lines while you have lines of your own. "
+            .. "Same as /fpe only on and off.",
+        OPTION_CUSTOM_ADD = "Add",
+        OPTION_CUSTOM_REMOVE = "Remove",
+        OPTION_CUSTOM_NONE = "No lines yet: type one above and press Enter or Add.",
     },
 
     -- Placeholders for emote lines: {he} becomes he or she from the pet's sex,

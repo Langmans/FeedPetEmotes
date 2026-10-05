@@ -15,6 +15,15 @@ E.Locales.esES = {
         OPTION_PET_NAME_NOTE = "Nombra a la mascota en lugar de decir él o ella. Igual que /fpe name on y off.",
         OPTION_DEBUG = "Registro de depuración",
         OPTION_DEBUG_NOTE = "Muestra en el chat lo que ve el addon mientras alimentas. Igual que /fpe debug.",
+        OPTION_CUSTOM_TITLE = "Tus propias frases",
+        OPTION_CUSTOM_NOTE = "Se eligen al azar como las frases incluidas. Marcadores: %s. "
+            .. "Igual que /fpe add, /fpe list y /fpe remove.",
+        OPTION_CUSTOM_ONLY = "Usar solo mis propias frases",
+        OPTION_CUSTOM_ONLY_NOTE = "Omite las frases incluidas mientras tengas frases propias. "
+            .. "Igual que /fpe only on y off.",
+        OPTION_CUSTOM_ADD = "Añadir",
+        OPTION_CUSTOM_REMOVE = "Quitar",
+        OPTION_CUSTOM_NONE = "Aún no hay frases: escribe una arriba y pulsa Intro o Añadir.",
     },
 
     pronouns = {

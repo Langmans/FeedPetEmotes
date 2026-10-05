@@ -15,6 +15,14 @@ E.Locales.ruRU = {
         OPTION_PET_NAME_NOTE = "Называть питомца по имени вместо «он» или «она». То же, что /fpe name on и off.",
         OPTION_DEBUG = "Отладка",
         OPTION_DEBUG_NOTE = "Показывать в чате, что видит аддон во время кормления. То же, что /fpe debug.",
+        OPTION_CUSTOM_TITLE = "Свои фразы",
+        OPTION_CUSTOM_NOTE = "Выбираются случайно, как и встроенные. Подстановки: %s. "
+            .. "То же, что /fpe add, /fpe list и /fpe remove.",
+        OPTION_CUSTOM_ONLY = "Только мои фразы",
+        OPTION_CUSTOM_ONLY_NOTE = "Не использовать встроенные фразы, пока есть свои. То же, что /fpe only on и off.",
+        OPTION_CUSTOM_ADD = "Добавить",
+        OPTION_CUSTOM_REMOVE = "Удалить",
+        OPTION_CUSTOM_NONE = "Фраз пока нет: введите фразу выше и нажмите Enter или «Добавить».",
     },
 
     pronouns = {

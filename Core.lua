@@ -41,6 +41,7 @@ local DEFAULTS = {
     enabled = true, -- /fpe on|off
     petName = false, -- /fpe name on|off
     debug = false, -- /fpe debug
+    customOnly = false, -- /fpe only on|off
 }
 
 ---Creates or repairs the saved settings (FeedPetEmotesDBPC, declared in
@@ -48,8 +49,18 @@ local DEFAULTS = {
 ---filled in the saved table.
 function E.LoadSettings()
     if type(FeedPetEmotesDBPC) ~= "table" then FeedPetEmotesDBPC = {} end
+    local db = FeedPetEmotesDBPC
     for key, default in pairs(DEFAULTS) do
-        if type(FeedPetEmotesDBPC[key]) ~= type(default) then FeedPetEmotesDBPC[key] = default end
+        if type(db[key]) ~= type(default) then db[key] = default end
     end
-    E.db = FeedPetEmotesDBPC
+    -- The player's own lines (CustomLines.lua): a list of strings; anything
+    -- else in it is dropped.
+    local lines = {}
+    if type(db.customLines) == "table" then
+        for _, line in ipairs(db.customLines) do
+            if type(line) == "string" then lines[#lines + 1] = line end
+        end
+    end
+    db.customLines = lines
+    E.db = db
 end

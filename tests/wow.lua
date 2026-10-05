@@ -168,11 +168,44 @@ function NewClient(opts)
         end
     end
 
-    -- Layout calls only matter to the real UI; they do nothing here.
+    -- Layout calls only matter to the real UI; they do nothing here. A region
+    -- keeps its text and whether it is shown, so tests can read the panel.
     local function noop() end
     local function newRegion()
-        return { SetPoint = noop, SetText = noop, SetFontObject = noop }
+        local region = { shown = true }
+        for _, method in ipairs({
+            "SetPoint",
+            "SetFontObject",
+            "SetSize",
+            "SetWidth",
+            "SetJustifyH",
+            "SetWordWrap",
+            "SetAutoFocus",
+            "SetMaxBytes",
+            "ClearFocus",
+        }) do
+            region[method] = noop
+        end
+        -- Not `text`: that is the label's parentKey on older CheckButtons.
+        function region:SetText(text)
+            self.shownText = text
+        end
+        function region:GetText()
+            return self.shownText
+        end
+        function region:Show()
+            self.shown = true
+        end
+        function region:Hide()
+            self.shown = false
+        end
+        function region:IsShown()
+            return self.shown
+        end
+        return region
     end
+
+    client.fontStrings = {}
 
     ---A frame records its events and scripts; a CheckButton also its checked
     ---state, and comes with the label UICheckButtonTemplate gives it.
@@ -193,7 +226,10 @@ function NewClient(opts)
             if script == "OnEvent" then self.onEvent = handler end
         end
         function frame:CreateFontString()
-            return newRegion()
+            local region = newRegion()
+            region.parent = self
+            client.fontStrings[#client.fontStrings + 1] = region
+            return region
         end
         if kind == "CheckButton" then
             frame.Text = newRegion()

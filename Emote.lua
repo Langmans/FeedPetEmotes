@@ -1,8 +1,8 @@
 local _, E = ...
 
 -- Building the emote text: which lines apply, the placeholders in a line, and
--- the sentence in front. No state of its own; it reads the pet, the item and
--- the locale's tables.
+-- the sentence in front. No state of its own; it reads the pet, the item, the
+-- locale's tables and the player's own lines.
 
 local function append(pool, list)
     if type(list) ~= "table" then return end
@@ -11,11 +11,19 @@ local function append(pool, list)
     end
 end
 
----Every emote line that applies to feeding the current pet this item.
+---Every emote line that applies to feeding the current pet this item: the
+---player's own lines, then the built-in ones. A line with {food} needs the
+---food's name. With "only my own lines" on, the built-in lines are left out,
+---unless no own line applies.
 ---@param itemID number?
+---@param foodName string? the food's name, nil when it is not known
 ---@return string[]
-function E.EmotePool(itemID)
+function E.EmotePool(itemID, foodName)
     local emotes, pool = E.Emotes, {}
+    for _, line in ipairs(E.db.customLines) do
+        if foodName or not line:find("{food}", 1, true) then pool[#pool + 1] = line end
+    end
+    if E.db.customOnly and #pool > 0 then return pool end
     append(pool, emotes.any)
     local sex = UnitSex("pet")
     if sex == 2 then
@@ -44,17 +52,20 @@ local function pronounSex()
 end
 
 ---Replaces the placeholders in an emote line.
----{pet} is always the pet's name. Any other {token} is one of the locale's
----pronouns (E.Pronouns, e.g. {he} -> he/she); without a known sex, or for a
----token the locale does not define, it becomes the pet's name, which reads
----right in every language. Function replacements, so a % in the name is
----never read as a capture reference.
+---{pet} is always the pet's name, {food} the food's plain name (E.EmotePool
+---only offers such a line when the food is known). Any other {token} is one
+---of the locale's pronouns (E.Pronouns, e.g. {he} -> he/she); without a known
+---sex, or for a token the locale does not define, it becomes the pet's name,
+---which reads right in every language. Function replacements, so a % in a
+---name is never read as a capture reference.
 ---@param line string
 ---@param pet string
+---@param food string?
 ---@return string
-function E.FillPlaceholders(line, pet)
+function E.FillPlaceholders(line, pet, food)
     local sex = pronounSex()
     local filled = line:gsub("{([^}]+)}", function(token)
+        if token == "food" and food then return food end
         local words = token ~= "pet" and sex and E.Pronouns[token]
         return words and words[sex] or pet
     end)
@@ -68,12 +79,12 @@ function E.BuildEmote(itemID)
     local pet = UnitName("pet")
     if not pet or not E.Public(pet) then return end
     -- The chat link, so readers can click the food; the plain name if there is none.
-    local food, link
+    local name, link
     if itemID then
-        food, link = C_Item.GetItemInfo(itemID)
+        name, link = C_Item.GetItemInfo(itemID)
     end
-    food = link or food
+    local food = link or name
     local text = food and E.Format("FEED", pet, food) or E.Format("FEED_NO_FOOD", pet)
-    local pool = E.EmotePool(itemID)
-    return text .. E.FillPlaceholders(pool[math.random(#pool)], pet)
+    local pool = E.EmotePool(itemID, name)
+    return text .. E.FillPlaceholders(pool[math.random(#pool)], pet, name)
 end

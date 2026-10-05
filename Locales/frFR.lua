@@ -16,6 +16,15 @@ E.Locales.frFR = {
         OPTION_PET_NAME_NOTE = "Nomme le familier au lieu de dire il ou elle. Comme /fpe name on et off.",
         OPTION_DEBUG = "Trace de débogage",
         OPTION_DEBUG_NOTE = "Affiche dans le chat ce que l'addon voit pendant que vous nourrissez. Comme /fpe debug.",
+        OPTION_CUSTOM_TITLE = "Vos propres phrases",
+        OPTION_CUSTOM_NOTE = "Tirées au hasard comme les phrases intégrées. Marqueurs : %s. "
+            .. "Comme /fpe add, /fpe list et /fpe remove.",
+        OPTION_CUSTOM_ONLY = "N'utiliser que mes propres phrases",
+        OPTION_CUSTOM_ONLY_NOTE = "Laisse de côté les phrases intégrées tant que vous en avez à vous. "
+            .. "Comme /fpe only on et off.",
+        OPTION_CUSTOM_ADD = "Ajouter",
+        OPTION_CUSTOM_REMOVE = "Retirer",
+        OPTION_CUSTOM_NONE = "Aucune phrase : tapez-en une ci-dessus et appuyez sur Entrée ou Ajouter.",
     },
 
     pronouns = {
