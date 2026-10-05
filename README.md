@@ -23,9 +23,17 @@ Forever rather than a replacement, and both can be installed side by side.
 
 ## Install
 
-1. Download this repository (Code > Download ZIP) and unzip it.
-2. Put the folder in your WoW client's `Interface\AddOns` and make sure it is
-   called `FeedPetEmotes` (rename `FeedPetEmotes-main` if needed).
+With an addon manager: install Feed Pet Emotes from
+[CurseForge](https://www.curseforge.com/wow/addons/feedpetemotes) through the
+CurseForge app (or any manager that reads CurseForge).
+
+By hand:
+
+1. Download the zip from
+   [CurseForge](https://www.curseforge.com/wow/addons/feedpetemotes) or from
+   [GitHub releases](https://github.com/Langmans/FeedPetEmotes/releases).
+2. Unzip it into your WoW client's `Interface\AddOns`, so that you get
+   `Interface\AddOns\FeedPetEmotes`.
 3. Restart the game, or `/reload` if it was running, and check that "Feed Pet
    Emotes" is enabled in the AddOns list on the character screen.
 
@@ -66,7 +74,8 @@ If an emote does not appear, or names the wrong food:
 1. Summon your pet and type `/fpe debug`.
 2. Feed your pet the way that goes wrong.
 3. Type `/fpe selftest`.
-4. Copy the chat lines into an issue on this repository.
+4. Copy the chat lines into an
+   [issue on GitHub](https://github.com/Langmans/FeedPetEmotes/issues).
 
 ## Credits
 
@@ -76,8 +85,10 @@ written for this addon.
 
 ## License
 
-MIT, see [LICENSE](LICENSE). The emote lines from Feed-O-Matic are not
-covered by it; they remain the work of their authors (see [NOTICE](NOTICE)).
+MIT, see [LICENSE](https://github.com/Langmans/FeedPetEmotes/blob/main/LICENSE).
+The emote lines from Feed-O-Matic are not covered by it; they remain the work
+of their authors (see
+[NOTICE](https://github.com/Langmans/FeedPetEmotes/blob/main/NOTICE)).
 
 ---
 
