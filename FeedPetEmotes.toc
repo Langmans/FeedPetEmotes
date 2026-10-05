@@ -20,5 +20,6 @@ CustomLines.lua
 Emote.lua
 FoodTracker.lua
 Options.lua
+SelfTest.lua
 Commands.lua
 FeedPetEmotes.lua

@@ -143,7 +143,10 @@ In `.toc` order; all share the addon namespace `E`.
 - `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
   a Feed Pet cast used (see below).
 - `Options.lua` — the options panel in the game's settings (`E.OpenOptions`).
-- `Commands.lua` — `/fpe` and the selftest.
+- `SelfTest.lua` — `/fpe selftest` (`E.SelfTest`).
+- `Commands.lua` — `/fpe`: one function per subcommand in a `Commands`
+  table, looked up by the slash handler like the event frame looks up its
+  event methods; anything unknown shows the status line.
 - `FeedPetEmotes.lua` — wiring: the event frame (one method per event)
   and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
 
