@@ -1,5 +1,11 @@
 package-as: FeedPetEmotes
 
+# Release notes come from this file instead of the commit log, so commit
+# bodies and trailers stay out of the CurseForge page.
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
 # Files starting with a dot are left out by the packager already.
 ignore:
   - annotations

@@ -194,7 +194,9 @@ Releases: pushing a tag runs `.github/workflows/release.yml`, which runs
 `npm run check` and then BigWigsMods/packager. The packager builds the zip
 (leaving out what `.pkgmeta` lists), uploads it to the CurseForge project in
 `## X-Curse-Project-ID` using the `CF_API_KEY` repository secret, and attaches
-it to a GitHub release.
+it to a GitHub release. The release notes are the `CHANGELOG.md` in the
+repository, so add a section there (and set `## Version:` in the `.toc`)
+before tagging.
 
 fengari is Lua 5.3 and WoW runs 5.1; the addon sticks to the shared subset and
 WoW Lua LS flags WoW-incompatible API use. What the simulation cannot show —
