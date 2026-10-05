@@ -1,7 +1,8 @@
 # Feed Pet Emotes
 
-Sends a random `/emote` every time you feed your hunter pet, the way Fizzwidget
-Feed-O-Matic did in 2006:
+Sends a random `/emote` every time you feed your hunter pet, the way
+[Fizzwidget Feed-O-Matic](https://github.com/fizzwidget/feed-o-matic) did in
+2008:
 
 > Langmans feeds Fluffy a Mystery Meat. Tastes like well-aged gnome.
 
