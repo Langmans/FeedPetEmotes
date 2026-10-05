@@ -18,9 +18,14 @@ E.Locales.esES = {
         OPTION_CUSTOM_TITLE = "Tus propias frases",
         OPTION_CUSTOM_NOTE = "Se eligen al azar como las frases incluidas. Marcadores: %s. "
             .. "Igual que /fpe add, /fpe list y /fpe remove.",
-        OPTION_CUSTOM_ONLY = "Usar solo mis propias frases",
-        OPTION_CUSTOM_ONLY_NOTE = "Omite las frases incluidas mientras tengas frases propias. "
-            .. "Igual que /fpe only on y off.",
+        OPTION_FALLBACK = "Usar una frase incluida si ninguna mía encaja",
+        OPTION_FALLBACK_NOTE = "Sin marcar, ese emote solo dice a quién se dio de comer y qué. "
+            .. "Igual que /fpe fallback on y off.",
+        OPTION_CHANCE = "Probabilidad de una frase propia: %s",
+        OPTION_CHANCE_EVEN = "igual",
+        OPTION_CHANCE_NOTE = "Igual: cada frase que encaje, propia o incluida, tiene la misma probabilidad. "
+            .. "Si no, esta parte de los emotes quiere una de tus frases; 100% significa solo las tuyas. "
+            .. "Igual que /fpe chance.",
         OPTION_SHARED_LINES = "Compartir mis frases con todos los personajes",
         OPTION_SHARED_LINES_NOTE = "Una sola lista para cada personaje que lo marque; sin marcar, este "
             .. "personaje conserva la suya. Igual que /fpe shared on y off.",

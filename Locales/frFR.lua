@@ -19,9 +19,14 @@ E.Locales.frFR = {
         OPTION_CUSTOM_TITLE = "Vos propres phrases",
         OPTION_CUSTOM_NOTE = "Tirées au hasard comme les phrases intégrées. Marqueurs : %s. "
             .. "Comme /fpe add, /fpe list et /fpe remove.",
-        OPTION_CUSTOM_ONLY = "N'utiliser que mes propres phrases",
-        OPTION_CUSTOM_ONLY_NOTE = "Laisse de côté les phrases intégrées tant que vous en avez à vous. "
-            .. "Comme /fpe only on et off.",
+        OPTION_FALLBACK = "Phrase intégrée si aucune des miennes ne convient",
+        OPTION_FALLBACK_NOTE = "Décoché, cette emote dit seulement qui a été nourri et avec quoi. "
+            .. "Comme /fpe fallback on et off.",
+        OPTION_CHANCE = "Chance d'une phrase à vous : %s",
+        OPTION_CHANCE_EVEN = "égale",
+        OPTION_CHANCE_NOTE = "Égale : chaque phrase qui convient, à vous ou intégrée, a la même chance. "
+            .. "Sinon, cette part des emotes veut une de vos phrases ; 100 % signifie les vôtres seulement. "
+            .. "Comme /fpe chance.",
         OPTION_SHARED_LINES = "Partager mes phrases avec tous mes personnages",
         OPTION_SHARED_LINES_NOTE = "Une seule liste pour chaque personnage qui coche cette case ; sinon, ce "
             .. "personnage garde la sienne. Comme /fpe shared on et off.",

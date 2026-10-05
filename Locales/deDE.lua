@@ -18,8 +18,12 @@ E.Locales.deDE = {
         OPTION_CUSTOM_TITLE = "Eigene Zeilen",
         OPTION_CUSTOM_NOTE = "Werden wie die eingebauten Zeilen zufällig gewählt. Platzhalter: %s. "
             .. "Wie /fpe add, /fpe list und /fpe remove.",
-        OPTION_CUSTOM_ONLY = "Nur meine eigenen Zeilen verwenden",
-        OPTION_CUSTOM_ONLY_NOTE = "Die eingebauten Zeilen weglassen, solange du eigene hast. Wie /fpe only on und off.",
+        OPTION_CHANCE = "Chance auf eine eigene Zeile: %s",
+        OPTION_CHANCE_EVEN = "gleich",
+        OPTION_CHANCE_NOTE = "Gleich: jede passende Zeile, eigene oder eingebaute, hat dieselbe Chance. Sonst will "
+            .. "dieser Anteil der Emotes eine deiner Zeilen; 100% heißt nur deine. Wie /fpe chance.",
+        OPTION_FALLBACK = "Eingebaute Zeile, wenn keine eigene passt",
+        OPTION_FALLBACK_NOTE = "Ohne Kreuz sagt so ein Emote nur, wer was gefüttert hat. Wie /fpe fallback on und off.",
         OPTION_SHARED_LINES = "Zeilen mit allen Charakteren teilen",
         OPTION_SHARED_LINES_NOTE = "Eine Liste für jeden Charakter, der dies ankreuzt; sonst behält dieser "
             .. "Charakter seine eigene. Wie /fpe shared on und off.",

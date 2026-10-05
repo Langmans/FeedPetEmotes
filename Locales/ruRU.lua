@@ -18,8 +18,13 @@ E.Locales.ruRU = {
         OPTION_CUSTOM_TITLE = "Свои фразы",
         OPTION_CUSTOM_NOTE = "Выбираются случайно, как и встроенные. Подстановки: %s. "
             .. "То же, что /fpe add, /fpe list и /fpe remove.",
-        OPTION_CUSTOM_ONLY = "Только мои фразы",
-        OPTION_CUSTOM_ONLY_NOTE = "Не использовать встроенные фразы, пока есть свои. То же, что /fpe only on и off.",
+        OPTION_FALLBACK = "Встроенная фраза, если ни одна моя не подходит",
+        OPTION_FALLBACK_NOTE = "Без отметки такая эмоция говорит только, кого и чем покормили. "
+            .. "То же, что /fpe fallback on и off.",
+        OPTION_CHANCE = "Шанс своей фразы: %s",
+        OPTION_CHANCE_EVEN = "равный",
+        OPTION_CHANCE_NOTE = "Равный: у каждой подходящей фразы, своей или встроенной, одинаковый шанс. "
+            .. "Иначе такая доля эмоций хочет одну из ваших фраз; 100% — только ваши. То же, что /fpe chance.",
         OPTION_SHARED_LINES = "Общие фразы для всех персонажей",
         OPTION_SHARED_LINES_NOTE = "Один список для всех персонажей, у которых это отмечено; без отметки "
             .. "у персонажа свой список. То же, что /fpe shared on и off.",

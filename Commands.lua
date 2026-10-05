@@ -64,7 +64,7 @@ function Commands.list()
         Print(L.CUSTOM_NONE)
         return
     end
-    Print(E.Format("CUSTOM_LIST", #lines, E.db.customOnly and L.CUSTOM_LIST_ONLY or L.CUSTOM_LIST_MIXED))
+    Print(E.Format("CUSTOM_LIST", #lines))
     for i, line in ipairs(lines) do
         Print(i .. ". " .. line)
     end
@@ -77,12 +77,13 @@ function Commands.remove(rest)
     Print(line and E.Format("CUSTOM_REMOVED", line) or E.Format("CUSTOM_NO_SUCH", word))
 end
 
----/fpe only on|off
-function Commands.only(rest)
+---/fpe fallback on|off: a built-in line, or none, when an own line is
+---wanted but none fits.
+function Commands.fallback(rest)
     local on = onOff(rest)
     if on == nil then return status() end
-    E.db.customOnly = on
-    Print(on and L.CUSTOM_ONLY_ON or L.CUSTOM_ONLY_OFF)
+    E.db.customFallback = on
+    Print(on and L.FALLBACK_ON or L.FALLBACK_OFF)
 end
 
 ---/fpe shared on|off: the account-wide lines or this character's own.
@@ -91,6 +92,18 @@ function Commands.shared(rest)
     if on == nil then return status() end
     E.db.sharedLines = on
     Print(E.Format(on and "SHARED_ON" or "SHARED_OFF", #E.CustomLines()))
+end
+
+---/fpe chance <0-100>: the share of emotes that take an own line; 0 lets
+---every line count the same.
+function Commands.chance(rest)
+    local percent = tonumber(firstWord(rest):match("^(%d+)%%?$"))
+    if not percent or percent > 100 then
+        Print(L.CHANCE_BAD)
+        return
+    end
+    E.db.customChance = percent
+    Print(percent == 0 and L.CHANCE_EVEN or E.Format("CHANCE_SET", percent))
 end
 
 ---Local preview only; nothing is sent to chat.

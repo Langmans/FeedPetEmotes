@@ -3,7 +3,8 @@ local _, E = ...
 -- The options panel in the game's settings (Esc > Options > AddOns, or
 -- /fpe config). From top to bottom:
 --   - checkboxes for the same settings as /fpe on|off, /fpe name, /fpe debug;
---   - "Your own lines": the /fpe only and /fpe shared checkboxes, an editor
+--   - "Your own lines": the /fpe chance slider, the /fpe fallback and
+--     /fpe shared checkboxes, an editor
 --     (a text box, the conditions as checkboxes, Add or Save and Cancel), and
 --     the list of lines, each with an Edit button and a red X that removes it.
 -- Everything is filled from E.db every time the panel is shown, so a change
@@ -21,7 +22,7 @@ E.OptionsPanel = panel
 -- refresh(): the fixed part (CONTENT_BASE, measured from the layout below)
 -- plus one ROW_HEIGHT per line. UIPanelScrollFrameTemplate puts its scroll
 -- bar just outside the frame's right edge, hence the room on the right.
-local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 760, 24
+local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 840, 24
 local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
 scroll:SetPoint("TOPLEFT", 0, -4)
 scroll:SetPoint("BOTTOMRIGHT", -28, 4)
@@ -97,7 +98,41 @@ customNote:SetJustifyH("LEFT")
 customNote:SetText(E.Format("OPTION_CUSTOM_NOTE", E.PlaceholderList()))
 customNote.isHeading = true
 below = customNote
-addCheckbox("customOnly", L.OPTION_CUSTOM_ONLY, L.OPTION_CUSTOM_ONLY_NOTE)
+-- How often an own line is picked (/fpe chance): 0 ("even") lets every line
+-- count the same, 5-100 is a percentage. OptionsSliderTemplate's labels have
+-- parentKeys on newer clients and only global names ($parentText, ...) on
+-- older ones, hence the global name.
+local SLIDER_NAME = "FeedPetEmotesChanceSlider"
+local slider = CreateFrame("Slider", SLIDER_NAME, content, "OptionsSliderTemplate")
+slider:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 6, -36)
+slider:SetWidth(300)
+slider:SetMinMaxValues(0, 100)
+slider:SetValueStep(5)
+if slider.SetObeyStepOnDrag then slider:SetObeyStepOnDrag(true) end
+local sliderText = slider.Text or _G[SLIDER_NAME .. "Text"];
+(slider.Low or _G[SLIDER_NAME .. "Low"]):SetText(L.OPTION_CHANCE_EVEN);
+(slider.High or _G[SLIDER_NAME .. "High"]):SetText("100%")
+
+---The slider's title for a value: "Chance of an own line: even" or "...: 35%".
+---@param percent number
+local function showChance(percent)
+    sliderText:SetText(E.Format("OPTION_CHANCE", percent == 0 and L.OPTION_CHANCE_EVEN or percent .. "%"))
+end
+
+slider:SetScript("OnValueChanged", function(_, value)
+    local percent = math.floor(value + 0.5)
+    E.db.customChance = percent
+    showChance(percent)
+end)
+local sliderNote = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+sliderNote:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -16)
+sliderNote:SetWidth(CONTENT_WIDTH - 40)
+sliderNote:SetJustifyH("LEFT")
+sliderNote:SetText(L.OPTION_CHANCE_NOTE)
+sliderNote.isHeading = true
+below = sliderNote
+addCheckbox("customFallback", L.OPTION_FALLBACK, L.OPTION_FALLBACK_NOTE)
+
 -- The list and the editor switch to the other set of lines.
 addCheckbox("sharedLines", L.OPTION_SHARED_LINES, L.OPTION_SHARED_LINES_NOTE, function()
     edit(nil)
@@ -346,6 +381,10 @@ panel:SetScript("OnShow", function()
     for key, box in pairs(checkboxes) do
         box:SetChecked(E.db[key])
     end
+    local chance = E.db.customChance --[[@as number]]
+    slider:SetValue(chance)
+    -- SetValue only reports a change; the title must show an unchanged value too.
+    showChance(chance)
     edit(nil)
     refresh()
 end)

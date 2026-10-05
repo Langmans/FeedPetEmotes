@@ -27,35 +27,70 @@ local function situationOf(itemID)
     }
 end
 
----Every emote line that applies to feeding the current pet this item: the
----player's own lines whose conditions hold (without their conditions), then
----the built-in ones. A line with {food} needs the food's name. With "only my
----own lines" on, the built-in lines are left out, unless no own line applies.
+---The lines that apply to feeding the current pet this item, in two lists:
+---the player's own lines whose conditions hold (without their conditions),
+---and the built-in ones. A line with {food} needs the food's name.
 ---@param itemID number?
 ---@param foodName string? the food's name, nil when it is not known
----@return string[]
-function E.EmotePool(itemID, foodName)
-    local emotes, pool = E.Emotes, {}
+---@return string[] own
+---@return string[] builtIn
+function E.LinePools(itemID, foodName)
+    local emotes, own, builtIn = E.Emotes, {}, {}
     local situation = situationOf(itemID)
     for _, line in ipairs(E.CustomLines()) do
         -- A saved line with a tag this version does not know is skipped.
         local tags, text = E.ParseCustomLine(line)
         if tags and E.ConditionsHold(tags, situation) and (foodName or not text:find("{food}", 1, true)) then
-            pool[#pool + 1] = text
+            own[#own + 1] = text
         end
     end
-    if E.db.customOnly and #pool > 0 then return pool end
-    append(pool, emotes.any)
+    append(builtIn, emotes.any)
     if situation.sex == 2 then
-        append(pool, emotes.male)
+        append(builtIn, emotes.male)
     elseif situation.sex == 3 then
-        append(pool, emotes.female)
+        append(builtIn, emotes.female)
     end
     local group = itemID and E.FoodGroups[itemID]
-    if group then append(pool, emotes.food[group]) end
-    if situation.foodType and emotes.foodType then append(pool, emotes.foodType[situation.foodType]) end
-    if situation.family then append(pool, emotes.family[situation.family]) end
-    return pool
+    if group then append(builtIn, emotes.food[group]) end
+    if situation.foodType and emotes.foodType then append(builtIn, emotes.foodType[situation.foodType]) end
+    if situation.family then append(builtIn, emotes.family[situation.family]) end
+    return own, builtIn
+end
+
+---Every line that fits, own and built-in together: what an even chance
+---(E.db.customChance 0) picks from.
+---@param itemID number?
+---@param foodName string?
+---@return string[]
+function E.EmotePool(itemID, foodName)
+    local own, builtIn = E.LinePools(itemID, foodName)
+    append(own, builtIn)
+    return own
+end
+
+---Picks the line for one emote, or nil for none.
+---Chance 0: every fitting line, own or built-in, counts the same.
+---Above 0: a roll of 1-100 at or under the chance wants an own line, above it
+---a built-in one (100 means own lines only). When an own line is wanted but
+---none fits, E.db.customFallback decides: a built-in line, or no line at all
+---(the emote then only says who was fed what).
+---@param itemID number?
+---@param foodName string?
+---@return string?
+function E.PickLine(itemID, foodName)
+    local chance = E.db.customChance
+    local own, builtIn = E.LinePools(itemID, foodName)
+    local pool
+    if chance == 0 then
+        pool = E.EmotePool(itemID, foodName)
+    elseif math.random(100) <= chance then
+        pool = (#own > 0 or not E.db.customFallback) and own or builtIn
+    else
+        -- A locale always has built-in lines; own ones stand in if it ever has none.
+        pool = #builtIn > 0 and builtIn or own
+    end
+    if #pool == 0 then return nil end
+    return pool[math.random(#pool)]
 end
 
 ---"male", "female", or nil when the pet's sex is unknown or the player asked
@@ -102,6 +137,8 @@ function E.BuildEmote(itemID)
     end
     local food = link or name
     local text = food and E.Format("FEED", pet, food) or E.Format("FEED_NO_FOOD", pet)
-    local pool = E.EmotePool(itemID, name)
-    return text .. E.FillPlaceholders(pool[math.random(#pool)], pet, name)
+    local line = E.PickLine(itemID, name)
+    -- No line: the sentence alone, without the space the FEED strings end in.
+    if not line then return (text:gsub("%s+$", "")) end
+    return text .. E.FillPlaceholders(line, pet, name)
 end

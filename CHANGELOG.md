@@ -12,9 +12,13 @@
 - Conditions on your own lines: only for some pet families, foods or sexes,
   ticked in the panel or typed in brackets (`/fpe add [cat,fish] ...`).
   Lines can be edited in the panel.
+- How often your own lines come up: by default every fitting line counts the
+  same; `/fpe chance <0-100>` or the panel's slider sets a fixed share of
+  emotes that want one of your lines, up to 100% for your lines only.
+- When an own line is wanted but none fits, a built-in line is used; untick
+  "Use a built-in line when none of mine fits" (`/fpe fallback off`) to send
+  just "feeds Fluffy a Mystery Meat." instead.
 - The options panel scrolls.
-- "Only use my own lines" (`/fpe only on|off`) leaves the built-in lines out
-  while you have lines of your own.
 
 ## 1.0.0 - 2026-10-05
 

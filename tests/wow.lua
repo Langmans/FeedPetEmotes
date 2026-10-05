@@ -234,6 +234,20 @@ function NewClient(opts)
             client.fontStrings[#client.fontStrings + 1] = region
             return region
         end
+        -- Like OptionsSliderTemplate on newer clients: labels as parentKeys.
+        -- SetValue reports a change through OnValueChanged, as the client does.
+        if kind == "Slider" then
+            frame.Text, frame.Low, frame.High = newRegion(), newRegion(), newRegion()
+            frame.SetMinMaxValues, frame.SetValueStep, frame.SetObeyStepOnDrag = noop, noop, noop
+            function frame:SetValue(value)
+                if value == self.value then return end
+                self.value = value
+                if self.scripts.OnValueChanged then self.scripts.OnValueChanged(self, value) end
+            end
+            function frame:GetValue()
+                return self.value
+            end
+        end
         if kind == "CheckButton" then
             frame.Text = newRegion()
             function frame:SetChecked(checked)

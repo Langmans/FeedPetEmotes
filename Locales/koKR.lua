@@ -17,8 +17,12 @@ E.Locales.koKR = {
         OPTION_CUSTOM_TITLE = "나만의 문구",
         OPTION_CUSTOM_NOTE = "기본 문구처럼 무작위로 선택됩니다. 자리 표시자: %s. "
             .. "/fpe add, /fpe list, /fpe remove와 같습니다.",
-        OPTION_CUSTOM_ONLY = "내 문구만 사용",
-        OPTION_CUSTOM_ONLY_NOTE = "나만의 문구가 있는 동안 기본 문구를 쓰지 않습니다. /fpe only on, off와 같습니다.",
+        OPTION_FALLBACK = "맞는 내 문구가 없으면 기본 문구 사용",
+        OPTION_FALLBACK_NOTE = "선택하지 않으면 누구에게 무엇을 먹였는지만 말합니다. /fpe fallback on, off와 같습니다.",
+        OPTION_CHANCE = "나만의 문구 확률: %s",
+        OPTION_CHANCE_EVEN = "균등",
+        OPTION_CHANCE_NOTE = "균등: 맞는 문구는 나만의 문구든 기본 문구든 모두 같은 확률입니다. "
+            .. "그 외에는 이 비율만큼 나만의 문구를 원합니다. 100%는 나만의 문구만입니다. /fpe chance와 같습니다.",
         OPTION_SHARED_LINES = "모든 캐릭터와 문구 공유",
         OPTION_SHARED_LINES_NOTE = "이 항목을 선택한 모든 캐릭터가 하나의 목록을 씁니다. 선택하지 않으면 "
             .. "이 캐릭터만의 목록을 씁니다. /fpe shared on, off와 같습니다.",

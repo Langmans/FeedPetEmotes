@@ -2,10 +2,10 @@ local _, E = ...
 
 -- The player's own emote lines, managed with /fpe add|list|remove or the
 -- options panel. They live in the list E.CustomLines() returns: this
--- character's own, or the account-wide one with E.db.sharedLines. E.EmotePool
--- puts the ones whose conditions hold in the pool next to the built-in lines,
--- or instead of them with E.db.customOnly. They take the same placeholders as
--- the built-in lines, plus {food} (see E.FillPlaceholders).
+-- character's own, or the account-wide one with E.db.sharedLines. The ones
+-- whose conditions hold compete with the built-in lines as E.PickLine
+-- decides (E.db.customChance, E.db.customFallback). They take the same
+-- placeholders as the built-in lines, plus {food} (see E.FillPlaceholders).
 --
 -- A line is saved as one string. It may start with conditions in brackets,
 -- "[cat,wolf,fish] Good hunter!": the same keys the built-in lists use (sex,

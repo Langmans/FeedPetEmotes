@@ -33,11 +33,17 @@ function E.SelfTest()
     Print("Pronouns: " .. (db.petName and "always the pet's name" or "from the pet's sex, else its name") .. ".")
     Print(
         string.format(
-            "Own lines: %d, %s (%s).",
+            "Own lines: %d, %s.",
             #E.CustomLines(),
-            db.sharedLines and "shared by the account" or "this character's",
-            db.customOnly and "used instead of the built-in lines" or "mixed with the built-in lines"
+            db.sharedLines and "shared by the account" or "this character's"
         )
+    )
+    Print(
+        "Chance of an own line: "
+            .. (db.customChance == 0 and "even (every line counts the same)" or db.customChance .. "%")
+            .. "; none fits: "
+            .. (db.customFallback and "a built-in line" or "no line")
+            .. "."
     )
 
     if not UnitExists("pet") then

@@ -41,8 +41,9 @@ local DEFAULTS = {
     enabled = true, -- /fpe on|off
     petName = false, -- /fpe name on|off
     debug = false, -- /fpe debug
-    customOnly = false, -- /fpe only on|off
     sharedLines = false, -- /fpe shared on|off
+    customChance = 0, -- /fpe chance <0-100>; 0: every line counts the same
+    customFallback = true, -- /fpe fallback on|off
 }
 
 ---A list of own lines (CustomLines.lua) as saved: only its strings are kept.
@@ -66,10 +67,15 @@ end
 function E.LoadSettings()
     if type(FeedPetEmotesDBPC) ~= "table" then FeedPetEmotesDBPC = {} end
     local db = FeedPetEmotesDBPC
+    -- customOnly (own lines only) is now a chance of 100%.
+    if db.customOnly == true and db.customChance == nil then db.customChance = 100 end
+    db.customOnly = nil
     for key, default in pairs(DEFAULTS) do
         if type(db[key]) ~= type(default) then db[key] = default end
     end
     db.customLines = cleanLines(db.customLines)
+    -- A whole percentage; anything else is put back to the nearest one.
+    db.customChance = math.max(0, math.min(100, math.floor(db.customChance + 0.5)))
     E.db = db
 
     if type(FeedPetEmotesDB) ~= "table" then FeedPetEmotesDB = {} end

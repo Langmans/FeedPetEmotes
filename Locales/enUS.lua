@@ -20,7 +20,7 @@ E.Locales.enUS = {
         EMOTES_OFF = "Emotes off.",
         STATUS = "Emotes are %s. Commands: /fpe config (options panel), /fpe on, /fpe off, "
             .. "/fpe name on, /fpe name off, /fpe add [conditions] <line>, /fpe list, /fpe remove <number>, "
-            .. "/fpe only on, /fpe only off, /fpe shared on, /fpe shared off, /fpe test (local preview), /fpe selftest, /fpe debug.",
+            .. "/fpe chance <0-100>, /fpe fallback on, /fpe fallback off, /fpe shared on, /fpe shared off, /fpe test (local preview), /fpe selftest, /fpe debug.",
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",
@@ -28,16 +28,18 @@ E.Locales.enUS = {
         PET_NAME_ON = "Emotes name your pet instead of saying he or she.",
         PET_NAME_OFF = "Emotes say he or she when your pet's sex is known, its name otherwise.",
 
-        -- Your own lines (CustomLines.lua; /fpe add, list, remove, only).
+        -- Your own lines (CustomLines.lua; /fpe add, list, remove, chance, fallback, shared).
         CUSTOM_ADDED = "Line %d added: %s",
         CUSTOM_REMOVED = "Line removed: %s",
         CUSTOM_NO_SUCH = "There is no line %s; /fpe list shows the numbers.",
         CUSTOM_NONE = "You have no lines of your own yet. Add one with /fpe add <line>.",
-        CUSTOM_LIST = "Your lines (%d), %s:",
-        CUSTOM_LIST_ONLY = "used instead of the built-in lines",
-        CUSTOM_LIST_MIXED = "mixed with the built-in lines",
-        CUSTOM_ONLY_ON = "Only your own lines are used; while you have none, the built-in lines are.",
-        CUSTOM_ONLY_OFF = "Your own lines are mixed with the built-in lines.",
+        CUSTOM_LIST = "Your lines (%d):",
+        CHANCE_SET = "%d%% of your emotes now want one of your own lines.",
+        CHANCE_EVEN = "Your own lines now count like the built-in ones: every fitting line has the same chance.",
+        CHANCE_BAD = "Give a number from 0 to 100, e.g. /fpe chance 50. 0 lets every line count the same, "
+            .. "100 uses only your own lines.",
+        FALLBACK_ON = "When none of your lines fits, a built-in line is used.",
+        FALLBACK_OFF = "When none of your lines fits, the emote only says who was fed what.",
         SHARED_ON = "This character now uses the lines shared by all your characters (%d).",
         SHARED_OFF = "This character now uses its own lines (%d).",
         CUSTOM_EMPTY = "Type the line after /fpe add, e.g. /fpe add {pet} wolfs it down.",
@@ -58,9 +60,14 @@ E.Locales.enUS = {
         -- %s is the list of placeholders, e.g. "{pet}, {food}, {he}".
         OPTION_CUSTOM_NOTE = "Picked at random like the built-in lines. Placeholders: %s. "
             .. "Same as /fpe add, /fpe list and /fpe remove.",
-        OPTION_CUSTOM_ONLY = "Only use my own lines",
-        OPTION_CUSTOM_ONLY_NOTE = "Leave out the built-in lines while you have lines of your own. "
-            .. "Same as /fpe only on and off.",
+        -- %s is OPTION_CHANCE_EVEN or a percentage like "35%".
+        OPTION_CHANCE = "Chance of an own line: %s",
+        OPTION_CHANCE_EVEN = "even",
+        OPTION_CHANCE_NOTE = "Even: every fitting line, yours or built-in, has the same chance. Otherwise this "
+            .. "share of emotes wants one of your lines; 100% means only yours. Same as /fpe chance.",
+        OPTION_FALLBACK = "Use a built-in line when none of mine fits",
+        OPTION_FALLBACK_NOTE = "Unticked, such an emote only says who was fed what. "
+            .. "Same as /fpe fallback on and off.",
         OPTION_SHARED_LINES = "Share my lines with all characters",
         OPTION_SHARED_LINES_NOTE = "Use one list for every character that ticks this; unticked, this "
             .. "character keeps its own. Same as /fpe shared on and off.",

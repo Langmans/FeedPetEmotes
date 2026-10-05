@@ -1,4 +1,4 @@
--- The player's own lines: saving and repairing them, /fpe add|list|remove|only,
+-- The player's own lines: saving and repairing them, /fpe add|list|remove,
 -- the {food} placeholder, and managing them in the options panel.
 
 ---The line after "feeds <pet> ... " in the last emote sent.
@@ -7,25 +7,24 @@ local function sentLine(client)
     return text:match("^feeds Fluffy a .-|h|r%. (.*)$") or text:match("^feeds Fluffy%. (.*)$") or text
 end
 
----Only own lines, so the emote is predictable.
+---Own lines at a chance of 100%, so the emote is predictable.
 local function onlyOwn(client, ...)
     for _, line in ipairs({ ... }) do
         client:slash("add " .. line)
     end
-    client:slash("only on")
+    client:slash("chance 100")
 end
 
-test("a new character has no own lines and mixes them in", function()
+test("a new character has no own lines", function()
     NewClient():login()
     eq(type(Saved().customLines), "table")
     eq(#Saved().customLines, 0)
-    eq(Saved().customOnly, false)
 end)
 
 test("broken own-line settings are repaired; lines that are not text are dropped", function()
-    NewClient({ savedDB = { customLines = "nope", customOnly = "yes" } }):login()
+    NewClient({ savedDB = { customLines = "nope", customFallback = "yes" } }):login()
     eq(#Saved().customLines, 0)
-    eq(Saved().customOnly, false)
+    eq(Saved().customFallback, true)
     NewClient({ savedDB = { customLines = { "Keep me.", 42, "Me too." } } }):login()
     eq(#Saved().customLines, 2)
     eq(Saved().customLines[2], "Me too.")
@@ -48,21 +47,11 @@ test("own lines join the built-in lines", function()
     contains(pool, "Nice kitty!")
 end)
 
-test("with only own lines on, the emote uses one of them", function()
+test("at a chance of 100% the emote uses one of the own lines", function()
     local client = NewClient():login()
     onlyOwn(client, "Chomp.")
-    eq(#client.E.EmotePool(12037, "Mystery Meat"), 1)
     client:feed(12037)
     eq(sentLine(client), "Chomp.")
-end)
-
-test("only own lines without any own line keeps the built-in lines", function()
-    local client = NewClient():login()
-    client:slash("only on")
-    eq(Saved().customOnly, true)
-    ok(#client.E.EmotePool(nil) > 0)
-    client:castSucceeded()
-    ok(client:lastSent(), "an emote is still sent")
 end)
 
 test("{pet}, {food} and pronouns are filled in own lines", function()
@@ -107,19 +96,16 @@ test("the same line twice is refused", function()
     ok(client:printedContains("You already have that line."))
 end)
 
-test("/fpe list numbers the lines and says how they are used", function()
+test("/fpe list numbers the lines", function()
     local client = NewClient():login()
     client:slash("list")
     ok(client:printedContains("You have no lines of your own yet."))
     client:slash("add Chomp.")
     client:slash("add Crunch.")
     client:slash("list")
-    ok(client:printedContains("Your lines (2), mixed with the built-in lines:"))
+    ok(client:printedContains("Your lines (2):"))
     ok(client:printedContains("1. Chomp."))
     ok(client:printedContains("2. Crunch."))
-    client:slash("only on")
-    client:slash("list")
-    ok(client:printedContains("Your lines (2), used instead of the built-in lines:"))
 end)
 
 test("/fpe remove takes a line out by its number", function()
@@ -137,20 +123,10 @@ test("/fpe remove takes a line out by its number", function()
     eq(#Saved().customLines, 1)
 end)
 
-test("/fpe only on and off switch the setting", function()
-    local client = NewClient():login()
-    client:slash("only on")
-    eq(Saved().customOnly, true)
-    ok(client:printedContains("Only your own lines are used"))
-    client:slash("only off")
-    eq(Saved().customOnly, false)
-    ok(client:printedContains("mixed with the built-in lines"))
-end)
-
 test("own lines survive a reload", function()
     local client = NewClient():login()
     client:slash("add Chomp.")
-    client:slash("only on")
+    client:slash("chance 100")
     local reloaded = NewClient({ savedDB = Saved() }):login()
     eq(Saved().customLines[1], "Chomp.")
     reloaded:castSucceeded()
@@ -163,7 +139,7 @@ test("/fpe lists the own-line commands; selftest counts the lines", function()
     ok(client:printedContains("/fpe add [conditions] <line>"))
     client:slash("add Chomp.")
     client:slash("selftest")
-    ok(client:printedContains("Own lines: 1, this character's (mixed with the built-in lines)."))
+    ok(client:printedContains("Own lines: 1, this character's."))
 end)
 
 -- The options panel.
