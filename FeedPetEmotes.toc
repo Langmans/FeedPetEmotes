@@ -5,6 +5,7 @@
 ## Version: 1.0.0
 ## SavedVariablesPerCharacter: FeedPetEmotesDBPC
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastTraining
+## X-Curse-Project-ID: 000000
 
 Data.lua
 Locales\enUS.lua
