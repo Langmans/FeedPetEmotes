@@ -54,12 +54,12 @@ end
 ---/fpe add <line>: rest keeps the case it was typed in.
 function Commands.add(rest)
     local added, result = E.AddCustomLine(rest)
-    Print(added and E.Format("CUSTOM_ADDED", #E.db.customLines, result) or result)
+    Print(added and E.Format("CUSTOM_ADDED", #E.CustomLines(), result) or result)
 end
 
 ---/fpe list: the player's own lines, numbered for /fpe remove.
 function Commands.list()
-    local lines = E.db.customLines
+    local lines = E.CustomLines()
     if #lines == 0 then
         Print(L.CUSTOM_NONE)
         return
@@ -83,6 +83,14 @@ function Commands.only(rest)
     if on == nil then return status() end
     E.db.customOnly = on
     Print(on and L.CUSTOM_ONLY_ON or L.CUSTOM_ONLY_OFF)
+end
+
+---/fpe shared on|off: the account-wide lines or this character's own.
+function Commands.shared(rest)
+    local on = onOff(rest)
+    if on == nil then return status() end
+    E.db.sharedLines = on
+    Print(E.Format(on and "SHARED_ON" or "SHARED_OFF", #E.CustomLines()))
 end
 
 ---Local preview only; nothing is sent to chat.

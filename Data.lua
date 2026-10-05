@@ -107,3 +107,11 @@ E.Family = {
     DEVILSAUR = 39,
     CORE_HOUND = 45,
 }
+
+-- Families no hunter can tame on Forever: own lines can still name them
+-- ([chimaera] etc.), but the options panel offers no checkbox for them.
+E.ExoticFamily = {
+    [E.Family.CHIMAERA] = true,
+    [E.Family.DEVILSAUR] = true,
+    [E.Family.CORE_HOUND] = true,
+}

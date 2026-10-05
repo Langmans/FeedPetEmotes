@@ -22,8 +22,9 @@ const toc = tocText
     .split(/\r?\n/)
     .filter((line) => line.trim() && !line.startsWith("#"))
     .map((line) => line.trim().replace(/\\/g, "/"));
-// The client creates this global from the saved file; tests seed and read it by this name.
+// The client creates these globals from the saved files; tests seed and read them by these names.
 const savedPerCharacter = (tocText.match(/^## SavedVariablesPerCharacter:\s*(\S+)/m) || [])[1] || "";
+const savedPerAccount = (tocText.match(/^## SavedVariables:\s*(\S+)/m) || [])[1] || "";
 
 const filter = process.argv[2];
 const files = readdirSync(testsDir)
@@ -54,6 +55,8 @@ for (const file of files) {
     lua.lua_setglobal(L, to_luastring("TOC_FILES"));
     lua.lua_pushstring(L, to_luastring(savedPerCharacter));
     lua.lua_setglobal(L, to_luastring("TOC_SAVED_PER_CHARACTER"));
+    lua.lua_pushstring(L, to_luastring(savedPerAccount));
+    lua.lua_setglobal(L, to_luastring("TOC_SAVED_PER_ACCOUNT"));
 
     const chunks = ["tests/framework.lua", "tests/wow.lua", `tests/${file}`];
     let loadError = null;

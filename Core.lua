@@ -42,25 +42,44 @@ local DEFAULTS = {
     petName = false, -- /fpe name on|off
     debug = false, -- /fpe debug
     customOnly = false, -- /fpe only on|off
+    sharedLines = false, -- /fpe shared on|off
 }
 
----Creates or repairs the saved settings (FeedPetEmotesDBPC, declared in
----the .toc) and makes them E.db. Called on ADDON_LOADED, when the client has
----filled in the saved table.
+---A list of own lines (CustomLines.lua) as saved: only its strings are kept.
+---@param saved any
+---@return string[]
+local function cleanLines(saved)
+    local lines = {}
+    if type(saved) == "table" then
+        for _, line in ipairs(saved) do
+            if type(line) == "string" then lines[#lines + 1] = line end
+        end
+    end
+    return lines
+end
+
+---Creates or repairs the saved settings and makes them E.db (per character,
+---FeedPetEmotesDBPC) and E.accountDB (account-wide, FeedPetEmotesDB); both
+---names are declared in the .toc. The account table only holds the own lines
+---shared by every character that ticks sharedLines. Called on ADDON_LOADED,
+---when the client has filled in the saved tables.
 function E.LoadSettings()
     if type(FeedPetEmotesDBPC) ~= "table" then FeedPetEmotesDBPC = {} end
     local db = FeedPetEmotesDBPC
     for key, default in pairs(DEFAULTS) do
         if type(db[key]) ~= type(default) then db[key] = default end
     end
-    -- The player's own lines (CustomLines.lua): a list of strings; anything
-    -- else in it is dropped.
-    local lines = {}
-    if type(db.customLines) == "table" then
-        for _, line in ipairs(db.customLines) do
-            if type(line) == "string" then lines[#lines + 1] = line end
-        end
-    end
-    db.customLines = lines
+    db.customLines = cleanLines(db.customLines)
     E.db = db
+
+    if type(FeedPetEmotesDB) ~= "table" then FeedPetEmotesDB = {} end
+    FeedPetEmotesDB.customLines = cleanLines(FeedPetEmotesDB.customLines)
+    E.accountDB = FeedPetEmotesDB
+end
+
+---The own lines this character uses: the account-wide list with sharedLines
+---on, its own list otherwise. Each list is kept when the other is in use.
+---@return string[]
+function E.CustomLines()
+    return E.db.sharedLines and E.accountDB.customLines or E.db.customLines
 end

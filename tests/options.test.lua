@@ -2,11 +2,11 @@
 -- the checkboxes reading and writing the saved settings.
 
 ---The panel's checkboxes in the order they appear: enabled, petName, debug,
----customOnly.
+---customOnly, sharedLines.
 local function checkboxes(client)
     local boxes = {}
     for _, frame in ipairs(client.frames) do
-        if frame.kind == "CheckButton" and frame.parent == client.optionsPanel then boxes[#boxes + 1] = frame end
+        if frame.kind == "CheckButton" and frame.settingKey then boxes[#boxes + 1] = frame end
     end
     return boxes
 end
@@ -36,14 +36,17 @@ test("/fpe config and /fpe options open the panel", function()
 end)
 
 test("showing the panel fills the checkboxes from the saved settings", function()
-    local client = NewClient({ savedDB = { enabled = false, petName = true, debug = true, customOnly = true } }):login()
+    local client = NewClient({
+        savedDB = { enabled = false, petName = true, debug = true, customOnly = true, sharedLines = true },
+    }):login()
     local boxes = checkboxes(client)
-    eq(#boxes, 4)
+    eq(#boxes, 5)
     show(client)
     eq(boxes[1]:GetChecked(), nil)
     eq(boxes[2]:GetChecked(), 1)
     eq(boxes[3]:GetChecked(), 1)
     eq(boxes[4]:GetChecked(), 1)
+    eq(boxes[5]:GetChecked(), 1)
 end)
 
 test("a change made with /fpe shows the next time the panel opens", function()
@@ -63,10 +66,12 @@ test("clicking a checkbox saves a boolean", function()
     click(boxes[2], true)
     click(boxes[3], true)
     click(boxes[4], true)
+    click(boxes[5], true)
     eq(Saved().enabled, false)
     eq(Saved().petName, true)
     eq(Saved().debug, true)
     eq(Saved().customOnly, true)
+    eq(Saved().sharedLines, true)
 end)
 
 test("emotes switched off in the panel are not sent", function()

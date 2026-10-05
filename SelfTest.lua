@@ -33,8 +33,9 @@ function E.SelfTest()
     Print("Pronouns: " .. (db.petName and "always the pet's name" or "from the pet's sex, else its name") .. ".")
     Print(
         string.format(
-            "Own lines: %d (%s).",
-            #db.customLines,
+            "Own lines: %d, %s (%s).",
+            #E.CustomLines(),
+            db.sharedLines and "shared by the account" or "this character's",
             db.customOnly and "used instead of the built-in lines" or "mixed with the built-in lines"
         )
     )

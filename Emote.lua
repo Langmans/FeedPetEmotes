@@ -11,33 +11,50 @@ local function append(pool, list)
     end
 end
 
+---What the lists are chosen by for one feeding: the pet's sex (2 male, 3
+---female), the food's type and the pet's family ID, each nil when unknown
+---or secret. The family ID is the same on every client language; the name
+---is not.
+---@param itemID number?
+---@return {sex: number?, foodType: string?, family: number?}
+local function situationOf(itemID)
+    local sex = UnitSex("pet")
+    local _, familyID = UnitCreatureFamily("pet")
+    return {
+        sex = sex and E.Public(sex) and sex or nil,
+        foodType = itemID and E.FoodTypes[itemID] or nil,
+        family = familyID and E.Public(familyID) and familyID or nil,
+    }
+end
+
 ---Every emote line that applies to feeding the current pet this item: the
----player's own lines, then the built-in ones. A line with {food} needs the
----food's name. With "only my own lines" on, the built-in lines are left out,
----unless no own line applies.
+---player's own lines whose conditions hold (without their conditions), then
+---the built-in ones. A line with {food} needs the food's name. With "only my
+---own lines" on, the built-in lines are left out, unless no own line applies.
 ---@param itemID number?
 ---@param foodName string? the food's name, nil when it is not known
 ---@return string[]
 function E.EmotePool(itemID, foodName)
     local emotes, pool = E.Emotes, {}
-    for _, line in ipairs(E.db.customLines) do
-        if foodName or not line:find("{food}", 1, true) then pool[#pool + 1] = line end
+    local situation = situationOf(itemID)
+    for _, line in ipairs(E.CustomLines()) do
+        -- A saved line with a tag this version does not know is skipped.
+        local tags, text = E.ParseCustomLine(line)
+        if tags and E.ConditionsHold(tags, situation) and (foodName or not text:find("{food}", 1, true)) then
+            pool[#pool + 1] = text
+        end
     end
     if E.db.customOnly and #pool > 0 then return pool end
     append(pool, emotes.any)
-    local sex = UnitSex("pet")
-    if sex == 2 then
+    if situation.sex == 2 then
         append(pool, emotes.male)
-    elseif sex == 3 then
+    elseif situation.sex == 3 then
         append(pool, emotes.female)
     end
     local group = itemID and E.FoodGroups[itemID]
     if group then append(pool, emotes.food[group]) end
-    local foodType = itemID and E.FoodTypes[itemID]
-    if foodType and emotes.foodType then append(pool, emotes.foodType[foodType]) end
-    -- The family ID is the same on every client language; the name is not.
-    local _, familyID = UnitCreatureFamily("pet")
-    if familyID and E.Public(familyID) then append(pool, emotes.family[familyID]) end
+    if situation.foodType and emotes.foodType then append(pool, emotes.foodType[situation.foodType]) end
+    if situation.family then append(pool, emotes.family[situation.family]) end
     return pool
 end
 

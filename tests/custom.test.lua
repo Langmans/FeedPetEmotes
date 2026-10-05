@@ -160,30 +160,36 @@ end)
 test("/fpe lists the own-line commands; selftest counts the lines", function()
     local client = NewClient():login()
     client:slash("")
-    ok(client:printedContains("/fpe add <line>"))
+    ok(client:printedContains("/fpe add [conditions] <line>"))
     client:slash("add Chomp.")
     client:slash("selftest")
-    ok(client:printedContains("Own lines: 1 (mixed with the built-in lines)."))
+    ok(client:printedContains("Own lines: 1, this character's (mixed with the built-in lines)."))
 end)
 
 -- The options panel.
 
+---The first frame of a kind (and with a text) the addon made.
 local function panelPart(client, kind, text)
     for _, frame in ipairs(client.frames) do
-        if frame.kind == kind and frame.parent == client.optionsPanel and (not text or frame:GetText() == text) then
-            return frame
-        end
+        if frame.kind == kind and (not text or frame:GetText() == text) then return frame end
     end
 end
 
----The panel's visible font strings that show an own line ("1. ...").
+---The panel's scroll frame, and the frame scrolled in it that holds everything.
+local function listFrames(client)
+    local scroll = panelPart(client, "ScrollFrame")
+    for _, frame in ipairs(client.frames) do
+        if frame.parent == scroll then return scroll, frame end
+    end
+end
+
+---The visible font strings in the list that show an own line ("1. ...").
 local function shownRows(client)
+    local _, list = listFrames(client)
     local rows = {}
     for _, region in ipairs(client.fontStrings) do
         local text = region:GetText()
-        if region.parent == client.optionsPanel and region.shown and text and text:match("^%d+%. ") then
-            rows[#rows + 1] = text
-        end
+        if region.parent == list and region.shown and text and text:match("^%d+%. ") then rows[#rows + 1] = text end
     end
     table.sort(rows)
     return rows
@@ -229,20 +235,64 @@ test("the panel shows why a line is refused, and clears it after a good one", fu
     ok(not problemShown())
 end)
 
-test("the panel's Remove button takes out its own line", function()
+test("a row's X button takes out its own line and says so in its tooltip", function()
     local client = NewClient():login()
     client:slash("add Chomp.")
     client:slash("add Crunch.")
     client:slash("add Munch.")
     showPanel(client)
     eq(#shownRows(client), 3)
+    local _, list = listFrames(client)
     local removes = {}
     for _, frame in ipairs(client.frames) do
-        if frame.kind == "Button" and frame:GetText() == "Remove" then removes[#removes + 1] = frame end
+        if frame.parent == list and frame.template == "UIPanelCloseButton" then removes[#removes + 1] = frame end
     end
+    eq(#removes, 3)
+    removes[2].scripts.OnEnter(removes[2])
+    eq(GameTooltip.owner, removes[2])
+    eq(GameTooltip:GetText(), "Remove")
+    ok(GameTooltip:IsShown())
+    removes[2].scripts.OnLeave(removes[2])
+    ok(not GameTooltip:IsShown())
     removes[2].scripts.OnClick(removes[2])
     eq(table.concat(Saved().customLines, "|"), "Chomp.|Munch.")
     eq(table.concat(shownRows(client), "|"), "1. Chomp.|2. Munch.")
+    ok(not removes[3].shown, "the row left over is hidden")
+end)
+
+test("the panel scrolls, and what it scrolls grows by one row per line", function()
+    local client = NewClient():login()
+    local scroll, content = listFrames(client)
+    eq(scroll.parent, client.optionsPanel)
+    eq(scroll.template, "UIPanelScrollFrameTemplate")
+    local heights = {}
+    function content:SetHeight(height)
+        heights[#heights + 1] = height
+    end
+    showPanel(client)
+    local base = heights[#heights]
+    for i = 1, 30 do
+        client:slash("add Line " .. i .. ".")
+    end
+    showPanel(client)
+    eq(heights[#heights] - base, 30 * 24)
+    eq(#shownRows(client), 30)
+end)
+
+test("the list's title says whose lines it shows and how many", function()
+    local client = NewClient():login()
+    client:slash("add Chomp.")
+    showPanel(client)
+    local function titleShown(text)
+        for _, region in ipairs(client.fontStrings) do
+            if region:GetText() == text then return true end
+        end
+        return false
+    end
+    ok(titleShown("Lines for this character (1)"))
+    client:slash("shared on")
+    showPanel(client)
+    ok(titleShown("Lines shared by all characters (0)"))
 end)
 
 test("the panel says when there are no lines, and picks up /fpe add on reopen", function()

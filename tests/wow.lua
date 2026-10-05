@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, savedDB: table?, noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?}?
+---@param opts {locale: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -178,6 +178,8 @@ function NewClient(opts)
             "SetFontObject",
             "SetSize",
             "SetWidth",
+            "SetHeight",
+            "SetScrollChild",
             "SetJustifyH",
             "SetWordWrap",
             "SetAutoFocus",
@@ -209,9 +211,10 @@ function NewClient(opts)
 
     ---A frame records its events and scripts; a CheckButton also its checked
     ---state, and comes with the label UICheckButtonTemplate gives it.
-    function CreateFrame(kind, _, parent)
+    function CreateFrame(kind, _, parent, template)
         local frame = newRegion()
-        frame.kind, frame.parent, frame.events, frame.unitEvents, frame.scripts = kind, parent, {}, {}, {}
+        frame.kind, frame.parent, frame.template = kind, parent, template
+        frame.events, frame.unitEvents, frame.scripts = {}, {}, {}
         function frame:RegisterEvent(event)
             self.events[event] = true
         end
@@ -245,6 +248,13 @@ function NewClient(opts)
         return frame
     end
 
+    -- The shared tooltip: who owns it, its text, and whether it is shown.
+    GameTooltip = newRegion()
+    GameTooltip.shown = false
+    function GameTooltip:SetOwner(owner)
+        self.owner = owner
+    end
+
     -- The game's settings window: which panel was registered, how often it was opened.
     client.optionsOpened = 0
     local category = {
@@ -266,8 +276,9 @@ function NewClient(opts)
     }
 
     SlashCmdList = {}
-    -- Seeded under the name the .toc declares, as the client would.
+    -- Seeded under the names the .toc declares, as the client would.
     _G[TOC_SAVED_PER_CHARACTER] = opts.savedDB
+    _G[TOC_SAVED_PER_ACCOUNT] = opts.savedAccountDB
 
     local E = {}
     for _, file in ipairs(TOC_FILES) do
@@ -414,6 +425,12 @@ end
 ---@return table
 function Saved()
     return _G[TOC_SAVED_PER_CHARACTER]
+end
+
+---The account-wide saved settings, under the name the .toc declares.
+---@return table
+function SavedAccount()
+    return _G[TOC_SAVED_PER_ACCOUNT]
 end
 
 -- fengari is Lua 5.3; WoW's Lua 5.1 has a global unpack.

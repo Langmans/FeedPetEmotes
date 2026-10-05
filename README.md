@@ -45,14 +45,15 @@ Made for WoW: Forever (1.60).
 ## Settings
 
 Open the options panel with `/fpe config`, or through Esc > Options > AddOns >
-Feed Pet Emotes. All settings are saved per character.
+Feed Pet Emotes. All settings are saved per character; only your own lines
+can be shared by all characters on the account.
 
 - **Send emotes**: switch the emotes on or off.
 - **Always use the pet's name**: name the pet instead of saying he or she.
 - **Debug trace**: print in chat what the addon sees while you feed (see
   [Reporting a problem](#reporting-a-problem)).
-- **Your own lines**: add and remove lines of your own, and **Only use my own
-  lines** (see below).
+- **Your own lines**: add and remove lines of your own, **Only use my own
+  lines** and **Share my lines with all characters** (see below).
 
 The same settings, and a few extras, are available as chat commands
 (`/feedpetemotes` works too):
@@ -61,8 +62,8 @@ The same settings, and a few extras, are available as chat commands
 - `/fpe config` (or `/fpe options`) opens the options panel.
 - `/fpe on` and `/fpe off` switch the emotes on or off.
 - `/fpe name on` and `/fpe name off` switch "always use the pet's name".
-- `/fpe add <line>`, `/fpe list`, `/fpe remove <number>`, `/fpe only on` and
-  `/fpe only off` manage your own lines (see below).
+- `/fpe add <line>`, `/fpe list`, `/fpe remove <number>`, `/fpe only on|off`
+  and `/fpe shared on|off` manage your own lines (see below).
 - `/fpe test` shows an example emote in your own chat window only; nothing
   is sent.
 - `/fpe selftest` prints what your game client reports to the addon.
@@ -71,7 +72,13 @@ The same settings, and a few extras, are available as chat commands
 ## Your own lines
 
 Your own lines come after "feeds Fluffy a Mystery Meat." just like the
-built-in ones, and are saved per character.
+built-in ones.
+
+Each character has its own list. Tick **Share my lines with all characters**
+(or `/fpe shared on`) to use one list shared by every character on the
+account that ticks it, e.g. all your hunters. The two lists stay apart:
+switching only chooses which one the character uses, and add, list and
+remove work on that one.
 
     /fpe add {pet} wolfs down the {food} before {he} even sniffs it.
     /fpe list
@@ -90,6 +97,30 @@ built-in ones, and are saved per character.
 - `/fpe only on` (or "Only use my own lines" in the panel) leaves the built-in
   lines out. While you have no lines of your own, or none that fit the
   feeding, the built-in lines are used anyway.
+
+### Conditions
+
+A line can be limited to some pets or foods, the same way the built-in lines
+are. In the options panel, tick the boxes under **Only when** before you add
+the line (or press **Edit** on a line to change them). In chat, put the
+conditions in brackets in front:
+
+    /fpe add [cat] Who's a pretty kitty?
+    /fpe add [cat,wolf] Good hunter!
+    /fpe add [cat,fish] A cat with a fish. How original.
+
+- Nothing ticked, or no brackets: the line is always used.
+- Several in one group (Pet, Food, Family): any of them will do. `[cat,wolf]`
+  is a cat or a wolf.
+- Several groups: each must match. `[cat,fish]` is a cat eating fish.
+- Pet: `male`, `female` (only when the game tells the pet's sex).
+- Food: `bread`, `meat`, `fish`, `cheese`, `fruit`, `fungus` (the vendor food
+  the addon knows; other food matches none of them).
+- Family: `wolf`, `cat`, `spider`, `bear`, `boar`, `crocolisk`,
+  `carrion_bird`, `crab`, `gorilla`, `raptor`, `tallstrider`, `scorpid`,
+  `turtle`, `bat`, `hyena`, `bird_of_prey`, `wind_serpent`.
+- The names in brackets are English on every client language; the panel shows
+  them in yours.
 
 ## Languages
 
@@ -135,14 +166,19 @@ In `.toc` order; all share the addon namespace `E`.
 - `Locale.lua` — picks the client's locale; `E.L`, `E.Emotes`, `E.Format`.
 - `Core.lua` — helpers (`E.Public`, `E.Print`, `E.Debug`, `E.SendFunction`)
   and the saved settings (`E.LoadSettings`, `E.db`).
-- `CustomLines.lua` — the player's own lines: `E.AddCustomLine` (trims and
-  checks), `E.RemoveCustomLine`, `E.PlaceholderList`. Shared by `/fpe` and the
-  options panel.
+- `CustomLines.lua` — the player's own lines and their conditions:
+  `E.Conditions` (tag, group, value), `E.ParseCustomLine`,
+  `E.FormatCustomLine`, `E.ConditionsHold`, `E.AddCustomLine` and
+  `E.ReplaceCustomLine` (trim, check, put the conditions in a fixed order),
+  `E.RemoveCustomLine`, `E.PlaceholderList`. Shared by `/fpe` and the options
+  panel.
 - `Emote.lua` — the emote text: `E.EmotePool`, `E.FillPlaceholders`,
   `E.BuildEmote`. No state.
 - `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
   a Feed Pet cast used (see below).
-- `Options.lua` — the options panel in the game's settings (`E.OpenOptions`).
+- `Options.lua` — the options panel in the game's settings (`E.OpenOptions`):
+  one scroll frame holding the settings, the line editor with its condition
+  checkboxes, and the list of lines.
 - `SelfTest.lua` — `/fpe selftest` (`E.SelfTest`).
 - `Commands.lua` — `/fpe`: one function per subcommand in a `Commands`
   table, looked up by the slash handler like the event frame looks up its
@@ -151,9 +187,13 @@ In `.toc` order; all share the addon namespace `E`.
   and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
 
 The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
-`petName`, `debug` and `customOnly`, all booleans, and `customLines`, a list
-of strings. A missing or broken value gets its default on load; entries in
-`customLines` that are not strings are dropped.
+`petName`, `debug`, `customOnly` and `sharedLines`, all booleans, and
+`customLines`, a list of strings. The account-wide `FeedPetEmotesDB` holds
+only `customLines`, the shared list; `E.CustomLines()` returns the list a
+character uses (shared with `sharedLines`, its own otherwise). A missing or
+broken value gets its default on load; entries in `customLines` that are not
+strings are dropped. A line is saved as one string, its conditions first:
+`"[fish,cat] Nice fish, kitty."`.
 
 ### How it works
 
@@ -180,8 +220,10 @@ of strings. A missing or broken value gets its default on load; entries in
   emote names the food as an item link, then a line is picked from the
   locale's emote lists that match: every pet, the pet's gender, the food's own
   group and its type (both looked up by item ID), and the pet's family. The
-  player's own lines join that pool; with `customOnly` they replace it, as
-  long as at least one of them applies. If the food is not known the emote
+  player's own lines whose conditions hold join that pool, by the same three
+  keys (sex, food type, family ID); with `customOnly` they replace it, as long
+  as at least one of them applies. A saved line with a tag the addon does not
+  know is skipped. If the food is not known the emote
   just says "feeds <pet>.", and own lines with `{food}` are left out.
 - Pet families are matched on the CreatureFamily ID (second return of
   `UnitCreatureFamily`), which is the same on every client language.

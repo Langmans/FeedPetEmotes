@@ -4,9 +4,15 @@
 
 - Your own emote lines: add them with `/fpe add <line>` or in the options
   panel, see them with `/fpe list`, remove them with `/fpe remove <number>`
-  or the panel's Remove button. They are saved per character.
+  or the X next to a line in the panel's scrollable list. Each character has its own list, or ticks
+  "Share my lines with all characters" (`/fpe shared on|off`) to use one
+  list for all your characters.
 - Own lines take the same placeholders as the built-in ones (`{pet}`, and
   `{he}` for he/she), plus `{food}` for the food's name.
+- Conditions on your own lines: only for some pet families, foods or sexes,
+  ticked in the panel or typed in brackets (`/fpe add [cat,fish] ...`).
+  Lines can be edited in the panel.
+- The options panel scrolls.
 - "Only use my own lines" (`/fpe only on|off`) leaves the built-in lines out
   while you have lines of your own.
 
