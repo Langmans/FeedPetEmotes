@@ -4,6 +4,7 @@ package-as: FeedPetEmotes
 ignore:
   - annotations
   - coverage
+  - media
   - node_modules
   - tests
   - package.json
