@@ -82,3 +82,35 @@ test("emotes switched off in the panel are not sent", function()
     client:settle()
     eq(#client.sent, 0)
 end)
+
+---True when one of the panel's texts is exactly `text`.
+local function shows(client, text)
+    for _, region in ipairs(client.fontStrings) do
+        if region:GetText() == text then return true end
+    end
+    return false
+end
+
+test("the panel shows the version, author and license from the .toc", function()
+    local about = "Version " .. TOC_METADATA.Version .. " by Langmans, MIT license."
+    ok(shows(NewClient():login(), about), "no about line")
+    ok(shows(NewClient({ noAddOnsAPI = true }):login(), about), "no about line on an older client")
+end)
+
+test("the website box holds the .toc's website and puts it back when typed in", function()
+    local client = NewClient():login()
+    local box = client.E.WebsiteBox
+    eq(box.kind, "EditBox")
+    eq(box:GetText(), "https://www.curseforge.com/wow/addons/feedpetemotes")
+    box:SetText("oops")
+    box.scripts.OnTextChanged(box, true)
+    eq(box:GetText(), "https://www.curseforge.com/wow/addons/feedpetemotes")
+    -- The client's own SetText is not the player typing.
+    box:SetText("set by code")
+    box.scripts.OnTextChanged(box, false)
+    eq(box:GetText(), "set by code")
+    box.scripts.OnEditFocusGained(box)
+    box.scripts.OnEditFocusLost(box)
+    box.scripts.OnEscapePressed(box)
+    box.scripts.OnEnterPressed(box)
+end)

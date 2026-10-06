@@ -1,7 +1,9 @@
-local _, E = ...
+local addonName, E = ...
 
 -- The options panel in the game's settings (Esc > Options > AddOns, or
 -- /fpe config). From top to bottom:
+--   - the version, author and license from the .toc, and the website in a
+--     box to copy it from (a link in the game cannot open a browser);
 --   - checkboxes for the same settings as /fpe on|off, /fpe name, /fpe debug;
 --   - "Your own lines": the /fpe chance slider, the /fpe fallback and
 --     /fpe shared checkboxes, an editor
@@ -22,7 +24,7 @@ E.OptionsPanel = panel
 -- refresh(): the fixed part (CONTENT_BASE, measured from the layout below)
 -- plus one ROW_HEIGHT per line. UIPanelScrollFrameTemplate puts its scroll
 -- bar just outside the frame's right edge, hence the room on the right.
-local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 840, 24
+local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 880, 24
 local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
 scroll:SetPoint("TOPLEFT", 0, -4)
 scroll:SetPoint("BOTTOMRIGHT", -28, 4)
@@ -35,10 +37,51 @@ title:SetPoint("TOPLEFT", 16, -12)
 title:SetText(L.OPTIONS_TITLE)
 title.isHeading = true
 
+-- About. C_AddOns has GetAddOnMetadata on newer clients, the global on older ones.
+local GetMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+local function metadata(key)
+    return GetMetadata(addonName, key) or "?"
+end
+local about = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+about:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
+about:SetText(E.Format("OPTION_ABOUT", metadata("Version"), metadata("Author"), metadata("X-License")))
+local websiteLabel = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+websiteLabel:SetPoint("TOPLEFT", about, "BOTTOMLEFT", 0, -12)
+websiteLabel:SetText(L.OPTION_WEBSITE)
+websiteLabel.isHeading = true
+local URL = metadata("X-Website")
+local website = CreateFrame("EditBox", nil, content, "InputBoxTemplate")
+-- InputBoxTemplate draws its border outside the box; the extra x keeps it clear.
+website:SetPoint("LEFT", websiteLabel, "RIGHT", 12, 0)
+website:SetSize(340, 20)
+website:SetAutoFocus(false)
+website:SetFontObject("GameFontHighlightSmall")
+website:SetText(URL)
+website:SetCursorPosition(0)
+-- Read-only: whatever is typed is put back, and a click selects it all for Ctrl+C.
+website:SetScript("OnTextChanged", function(self, userInput)
+    if not userInput then return end
+    self:SetText(URL)
+    self:HighlightText()
+end)
+website:SetScript("OnEditFocusGained", function(self)
+    self:HighlightText()
+end)
+website:SetScript("OnEditFocusLost", function(self)
+    self:HighlightText(0, 0)
+end)
+website:SetScript("OnEscapePressed", function(self)
+    self:ClearFocus()
+end)
+website:SetScript("OnEnterPressed", function(self)
+    self:ClearFocus()
+end)
+E.WebsiteBox = website
+
 ---Setting key -> its checkbox.
 ---@type table<string, table>
 local checkboxes = {}
-local below = title
+local below = websiteLabel
 
 ---A checkbox for one boolean setting, with a line of explanation under it.
 ---@param key string the E.db field

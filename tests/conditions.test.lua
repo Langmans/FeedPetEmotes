@@ -151,9 +151,10 @@ local function showPanel(client)
     client.optionsPanel.scripts.OnShow(client.optionsPanel)
 end
 
+---The first frame of a kind (and text); the website box is not the editor.
 local function frame(client, kind, text)
     for _, f in ipairs(client.frames) do
-        if f.kind == kind and (not text or f:GetText() == text) then return f end
+        if f.kind == kind and f ~= client.E.WebsiteBox and (not text or f:GetText() == text) then return f end
     end
 end
 

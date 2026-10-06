@@ -57,6 +57,9 @@ E.Locales.enUS = {
         OPTION_PET_NAME_NOTE = "Name the pet instead of saying he or she. Same as /fpe name on and off.",
         OPTION_DEBUG = "Debug trace",
         OPTION_DEBUG_NOTE = "Print in chat what the addon sees while you feed. Same as /fpe debug.",
+        -- Version, author and license from the .toc.
+        OPTION_ABOUT = "Version %s by %s, %s license.",
+        OPTION_WEBSITE = "Website (Ctrl+C to copy):",
         OPTION_CUSTOM_TITLE = "Your own lines",
         -- %s is the list of placeholders, e.g. "{pet}, {food}, {he}".
         OPTION_CUSTOM_NOTE = "Picked at random like the built-in lines. Placeholders: %s. "

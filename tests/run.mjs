@@ -25,6 +25,8 @@ const toc = tocText
 // The client creates these globals from the saved files; tests seed and read them by these names.
 const savedPerCharacter = (tocText.match(/^## SavedVariablesPerCharacter:\s*(\S+)/m) || [])[1] || "";
 const savedPerAccount = (tocText.match(/^## SavedVariables:\s*(\S+)/m) || [])[1] || "";
+// The "## Key: value" lines, for GetAddOnMetadata.
+const metadata = [...tocText.matchAll(/^## ([^:]+):\s*(.*?)\s*$/gm)].map((m) => [m[1], m[2]]);
 
 const filter = process.argv[2];
 const files = readdirSync(testsDir)
@@ -57,6 +59,12 @@ for (const file of files) {
     lua.lua_setglobal(L, to_luastring("TOC_SAVED_PER_CHARACTER"));
     lua.lua_pushstring(L, to_luastring(savedPerAccount));
     lua.lua_setglobal(L, to_luastring("TOC_SAVED_PER_ACCOUNT"));
+    lua.lua_createtable(L, 0, metadata.length);
+    for (const [key, value] of metadata) {
+        lua.lua_pushstring(L, to_luastring(value));
+        lua.lua_setfield(L, -2, to_luastring(key));
+    }
+    lua.lua_setglobal(L, to_luastring("TOC_METADATA"));
 
     const chunks = ["tests/framework.lua", "tests/wow.lua", `tests/${file}`];
     let loadError = null;

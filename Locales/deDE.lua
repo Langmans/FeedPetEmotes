@@ -15,6 +15,8 @@ E.Locales.deDE = {
         OPTION_PET_NAME_NOTE = "Den Begleiter beim Namen nennen statt er oder sie. Wie /fpe name on und off.",
         OPTION_DEBUG = "Debug-Ausgabe",
         OPTION_DEBUG_NOTE = "Im Chat zeigen, was das Addon beim Füttern sieht. Wie /fpe debug.",
+        OPTION_ABOUT = "Version %s von %s, Lizenz: %s.",
+        OPTION_WEBSITE = "Webseite (Strg+C zum Kopieren):",
         OPTION_CUSTOM_TITLE = "Eigene Zeilen",
         OPTION_CUSTOM_NOTE = "Werden wie die eingebauten Zeilen zufällig gewählt. Platzhalter: %s. "
             .. "Wie /fpe add, /fpe list und /fpe remove.",

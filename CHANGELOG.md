@@ -19,6 +19,10 @@
   "Use a built-in line when none of mine fits" (`/fpe fallback off`) to send
   just "feeds Fluffy a Mystery Meat." instead.
 - The options panel scrolls.
+- The options panel shows the version, author and license, and the
+  website in a box you can copy it from.
+- Settings you never changed follow the addon's defaults, also when a later
+  version changes one: only the settings you changed are saved.
 - On characters that are not hunters the addon stays idle: it no longer
   watches your cursor and bags there. `/fpe` says so, and the settings can
   still be changed.

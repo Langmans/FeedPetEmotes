@@ -180,7 +180,7 @@ In `.toc` order; all share the addon namespace `E`.
 - `Locales\*.lua` — one file per locale: strings, pronouns and emote lines.
 - `Locale.lua` — picks the client's locale; `E.L`, `E.Emotes`, `E.Format`.
 - `Core.lua` — helpers (`E.Public`, `E.Print`, `E.Debug`, `E.SendFunction`)
-  and the saved settings (`E.LoadSettings`, `E.db`).
+  and the saved settings (`E.LoadSettings`, `E.StripDefaults`, `E.db`).
 - `CustomLines.lua` — the player's own lines and their conditions:
   `E.Conditions` (tag, group, value), `E.ParseCustomLine`,
   `E.FormatCustomLine`, `E.ConditionsHold`, `E.AddCustomLine` and
@@ -193,7 +193,8 @@ In `.toc` order; all share the addon namespace `E`.
 - `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
   a Feed Pet cast used (see below).
 - `Options.lua` — the options panel in the game's settings (`E.OpenOptions`):
-  one scroll frame holding the settings, the line editor with its condition
+  one scroll frame holding the version, author, license and website from the
+  .toc (`GetAddOnMetadata`), the settings, the line editor with its condition
   checkboxes, and the list of lines.
 - `SelfTest.lua` — `/fpe selftest` (`E.SelfTest`).
 - `Commands.lua` — `/fpe`: one function per subcommand in a `Commands`
@@ -207,8 +208,12 @@ The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
 `customChance`, a whole percentage (0 = every line counts the same), and
 `customLines`, a list of strings. The account-wide `FeedPetEmotesDB` holds
 only `customLines`, the shared list; `E.CustomLines()` returns the list a
-character uses (shared with `sharedLines`, its own otherwise). A missing or
-broken value gets its default on load; entries in `customLines` that are not
+character uses (shared with `sharedLines`, its own otherwise). Only values
+that differ from their default are kept: `E.db` reads the rest from the
+defaults through a metatable, a broken value is dropped on load so its
+default shows through, and `E.StripDefaults` removes values equal to their
+default on `PLAYER_LOGOUT`. A default changed in a later version so reaches
+everyone who never changed it. Entries in `customLines` that are not
 strings are dropped. A line is saved as one string, its conditions first:
 `"[fish,cat] Nice fish, kitty."`.
 

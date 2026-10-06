@@ -145,9 +145,12 @@ end)
 -- The options panel.
 
 ---The first frame of a kind (and with a text) the addon made.
+---The first frame of a kind (and text); the website box is not the editor.
 local function panelPart(client, kind, text)
     for _, frame in ipairs(client.frames) do
-        if frame.kind == kind and (not text or frame:GetText() == text) then return frame end
+        if frame.kind == kind and frame ~= client.E.WebsiteBox and (not text or frame:GetText() == text) then
+            return frame
+        end
     end
 end
 

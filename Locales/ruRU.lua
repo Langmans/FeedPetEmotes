@@ -15,6 +15,8 @@ E.Locales.ruRU = {
         OPTION_PET_NAME_NOTE = "Называть питомца по имени вместо «он» или «она». То же, что /fpe name on и off.",
         OPTION_DEBUG = "Отладка",
         OPTION_DEBUG_NOTE = "Показывать в чате, что видит аддон во время кормления. То же, что /fpe debug.",
+        OPTION_ABOUT = "Версия %s, автор %s, лицензия %s.",
+        OPTION_WEBSITE = "Сайт (Ctrl+C, чтобы скопировать):",
         OPTION_CUSTOM_TITLE = "Свои фразы",
         OPTION_CUSTOM_NOTE = "Выбираются случайно, как и встроенные. Подстановки: %s. "
             .. "То же, что /fpe add, /fpe list и /fpe remove.",

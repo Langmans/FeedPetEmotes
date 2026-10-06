@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -70,6 +70,16 @@ function NewClient(opts)
     function UnitClass()
         local classFile = opts.class or "HUNTER"
         return classFile:sub(1, 1) .. classFile:sub(2):lower(), classFile
+    end
+    -- The .toc's "## Key: value" lines (handed over by run.mjs): through
+    -- C_AddOns, or the global on older clients (opts.noAddOnsAPI).
+    local function getMetadata(name, key)
+        if name == "FeedPetEmotes" then return TOC_METADATA[key] end
+    end
+    if opts.noAddOnsAPI then
+        C_AddOns, GetAddOnMetadata = nil, getMetadata
+    else
+        C_AddOns, GetAddOnMetadata = { GetAddOnMetadata = getMetadata }, nil
     end
     function UnitSex()
         return client.pet and client.pet.sex
@@ -190,6 +200,8 @@ function NewClient(opts)
             "SetAutoFocus",
             "SetMaxBytes",
             "ClearFocus",
+            "HighlightText",
+            "SetCursorPosition",
         }) do
             region[method] = noop
         end
