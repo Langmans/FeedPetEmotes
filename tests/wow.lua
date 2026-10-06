@@ -88,6 +88,10 @@ function NewClient(opts)
         if not client.pet then return nil end
         return client.pet.family, client.pet.familyID
     end
+    -- client.inCombat: whether the player is in combat (protected actions blocked).
+    function InCombatLockdown()
+        return client.inCombat == true
+    end
     function SpellIsTargeting()
         return client.targeting
     end

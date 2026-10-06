@@ -435,6 +435,21 @@ end)
 local category = Settings.RegisterCanvasLayoutCategory(panel, L.OPTIONS_TITLE)
 Settings.RegisterAddOnCategory(category)
 
+-- In combat the settings window is not opened from an addon: the call can be
+-- blocked or taint the window. /fpe config then waits for the end of combat
+-- (PLAYER_REGEN_ENABLED) and opens it once; asking again meanwhile changes
+-- nothing.
+local afterCombat = CreateFrame("Frame")
+afterCombat:SetScript("OnEvent", function(self)
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+    Settings.OpenToCategory(category:GetID())
+end)
+
 function E.OpenOptions()
+    if InCombatLockdown and InCombatLockdown() then
+        afterCombat:RegisterEvent("PLAYER_REGEN_ENABLED")
+        E.Print(L.OPTIONS_AFTER_COMBAT)
+        return
+    end
     Settings.OpenToCategory(category:GetID())
 end

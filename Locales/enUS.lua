@@ -25,6 +25,7 @@ E.Locales.enUS = {
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",
+        OPTIONS_AFTER_COMBAT = "In combat: the options open when combat ends.",
         YOU = "You",
         PET_NAME_ON = "Emotes name your pet instead of saying he or she.",
         PET_NAME_OFF = "Emotes say he or she when your pet's sex is known, its name otherwise.",

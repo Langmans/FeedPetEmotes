@@ -35,6 +35,20 @@ test("/fpe config and /fpe options open the panel", function()
     eq(client.optionsOpened, 2)
 end)
 
+test("/fpe config in combat opens the panel once combat ends", function()
+    local client = NewClient():login()
+    client.inCombat = true
+    client:slash("config")
+    client:slash("config")
+    eq(client.optionsOpened, 0)
+    ok(client:printedContains("when combat ends"))
+    client.inCombat = false
+    client:fire("PLAYER_REGEN_ENABLED")
+    eq(client.optionsOpened, 1)
+    client:fire("PLAYER_REGEN_ENABLED")
+    eq(client.optionsOpened, 1)
+end)
+
 test("showing the panel fills the checkboxes from the saved settings", function()
     local client = NewClient({
         savedDB = { enabled = false, petName = true, debug = true, customFallback = false, sharedLines = true },
