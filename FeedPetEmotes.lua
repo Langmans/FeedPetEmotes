@@ -26,18 +26,25 @@ end
 
 -- Targeted food: clicking food while Feed Pet waits for its target.
 hooksecurefunc(C_Container, "UseContainerItem", function(bag, slot)
-    Tracker:OnTargeted(bag, slot)
+    if E.isHunter then Tracker:OnTargeted(bag, slot) end
 end)
 
 -- Events: one method per event on this frame, named after the event and called
 -- with the event's own arguments. Only ADDON_LOADED is registered up front; it
 -- registers the rest once the saved settings are there.
+--
+-- Only a hunter has a pet to feed. On any other class the addon stays loaded
+-- (the addon list is account-wide, so disabling it here would disable it for
+-- the hunters too) but registers nothing past ADDON_LOADED: no cursor or bag
+-- watching, while /fpe and the options panel keep working.
 local frame = CreateFrame("Frame")
 
 function frame:ADDON_LOADED(name)
     if name ~= addonName then return end
     self:UnregisterEvent("ADDON_LOADED")
     E.LoadSettings()
+    E.isHunter = select(2, UnitClass("player")) == "HUNTER"
+    if not E.isHunter then return end
     self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
     self:RegisterEvent("CURSOR_CHANGED")
     self:RegisterEvent("BAG_UPDATE_DELAYED")

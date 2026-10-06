@@ -19,6 +19,15 @@ function E.SelfTest()
             E.LocaleCode
         )
     )
+    local className, classFile = UnitClass("player")
+    Print(
+        string.format(
+            "Class %s (%s): emotes %s.",
+            tostring(className),
+            tostring(classFile),
+            E.isHunter and "active" or "idle, not a hunter"
+        )
+    )
     local _, how = E.SendFunction()
     Print(
         string.format(

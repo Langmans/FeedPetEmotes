@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -65,6 +65,11 @@ function NewClient(opts)
     function UnitName(unit)
         if unit == "player" then return "Langmans" end
         return client.pet and client.pet.name
+    end
+    -- opts.class: the class file name (HUNTER by default) with an English name.
+    function UnitClass()
+        local classFile = opts.class or "HUNTER"
+        return classFile:sub(1, 1) .. classFile:sub(2):lower(), classFile
     end
     function UnitSex()
         return client.pet and client.pet.sex

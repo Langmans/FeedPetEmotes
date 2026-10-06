@@ -21,6 +21,7 @@ E.Locales.enUS = {
         STATUS = "Emotes are %s. Commands: /fpe config (options panel), /fpe on, /fpe off, "
             .. "/fpe name on, /fpe name off, /fpe add [conditions] <line>, /fpe list, /fpe remove <number>, "
             .. "/fpe chance <0-100>, /fpe fallback on, /fpe fallback off, /fpe shared on, /fpe shared off, /fpe test (local preview), /fpe selftest, /fpe debug.",
+        NOT_HUNTER = "Not a hunter: emotes are idle on this character.",
         STATUS_ON = "on",
         STATUS_OFF = "off",
         NO_PET = "Summon your pet first.",

@@ -19,6 +19,9 @@
   "Use a built-in line when none of mine fits" (`/fpe fallback off`) to send
   just "feeds Fluffy a Mystery Meat." instead.
 - The options panel scrolls.
+- On characters that are not hunters the addon stays idle: it no longer
+  watches your cursor and bags there. `/fpe` says so, and the settings can
+  still be changed.
 
 ## 1.0.0 - 2026-10-05
 

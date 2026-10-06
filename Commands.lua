@@ -27,6 +27,7 @@ local function onOff(rest)
 end
 
 local function status()
+    if not E.isHunter then Print(L.NOT_HUNTER) end
     Print(E.Format("STATUS", E.db.enabled and L.STATUS_ON or L.STATUS_OFF))
 end
 
