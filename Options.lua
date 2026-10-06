@@ -22,8 +22,12 @@ E.OptionsPanel = panel
 
 -- Everything is laid out on `content`, the scroll child. Its height is set in
 -- refresh(): the fixed part (CONTENT_BASE, measured from the layout below)
--- plus one ROW_HEIGHT per line. UIPanelScrollFrameTemplate puts its scroll
--- bar just outside the frame's right edge, hence the room on the right.
+-- plus one ROW_HEIGHT per line. Its width follows the scroll frame, whose
+-- size the settings window decides; CONTENT_WIDTH only holds until then.
+-- Notes and list rows are anchored to its right edge (toRightEdge), so they
+-- wrap or end there instead of running past what the scroll frame shows.
+-- UIPanelScrollFrameTemplate puts its scroll bar just outside the frame's
+-- right edge, hence the room on the right.
 local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 880, 24
 local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
 scroll:SetPoint("TOPLEFT", 0, -4)
@@ -31,6 +35,27 @@ scroll:SetPoint("BOTTOMRIGHT", -28, 4)
 local content = CreateFrame("Frame", nil, scroll)
 content:SetSize(CONTENT_WIDTH, CONTENT_BASE)
 scroll:SetScrollChild(content)
+scroll:SetScript("OnSizeChanged", function(_, width)
+    content:SetWidth(width)
+end)
+
+-- The template's scroll bar has buttons and a thumb but no track; a dark
+-- strip behind it shows where the thumb can go.
+local scrollBar = scroll.ScrollBar
+if scrollBar then
+    local track = scrollBar:CreateTexture(nil, "BACKGROUND")
+    track:SetAllPoints()
+    track:SetColorTexture(0, 0, 0, 0.4)
+end
+
+---Stretches a text anchored at its top left to `inset` pixels from the
+---content's right edge: a note wraps there, a list row is cut off there.
+---@param fontString table
+---@param inset number
+local function toRightEdge(fontString, inset)
+    fontString:SetPoint("RIGHT", content, "RIGHT", -inset, 0)
+    fontString:SetJustifyH("LEFT")
+end
 
 local title = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 title:SetPoint("TOPLEFT", 16, -12)
@@ -98,6 +123,7 @@ local function addCheckbox(key, label, description, onChange)
     text:SetText(label)
     local note = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
     note:SetPoint("TOPLEFT", text, "BOTTOMLEFT", 0, -2)
+    toRightEdge(note, 16)
     note:SetText(description)
     box:SetScript("OnClick", function(self)
         -- GetChecked returns 1/nil on some clients; the saved value must be a boolean.
@@ -136,8 +162,7 @@ local edit
 addHeading(L.OPTION_CUSTOM_TITLE, "GameFontNormalLarge", 32)
 local customNote = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 customNote:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 0, -4)
-customNote:SetWidth(CONTENT_WIDTH - 40)
-customNote:SetJustifyH("LEFT")
+toRightEdge(customNote, 16)
 customNote:SetText(E.Format("OPTION_CUSTOM_NOTE", E.PlaceholderList()))
 customNote.isHeading = true
 below = customNote
@@ -169,8 +194,7 @@ slider:SetScript("OnValueChanged", function(_, value)
 end)
 local sliderNote = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 sliderNote:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -16)
-sliderNote:SetWidth(CONTENT_WIDTH - 40)
-sliderNote:SetJustifyH("LEFT")
+toRightEdge(sliderNote, 16)
 sliderNote:SetText(L.OPTION_CHANCE_NOTE)
 sliderNote.isHeading = true
 below = sliderNote
@@ -218,8 +242,7 @@ conditionsTitle:SetPoint("TOPLEFT", problem, "BOTTOMLEFT", 0, -10)
 conditionsTitle:SetText(L.OPTION_COND_TITLE)
 local conditionsNote = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 conditionsNote:SetPoint("TOPLEFT", conditionsTitle, "BOTTOMLEFT", 0, -2)
-conditionsNote:SetWidth(CONTENT_WIDTH - 40)
-conditionsNote:SetJustifyH("LEFT")
+toRightEdge(conditionsNote, 16)
 conditionsNote:SetText(L.OPTION_COND_NOTE)
 
 local COLUMNS, COLUMN_WIDTH, GRID_ROW, GRID_LEFT = 4, 122, 22, 70
@@ -294,8 +317,8 @@ local function rowAt(index)
     if rows[index] then return rows[index] end
     local text = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     text:SetPoint("TOPLEFT", listTitle, "BOTTOMLEFT", 4, -8 - (index - 1) * ROW_HEIGHT)
-    text:SetWidth(CONTENT_WIDTH - 130)
-    text:SetJustifyH("LEFT")
+    -- Room on the right for the Edit button (60), the X (22) and their gaps.
+    toRightEdge(text, 106)
     -- One line per row: a long line is cut off with "..." rather than wrapped.
     text:SetWordWrap(false)
     local editButton = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")

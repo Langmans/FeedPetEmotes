@@ -194,9 +194,10 @@ function NewClient(opts)
         local region = { shown = true }
         for _, method in ipairs({
             "SetPoint",
+            "SetAllPoints",
+            "SetColorTexture",
             "SetFontObject",
             "SetSize",
-            "SetWidth",
             "SetHeight",
             "SetScrollChild",
             "SetJustifyH",
@@ -208,6 +209,9 @@ function NewClient(opts)
             "SetCursorPosition",
         }) do
             region[method] = noop
+        end
+        function region:SetWidth(width)
+            self.width = width
         end
         -- Not `text`: that is the label's parentKey on older CheckButtons.
         function region:SetText(text)
@@ -255,6 +259,11 @@ function NewClient(opts)
             client.fontStrings[#client.fontStrings + 1] = region
             return region
         end
+        function frame:CreateTexture()
+            return newRegion()
+        end
+        -- UIPanelScrollFrameTemplate comes with its scroll bar as a parentKey.
+        if template == "UIPanelScrollFrameTemplate" then frame.ScrollBar = CreateFrame("Frame", nil, frame) end
         -- Like OptionsSliderTemplate on newer clients: labels as parentKeys.
         -- SetValue reports a change through OnValueChanged, as the client does.
         if kind == "Slider" then

@@ -35,6 +35,19 @@ test("/fpe config and /fpe options open the panel", function()
     eq(client.optionsOpened, 2)
 end)
 
+test("the panel's content takes the width the settings window gives the scroll frame", function()
+    local client = NewClient():login()
+    local scroll, content
+    for _, frame in ipairs(client.frames) do
+        if frame.kind == "ScrollFrame" then scroll = frame end
+    end
+    for _, frame in ipairs(client.frames) do
+        if frame.parent == scroll and frame ~= scroll.ScrollBar then content = frame end
+    end
+    scroll.scripts.OnSizeChanged(scroll, 512)
+    eq(content.width, 512)
+end)
+
 test("/fpe config in combat opens the panel once combat ends", function()
     local client = NewClient():login()
     client.inCombat = true

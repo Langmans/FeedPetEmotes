@@ -158,7 +158,7 @@ end
 local function listFrames(client)
     local scroll = panelPart(client, "ScrollFrame")
     for _, frame in ipairs(client.frames) do
-        if frame.parent == scroll then return scroll, frame end
+        if frame.parent == scroll and frame ~= scroll.ScrollBar then return scroll, frame end
     end
 end
 
