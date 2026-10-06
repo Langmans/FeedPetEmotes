@@ -17,10 +17,14 @@ Forever rather than a replacement, and both can be installed side by side.
   random line.
 - Lines fit the situation: some for every pet, some for the kind of food
   (bread, meat, fish, cheese, fruit, mushrooms, and a few special foods), and
-  three or more for each of the 17 pet families you can tame, from "Nice
-  kitty!" to "Clever girl...".
-- Lines that talk about your pet say "he" or "she" when the game tells the
-  pet's sex, and use the pet's name otherwise.
+  some for each of the 17 pet families you can tame, from "Nice kitty!" to
+  "Clever girl...". In English and German that is 20 lines for every pet and
+  10 per family; the other languages have fewer.
+- Lines that talk about your pet say "he"/"she", "his"/"her" or "boy"/"girl"
+  when the pet's sex is known, and use the pet's name otherwise ("Who's a
+  good Fluffy?"). WoW: Forever does not tell the sex of hunter pets, so tell
+  the addon yourself with `/fpe sex male` or `/fpe sex female`; it remembers
+  this for each pet.
 - You can add lines of your own, mixed in with the built-in ones or used
   instead of them (see [Your own lines](#your-own-lines)).
 
@@ -140,7 +144,8 @@ conditions in brackets in front:
 - Several in one group (Pet, Food, Family): any of them will do. `[cat,wolf]`
   is a cat or a wolf.
 - Several groups: each must match. `[cat,fish]` is a cat eating fish.
-- Pet: `male`, `female` (only when the game tells the pet's sex).
+- Pet: `male`, `female` (only when the sex is known: set with `/fpe sex`, or
+  told by the game).
 - Food: `bread`, `meat`, `fish`, `cheese`, `fruit`, `fungus` (the vendor food
   the addon knows; other food matches none of them).
 - Family: `wolf`, `cat`, `spider`, `bear`, `boar`, `crocolisk`,
@@ -299,10 +304,11 @@ the chat messages) and `emotes`.
     e.g. enUS `{he}` → he/she, `{boy}` → boy/girl and `{his}` → his/her
     (its `unknown` field, a format or a function of the name, gives
     "Fluffy's" for an unknown sex), deDE `{er}` → er/sie,
-    frFR `{Il}` → Il/Elle. It follows `E.PetSex()` (2 male, 3 female). When the sex is unknown
-    (1, or a secret value), with `/fpe name on`, or for a token the locale
-    does not define, it becomes the pet's name: "A little smelly, just how
-    Kaldor likes it." Pronouns never fall back to enUS, so a German line never
+    frFR `{Il}` → Il/Elle. It follows `E.PetSex()` (2 male, 3 female).
+    When the sex is unknown (no `/fpe sex` choice and `UnitSex` 1 or
+    secret) or with `/fpe name on`, it becomes the pet's name, or its
+    `unknown` form: "A little smelly, just how Kaldor likes it." A token the
+    locale does not define is always the name. Pronouns never fall back to enUS, so a German line never
     gets an English "he".
   - A test rejects any token that is neither `{pet}` nor in that locale's
     `pronouns`.
