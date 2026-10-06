@@ -71,6 +71,13 @@ E.Locales.koKR = {
         OPTION_CUSTOM_NONE = "아직 문구가 없습니다. 위에 입력하고 Enter 또는 추가를 누르세요.",
     },
 
+    -- No he/she placeholder: the Korean lines do without one.
+    pronouns = {
+        ["소년"] = { male = "소년", female = "소녀" },
+        -- 의 follows any name unchanged: "Fluffy의".
+        ["그의"] = { male = "그의", female = "그녀의", unknown = "%s의" },
+    },
+
     emotes = {
         any = {
             "얌얌!",
@@ -81,6 +88,8 @@ E.Locales.koKR = {
             "먹어봐라, 이 집은 이게 죽여준다.",
             "꺼억~!",
             "어예~, 가방 한칸 빈다!",
+            "우리 착한 {소년}, 맛있게 먹어!",
+            "야, 그건 내 손가락이지 {그의} 디저트가 아니야!",
         },
         male = {
             "잘했어!",

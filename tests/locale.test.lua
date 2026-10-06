@@ -144,6 +144,38 @@ test("every locale has at least three lines for every family", function()
     eq(#short, 0, "too few family lines: " .. table.concat(short, ", "))
 end)
 
+test("enUS and deDE have 20 lines for every pet and 10 per family", function()
+    local E = NewClient().E
+    for _, code in ipairs({ "enUS", "deDE" }) do
+        local emotes = E.Locales[code].emotes
+        eq(#emotes.any, 20, code .. " any")
+        for name, id in pairs(E.Family) do
+            eq(#emotes.family[id], 10, code .. " " .. name)
+        end
+    end
+end)
+
+test("no emote list holds the same line twice", function()
+    local E = NewClient().E
+    local twice = {}
+    local function check(list, where)
+        local seen = {}
+        for _, line in ipairs(list) do
+            if seen[line] then twice[#twice + 1] = where .. ": " .. line end
+            seen[line] = true
+        end
+    end
+    for _, code in ipairs(ALL_LOCALES) do
+        local emotes = E.Locales[code].emotes
+        check(emotes.any, code .. " any")
+        for name, id in pairs(E.Family) do
+            check(emotes.family[id] or {}, code .. " " .. name)
+        end
+    end
+    table.sort(twice)
+    eq(#twice, 0, table.concat(twice, ", "))
+end)
+
 test("E.Family holds the 17 Forever families", function()
     local E = NewClient().E
     for _, name in ipairs(FOREVER_FAMILIES) do

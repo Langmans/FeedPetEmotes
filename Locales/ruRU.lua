@@ -75,6 +75,10 @@ E.Locales.ruRU = {
 
     pronouns = {
         ["Он"] = { male = "Он", female = "Она" },
+        -- No {his} (его/её): without a known sex it would need the name in
+        -- the genitive, which the addon cannot inflect.
+        -- Only the noun changes; an adjective in front keeps its own ending.
+        ["мальчик"] = { male = "мальчик", female = "девочка" },
     },
 
     emotes = {
@@ -87,6 +91,8 @@ E.Locales.ruRU = {
             "Ммм, восхитительно.",
             "Отрыгивает!",
             "Чумааа!",
+            "Вот это {мальчик}!",
+            "Эй, это мои пальцы, а не десерт!",
         },
         male = { "Хороший мальчик!", "Ах ты май малыш!", "Молодчина!" },
         female = { "Хорошая девочка!", "Ух ты мая малышка!", "Умница!" },

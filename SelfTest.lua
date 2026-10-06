@@ -73,6 +73,16 @@ function E.SelfTest()
                 show(UnitSex("pet"))
             )
         )
+        local petNumber = E.PetNumber()
+        local chosen = petNumber and db.petSex[petNumber]
+        Print(
+            string.format(
+                "Pet number %s; sex used: %s (%s).",
+                tostring(petNumber),
+                tostring(E.PetSex()),
+                chosen and "chosen with /fpe sex" or "from the game"
+            )
+        )
         local familyLines = Public(familyID) and E.Emotes.family[familyID]
         Print(
             string.format(

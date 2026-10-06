@@ -77,6 +77,9 @@ E.Locales.frFR = {
 
     pronouns = {
         Il = { male = "Il", female = "Elle" },
+        -- No {his}: son/sa follows the thing owned, not the pet's sex.
+        -- Only the noun changes: "Quel {garçon} !" would give "Quel fille".
+        ["garçon"] = { male = "garçon", female = "fille" },
     },
 
     emotes = {
@@ -89,6 +92,8 @@ E.Locales.frFR = {
             "Mmm, délicieux.",
             "Burp!",
             "Oui, un peu plus de place dans le sac!",
+            "Chaque {garçon} sage mérite sa récompense !",
+            "Hé, ce sont mes doigts, pas son dessert !",
         },
         male = { "Bon garçon!", "Attrape garçon!", "Pas plus monsieur le goinfre!" },
         female = { "Bonne fille!", "Attrape ma fille!", "Pas plus madame la goinfre!" },

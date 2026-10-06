@@ -52,6 +52,32 @@ function Commands.name(rest)
     Print(on and L.PET_NAME_ON or L.PET_NAME_OFF)
 end
 
+local SEX_WORDS = { male = 2, female = 3, auto = false }
+
+---/fpe sex male|female|auto: the summoned pet's sex, saved under its pet
+---number (E.PetNumber); auto drops the choice so the game's value counts.
+function Commands.sex(rest)
+    local sex = SEX_WORDS[firstWord(rest)]
+    if sex == nil then
+        Print(L.SEX_BAD)
+        return
+    end
+    local petNumber = E.PetNumber()
+    if not petNumber then
+        Print(L.NO_PET)
+        return
+    end
+    E.db.petSex[petNumber] = sex or nil
+    local pet = UnitName("pet")
+    if not pet or not E.Public(pet) then pet = L.YOUR_PET end
+    if sex then
+        Print(E.Format("SEX_SET", pet, sex == 2 and L.SEX_MALE or L.SEX_FEMALE))
+    else
+        Print(E.Format("SEX_AUTO", pet))
+    end
+end
+Commands.gender = Commands.sex
+
 ---/fpe add <line>: rest keeps the case it was typed in.
 function Commands.add(rest)
     local added, result = E.AddCustomLine(rest)

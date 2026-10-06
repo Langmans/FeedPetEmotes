@@ -11,7 +11,12 @@ test("feeding sends one emote naming the pet and the food", function()
     eq(#client.sent, 1)
     eq(client.sent[1].kind, "EMOTE")
     local line = emoteLine(client, client.sent[1], "feeds Fluffy a " .. ItemLink(12037) .. ". ")
-    contains(client.E.EmotePool(12037), line)
+    -- The pool holds lines with their placeholders ({boy}, {his}) unfilled.
+    local filled = {}
+    for i, pooled in ipairs(client.E.EmotePool(12037)) do
+        filled[i] = client.E.FillPlaceholders(pooled, "Fluffy", "Mystery Meat")
+    end
+    contains(filled, line)
 end)
 
 test("dragging food onto the pet names the food", function()

@@ -26,7 +26,7 @@ end
 ---@field E table the addon namespace
 ---@field sent {text: string, kind: string}[] chat messages sent by the addon
 ---@field printed string[] lines the addon printed to the chat frame
----@field pet {name: any, sex: number?, family: any, familyID: any}?
+---@field pet {name: any, sex: number?, family: any, familyID: any, guid: any}?
 ---@field time number
 ---@field targeting boolean whether a spell is waiting for an item target
 ---@field secret table<any, boolean> values issecretvalue reports as secret
@@ -40,7 +40,7 @@ function NewClient(opts)
     local client = {
         sent = {},
         printed = {},
-        pet = { name = "Fluffy", sex = 2, family = "Cat", familyID = 2 },
+        pet = { name = "Fluffy", sex = 2, family = "Cat", familyID = 2, guid = "Pet-0-5250-0-1-165189-01002ED5F4" },
         time = 100,
         targeting = false,
         secret = {},
@@ -83,6 +83,12 @@ function NewClient(opts)
     end
     function UnitSex()
         return client.pet and client.pet.sex
+    end
+    -- client.pet.guid: as Forever builds it, the pet number (3069428 by
+    -- default) in the low 32 bits of the last field, a summon counter above.
+    function UnitGUID(unit)
+        if unit ~= "pet" or not client.pet then return nil end
+        return client.pet.guid
     end
     function UnitCreatureFamily()
         if not client.pet then return nil end

@@ -22,6 +22,79 @@ test("{he} becomes he for a male pet and she for a female pet", function()
     eq(sentLine(client), "Just how she likes it.")
 end)
 
+test("{boy} becomes boy or girl, the pet's name when the sex is unknown", function()
+    local client = NewClient():login()
+    onlyLine(client, "Good {boy}!")
+    client.pet.sex = 2
+    eq(sentLine(client), "Good boy!")
+    client.pet.sex = 3
+    eq(sentLine(client), "Good girl!")
+    client.pet.sex = 1
+    eq(sentLine(client), "Good Fluffy!")
+    client:slash("sex female")
+    eq(sentLine(client), "Good girl!")
+    client:slash("name on")
+    eq(sentLine(client), "Good Fluffy!")
+end)
+
+test("{boy} works in own lines and in every locale under its own word", function()
+    local client = NewClient():login()
+    client:slash("chance 100")
+    client:slash("add Who's a good {boy}?")
+    client.pet.sex = 3
+    client:castSucceeded()
+    eq(client:lastSent().text, "feeds Fluffy. Who's a good girl?")
+    local words = { deDE = "Junge", esES = "chico", frFR = "garçon", ruRU = "мальчик", koKR = "소년" }
+    for code, token in pairs(words) do
+        local locale = client.E.Locales[code]
+        ok(locale.pronouns and locale.pronouns[token], code .. " {" .. token .. "}")
+    end
+    local german = NewClient({ locale = "deDE" }):login()
+    onlyLine(german, "Was für ein {Junge}!")
+    german.pet.sex = 3
+    german:castSucceeded()
+    eq(german:lastSent().text, "füttert Fluffy. Was für ein Mädchen!")
+end)
+
+test("{his} becomes his or her, the pet's name with 's when the sex is unknown", function()
+    local client = NewClient():login()
+    onlyLine(client, "Not {his} dessert!")
+    client.pet.sex = 2
+    eq(sentLine(client), "Not his dessert!")
+    client.pet.sex = 3
+    eq(sentLine(client), "Not her dessert!")
+    client.pet.sex = 1
+    eq(sentLine(client), "Not Fluffy's dessert!")
+    client.pet.sex = 2
+    client:slash("name on")
+    eq(sentLine(client), "Not Fluffy's dessert!")
+end)
+
+test("a % in the pet's name survives the possessive form", function()
+    local client = NewClient():login()
+    onlyLine(client, "Not {his} dessert!")
+    client.pet.sex = 1
+    client.pet.name = "100%"
+    client:castSucceeded()
+    eq(client:lastSent().text, "feeds 100%. Not 100%'s dessert!")
+end)
+
+test("German {sein}: Fluffys, but Boris' and Strauß'", function()
+    local client = NewClient({ locale = "deDE" }):login()
+    onlyLine(client, "Nicht {sein} Nachtisch!")
+    client.pet.sex = 3
+    client:castSucceeded()
+    eq(client:lastSent().text, "füttert Fluffy. Nicht ihr Nachtisch!")
+    client.pet.sex = 1
+    client:castSucceeded()
+    eq(client:lastSent().text, "füttert Fluffy. Nicht Fluffys Nachtisch!")
+    for name, possessive in pairs({ Boris = "Boris'", ["Strauß"] = "Strauß'", Max = "Max'" }) do
+        client.pet.name = name
+        client:castSucceeded()
+        eq(client:lastSent().text, "füttert " .. name .. ". Nicht " .. possessive .. " Nachtisch!")
+    end
+end)
+
 test("a pet of unknown sex is named instead", function()
     local client = NewClient():login()
     onlyLine(client, "Just how {he} likes it.")
@@ -92,6 +165,13 @@ test("every pronoun has a male and a female word", function()
     for code, locale in pairs(E.Locales) do
         for token, words in pairs(locale.pronouns or {}) do
             ok(type(words.male) == "string" and type(words.female) == "string", code .. " {" .. token .. "}")
+            local unknown = words.unknown
+            if type(unknown) == "function" then unknown = unknown("Fluffy") end
+            ok(
+                unknown == nil
+                    or (type(unknown) == "string" and unknown:find("Fluffy", 1, true) or unknown:find("%s", 1, true)),
+                code .. " {" .. token .. "} unknown"
+            )
         end
     end
 end)

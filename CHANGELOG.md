@@ -18,6 +18,19 @@
 - When an own line is wanted but none fits, a built-in line is used; untick
   "Use a built-in line when none of mine fits" (`/fpe fallback off`) to send
   just "feeds Fluffy a Mystery Meat." instead.
+- `/fpe sex male|female|auto` tells the addon your pet's sex, which WoW:
+  Forever does not report for hunter pets, so the he/she lines and pronouns
+  work. Each pet keeps its own choice through renames, relogs and stable
+  swaps.
+- New placeholder `{boy}` for boy or girl ("Good {boy}!"), with its own word
+  in every language (`{Junge}`, `{chico}`, `{garçon}`, `{мальчик}`, `{소년}`).
+  New lines for every pet use it, such as "Who's a good {boy}?"; without a
+  known sex they name the pet ("Who's a good Fluffy?").
+- New placeholder `{his}` for his or her ("Fluffy's" when the sex is not
+  known); German `{sein}`, Korean `{그의}`. With a few new lines, such as
+  "Hey, those are my fingers, not {his} dessert!".
+- Many more built-in lines in English and German: 20 for every pet and 10
+  for each of the 17 pet families, so each pet has about 30 to pick from.
 - The options panel scrolls.
 - The options panel shows the version, author and license, and the
   website in a box you can copy it from.

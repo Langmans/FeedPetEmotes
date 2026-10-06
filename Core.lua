@@ -66,6 +66,33 @@ local function cleanLines(saved)
     return lines
 end
 
+---The per-pet sex choices as saved (/fpe sex): pet number -> 2 (male) or 3
+---(female). Anything else is dropped; a pet without a choice has no entry.
+---@param saved any
+---@return table<number, number>
+local function cleanPetSex(saved)
+    local choices = {}
+    if type(saved) == "table" then
+        for petNumber, sex in pairs(saved) do
+            if type(petNumber) == "number" and (sex == 2 or sex == 3) then choices[petNumber] = sex end
+        end
+    end
+    return choices
+end
+
+---The summoned pet's number, the same value as C_StableInfo's
+---PetInfo.petNumber: the low 32 bits of the GUID's last field (the spawn UID;
+---its high bits are a summon counter). It stays the same through resummons,
+---relogs, stable swaps and renames, so per-pet settings are keyed on it; see
+---docs/pet-id.md. Nil without a pet or when the GUID is secret.
+---@return number?
+function E.PetNumber()
+    local guid = UnitGUID("pet")
+    if not guid or not E.Public(guid) then return nil end
+    local spawnUID = guid:match("^Pet%-.-%-(%x+)$")
+    return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
+end
+
 ---Creates or repairs the saved settings and makes them E.db (per character,
 ---FeedPetEmotesDBPC) and E.accountDB (account-wide, FeedPetEmotesDB); both
 ---names are declared in the .toc. The account table only holds the own lines
@@ -84,6 +111,7 @@ function E.LoadSettings()
     end
     setmetatable(db, { __index = DEFAULTS })
     db.customLines = cleanLines(db.customLines)
+    db.petSex = cleanPetSex(db.petSex)
     -- A whole percentage; anything else is put back to the nearest one.
     db.customChance = math.max(0, math.min(100, math.floor(db.customChance + 0.5)))
     E.db = db

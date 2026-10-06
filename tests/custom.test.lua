@@ -294,7 +294,7 @@ test("the panel says when there are no lines, and picks up /fpe add on reopen", 
 end)
 
 test("the panel lists the locale's own placeholders", function()
-    eq(NewClient():login().E.PlaceholderList(), "{pet}, {food}, {he}")
+    eq(NewClient():login().E.PlaceholderList(), "{pet}, {food}, {boy}, {he}, {his}")
     local german = NewClient({ locale = "deDE" }):login().E.PlaceholderList()
     ok(german:find("{er}", 1, true), german)
     ok(not german:find("{he}", 1, true), german)

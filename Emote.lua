@@ -11,6 +11,20 @@ local function append(pool, list)
     end
 end
 
+---The summoned pet's sex: 2 male, 3 female, nil when unknown. The player's
+---choice for this pet (/fpe sex, saved under its pet number) comes first;
+---without one, what the game reports (UnitSex: 1 unknown, which is what
+---WoW: Forever gives for hunter pets, or a secret value counts as nil).
+---@return number?
+function E.PetSex()
+    local petNumber = E.PetNumber()
+    local chosen = petNumber and E.db.petSex[petNumber]
+    if chosen then return chosen end
+    local sex = UnitSex("pet")
+    if not E.Public(sex) then return nil end
+    return (sex == 2 or sex == 3) and sex or nil
+end
+
 ---What the lists are chosen by for one feeding: the pet's sex (2 male, 3
 ---female), the food's type and the pet's family ID, each nil when unknown
 ---or secret. The family ID is the same on every client language; the name
@@ -18,10 +32,9 @@ end
 ---@param itemID number?
 ---@return {sex: number?, foodType: string?, family: number?}
 local function situationOf(itemID)
-    local sex = UnitSex("pet")
     local _, familyID = UnitCreatureFamily("pet")
     return {
-        sex = sex and E.Public(sex) and sex or nil,
+        sex = E.PetSex(),
         foodType = itemID and E.FoodTypes[itemID] or nil,
         family = familyID and E.Public(familyID) and familyID or nil,
     }
@@ -98,8 +111,7 @@ end
 ---@return string?
 local function pronounSex()
     if E.db.petName then return nil end
-    local sex = UnitSex("pet")
-    if not E.Public(sex) then return nil end
+    local sex = E.PetSex()
     return sex == 2 and "male" or sex == 3 and "female" or nil
 end
 
@@ -108,8 +120,11 @@ end
 ---only offers such a line when the food is known). Any other {token} is one
 ---of the locale's pronouns (E.Pronouns, e.g. {he} -> he/she); without a known
 ---sex, or for a token the locale does not define, it becomes the pet's name,
----which reads right in every language. Function replacements, so a % in a
----name is never read as a capture reference.
+---which reads right in every language. A pronoun whose name form differs
+---(a possessive: {his} -> "Fluffy's") gives it as `unknown`: a format with
+---%s for the name, or a function of the name when one format is not enough
+---(German "Fluffys" but "Boris'"). Function replacements, so a % in a name
+---is never read as a capture reference.
 ---@param line string
 ---@param pet string
 ---@param food string?
@@ -118,8 +133,12 @@ function E.FillPlaceholders(line, pet, food)
     local sex = pronounSex()
     local filled = line:gsub("{([^}]+)}", function(token)
         if token == "food" and food then return food end
-        local words = token ~= "pet" and sex and E.Pronouns[token]
-        return words and words[sex] or pet
+        local words = token ~= "pet" and E.Pronouns[token]
+        if not words then return pet end
+        if sex then return words[sex] end
+        local unknown = words.unknown
+        if type(unknown) == "function" then return unknown(pet) end
+        return unknown and string.format(unknown, pet) or pet
     end)
     return filled
 end

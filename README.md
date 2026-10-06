@@ -63,6 +63,10 @@ The same settings, and a few extras, are available as chat commands
 - `/fpe config` (or `/fpe options`) opens the options panel.
 - `/fpe on` and `/fpe off` switch the emotes on or off.
 - `/fpe name on` and `/fpe name off` switch "always use the pet's name".
+- `/fpe sex male` or `/fpe sex female` (or `/fpe gender ...`) tells the addon
+  the summoned pet's sex, which WoW: Forever does not report for hunter pets.
+  It is remembered for that pet through renames, relogs and stable swaps;
+  `/fpe sex auto` forgets it again.
 - `/fpe add <line>`, `/fpe list`, `/fpe remove <number>`,
   `/fpe chance <0-100>`, `/fpe fallback on|off` and `/fpe shared on|off`
   manage your own lines (see below).
@@ -88,10 +92,18 @@ remove work on that one.
 
 - `{pet}` becomes your pet's name and `{food}` the food's name. A line with
   `{food}` is skipped when the addon cannot tell which food was eaten.
-- `{he}` becomes he or she when the game tells the pet's sex, the pet's name
-  otherwise (and always with "Always use the pet's name"). In other languages
-  the word differs, e.g. `{er}` in German; the options panel lists the ones
-  for your language.
+- `{he}` becomes he or she and `{boy}` boy or girl when the pet's sex is
+  known (set it with `/fpe sex`), the pet's name otherwise (and always with
+  "Always use the pet's name"). In other languages the word differs, e.g.
+  `{er}` and `{Junge}` in German; the options panel lists the ones for your
+  language. Only the word itself changes, so in German, Spanish, French and
+  Russian pick a sentence where the words around it fit both ("Was für ein
+  {Junge}!", not "Guter {Junge}!").
+- `{his}` becomes his or her, and the pet's name with 's ("Fluffy's") when
+  the sex is unknown. German has `{sein}` (sein/ihr, "Fluffys"), only before
+  a noun where both fit ("{sein} Bauch", "in {sein} Bäuchlein"); Korean has
+  `{그의}`. Spanish and French need none ("su", "son/sa" do not depend on the
+  pet's sex), and Russian has none.
 - Placeholders must be typed exactly as listed (`{Pet}` is not `{pet}`);
   anything else in braces becomes the pet's name.
 - A line can be at most 150 bytes (letters outside A–Z take two or more), so
@@ -252,8 +264,13 @@ strings are dropped. A line is saved as one string, its conditions first:
   "feeds <pet>.", and own lines with `{food}` are left out.
 - Pet families are matched on the CreatureFamily ID (second return of
   `UnitCreatureFamily`), which is the same on every client language.
+- The pet's sex (`E.PetSex`) is the player's `/fpe sex` choice when there is
+  one, else `UnitSex("pet")` when that is 2 or 3. Choices are saved in
+  `FeedPetEmotesDBPC.petSex`, keyed on the pet number (`E.PetNumber`, the low
+  32 bits of `UnitGUID("pet")`'s last field, equal to `C_StableInfo`'s
+  `petNumber`); see [docs/pet-id.md](docs/pet-id.md) for why that is the key.
 - `/fpe selftest` prints build, locale, the chat send function, whether Feed
-  Pet is known, the pet's family ID and sex, and the last food and cast the
+  Pet is known, the pet's family ID, sex and pet number, and the last food and cast the
   addon saw. It is always English, since it is meant for bug reports.
 
 ### Localization
@@ -279,8 +296,10 @@ the chat messages) and `emotes`.
   - `{food}` is the food's plain name (not the link, which is already in
     the sentence in front). Only the player's own lines use it.
   - Any other `{token}` is a pronoun from the locale's own `pronouns` table,
-    e.g. enUS `{he}` → he/she, deDE `{er}` → er/sie, frFR `{Il}` → Il/Elle.
-    It follows `UnitSex("pet")` (2 male, 3 female). When the sex is unknown
+    e.g. enUS `{he}` → he/she, `{boy}` → boy/girl and `{his}` → his/her
+    (its `unknown` field, a format or a function of the name, gives
+    "Fluffy's" for an unknown sex), deDE `{er}` → er/sie,
+    frFR `{Il}` → Il/Elle. It follows `E.PetSex()` (2 male, 3 female). When the sex is unknown
     (1, or a secret value), with `/fpe name on`, or for a token the locale
     does not define, it becomes the pet's name: "A little smelly, just how
     Kaldor likes it." Pronouns never fall back to enUS, so a German line never
@@ -291,7 +310,8 @@ the chat messages) and `emotes`.
   this addon: all of deDE, the food-type lines, the ten families Feed-O-Matic
   never had (Bear, Bird of Prey, Tallstrider, Carrion Bird, Wind Serpent, Bat,
   Crab, Gorilla, Scorpid, Turtle), and the extra lines that give every family
-  at least three per locale.
+  at least three per locale. enUS and deDE go further: 20 lines for every pet
+  and 10 per family (a test holds them to that).
 
 To add a locale: copy `Locales\enUS.lua`, change the key in `E.Locales`, drop
 the strings that stay English, and list the file in the `.toc` before

@@ -76,6 +76,9 @@ E.Locales.esES = {
 
     pronouns = {
         ["él"] = { male = "él", female = "ella" },
+        -- No {his}: "su" is the same for a male and a female pet.
+        -- Only the noun changes: "¡Qué {chico}!" fits, "¡Buen {chico}!" does not.
+        chico = { male = "chico", female = "chica" },
     },
 
     emotes = {
@@ -87,6 +90,8 @@ E.Locales.esES = {
             "¡Un mordisco y listo!",
             "Mmm, delicioso.",
             "¡Gurps!",
+            "¡Así se come, {chico}!",
+            "¡Eh, que son mis dedos, no su postre!",
         },
         male = { "¡Buen chico!" },
         female = { "¡Buena chica!" },
