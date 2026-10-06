@@ -36,7 +36,10 @@ function E.SendFunction()
     return nil, "missing"
 end
 
--- Saved per character; a missing or broken value gets its default.
+-- Saved per character. The saved file keeps only what the player changed:
+-- E.db reads a missing value from here through a metatable, and
+-- E.StripDefaults removes values equal to their default at logout. A default
+-- changed in a later version so reaches everyone who never changed it.
 local DEFAULTS = {
     enabled = true, -- /fpe on|off
     petName = false, -- /fpe name on|off
@@ -70,9 +73,11 @@ function E.LoadSettings()
     -- customOnly (own lines only) is now a chance of 100%.
     if db.customOnly == true and db.customChance == nil then db.customChance = 100 end
     db.customOnly = nil
+    -- A broken value is dropped, so the default shows through.
     for key, default in pairs(DEFAULTS) do
-        if type(db[key]) ~= type(default) then db[key] = default end
+        if db[key] ~= nil and type(db[key]) ~= type(default) then db[key] = nil end
     end
+    setmetatable(db, { __index = DEFAULTS })
     db.customLines = cleanLines(db.customLines)
     -- A whole percentage; anything else is put back to the nearest one.
     db.customChance = math.max(0, math.min(100, math.floor(db.customChance + 0.5)))
@@ -81,6 +86,15 @@ function E.LoadSettings()
     if type(FeedPetEmotesDB) ~= "table" then FeedPetEmotesDB = {} end
     FeedPetEmotesDB.customLines = cleanLines(FeedPetEmotesDB.customLines)
     E.accountDB = FeedPetEmotesDB
+end
+
+---Removes the settings that equal their default, so the saved file keeps
+---only what the player changed. Called on PLAYER_LOGOUT, just before the
+---client writes the file; E.db keeps working through its metatable.
+function E.StripDefaults()
+    for key, default in pairs(DEFAULTS) do
+        if rawget(E.db, key) == default then E.db[key] = nil end
+    end
 end
 
 ---The own lines this character uses: the account-wide list with sharedLines
