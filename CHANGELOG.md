@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-10-06
 
 - Your own emote lines: add them with `/fpe add <line>` or in the options
   panel, see them with `/fpe list`, remove them with `/fpe remove <number>`
