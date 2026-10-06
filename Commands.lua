@@ -31,24 +31,35 @@ local function status()
     Print(E.Format("STATUS", E.db.enabled and L.STATUS_ON or L.STATUS_OFF))
 end
 
+-- The commands write settings through a local `db`, not as E.db.<field> = ...:
+-- WoW Lua LS 0.34 forgets a field's declared type once a function assigns it
+-- through the addon table, and the field turns `any` in every file.
+
 ---@type table<string, fun(rest: string)>
 local Commands = {}
 
 function Commands.on()
-    E.db.enabled = true
+    local db = E.db
+    db.enabled = true
     Print(L.EMOTES_ON)
 end
 
 function Commands.off()
-    E.db.enabled = false
+    local db = E.db
+    db.enabled = false
     Print(L.EMOTES_OFF)
 end
 
 ---/fpe name on|off
+---@param rest string
 function Commands.name(rest)
     local on = onOff(rest)
-    if on == nil then return status() end
-    E.db.petName = on
+    if on == nil then
+        status()
+        return
+    end
+    local db = E.db
+    db.petName = on
     Print(on and L.PET_NAME_ON or L.PET_NAME_OFF)
 end
 
@@ -56,6 +67,7 @@ local SEX_WORDS = { male = 2, female = 3, auto = false }
 
 ---/fpe sex male|female|auto: the summoned pet's sex, saved under its pet
 ---number (E.PetNumber); auto drops the choice so the game's value counts.
+---@param rest string
 function Commands.sex(rest)
     local sex = SEX_WORDS[firstWord(rest)]
     if sex == nil then
@@ -67,7 +79,8 @@ function Commands.sex(rest)
         Print(L.NO_PET)
         return
     end
-    E.db.petSex[petNumber] = sex or nil
+    local db = E.db
+    db.petSex[petNumber] = sex or nil
     local pet = UnitName("pet")
     if not pet or not E.Public(pet) then pet = L.YOUR_PET end
     if sex then
@@ -79,6 +92,7 @@ end
 Commands.gender = Commands.sex
 
 ---/fpe add <line>: rest keeps the case it was typed in.
+---@param rest string
 function Commands.add(rest)
     local added, result = E.AddCustomLine(rest)
     Print(added and E.Format("CUSTOM_ADDED", #E.CustomLines(), result) or result)
@@ -98,6 +112,7 @@ function Commands.list()
 end
 
 ---/fpe remove <number>
+---@param rest string
 function Commands.remove(rest)
     local word = firstWord(rest)
     local line = E.RemoveCustomLine(tonumber(word))
@@ -106,30 +121,42 @@ end
 
 ---/fpe fallback on|off: a built-in line, or none, when an own line is
 ---wanted but none fits.
+---@param rest string
 function Commands.fallback(rest)
     local on = onOff(rest)
-    if on == nil then return status() end
-    E.db.customFallback = on
+    if on == nil then
+        status()
+        return
+    end
+    local db = E.db
+    db.customFallback = on
     Print(on and L.FALLBACK_ON or L.FALLBACK_OFF)
 end
 
 ---/fpe shared on|off: the account-wide lines or this character's own.
+---@param rest string
 function Commands.shared(rest)
     local on = onOff(rest)
-    if on == nil then return status() end
-    E.db.sharedLines = on
+    if on == nil then
+        status()
+        return
+    end
+    local db = E.db
+    db.sharedLines = on
     Print(E.Format(on and "SHARED_ON" or "SHARED_OFF", #E.CustomLines()))
 end
 
 ---/fpe chance <0-100>: the share of emotes that take an own line; 0 lets
 ---every line count the same.
+---@param rest string
 function Commands.chance(rest)
     local percent = tonumber(firstWord(rest):match("^(%d+)%%?$"))
     if not percent or percent > 100 then
         Print(L.CHANCE_BAD)
         return
     end
-    E.db.customChance = percent
+    local db = E.db
+    db.customChance = percent
     Print(percent == 0 and L.CHANCE_EVEN or E.Format("CHANCE_SET", percent))
 end
 
@@ -149,12 +176,14 @@ function Commands.selftest()
 end
 
 function Commands.debug()
-    E.db.debug = not E.db.debug
-    Print("Debug " .. (E.db.debug and "on." or "off."))
+    local db = E.db
+    db.debug = not db.debug
+    Print("Debug " .. (db.debug and "on." or "off."))
 end
 
 SLASH_FEEDPETEMOTES1 = "/fpe"
 SLASH_FEEDPETEMOTES2 = "/feedpetemotes"
+---@param message string?
 SlashCmdList.FEEDPETEMOTES = function(message)
     local name, rest = (message or ""):match("^%s*(%S*)%s*(.-)%s*$")
     local command = Commands[(name or ""):lower()]

@@ -25,9 +25,12 @@ local function sendEmote(itemID)
 end
 
 -- Targeted food: clicking food while Feed Pet waits for its target.
-hooksecurefunc(C_Container, "UseContainerItem", function(bag, slot)
+---@param bag number
+---@param slot number
+local function onUseContainerItem(bag, slot)
     if E.isHunter then Tracker:OnTargeted(bag, slot) end
-end)
+end
+hooksecurefunc(C_Container, "UseContainerItem", onUseContainerItem)
 
 -- Events: one method per event on this frame, named after the event and called
 -- with the event's own arguments. Only ADDON_LOADED is registered up front; it
@@ -40,6 +43,7 @@ end)
 -- watching, while /fpe and the options panel keep working.
 local frame = CreateFrame("Frame")
 
+---@param name string the addon that finished loading
 function frame:ADDON_LOADED(name)
     if name ~= addonName then return end
     self:UnregisterEvent("ADDON_LOADED")
@@ -64,7 +68,10 @@ function frame:BAG_UPDATE_DELAYED()
     Tracker:OnBagsUpdated()
 end
 
-function frame:UNIT_SPELLCAST_SUCCEEDED(_, _, spellID)
+---@param unit string always "player": registered for that unit only
+---@param castGUID string
+---@param spellID number
+function frame:UNIT_SPELLCAST_SUCCEEDED(unit, castGUID, spellID)
     if not Public(spellID) or spellID ~= E.FEED_PET_SPELL then return end
     local itemID, source = Tracker:Claim()
     if not itemID then
@@ -75,7 +82,11 @@ function frame:UNIT_SPELLCAST_SUCCEEDED(_, _, spellID)
     sendEmote(itemID)
 end
 
-frame:SetScript("OnEvent", function(self, event, ...)
+---@param self Frame
+---@param event string
+---@param ... any the event's own arguments
+local function onEvent(self, event, ...)
     self[event](self, ...)
-end)
+end
+frame:SetScript("OnEvent", onEvent)
 frame:RegisterEvent("ADDON_LOADED")

@@ -21,7 +21,7 @@ E.CUSTOM_LINE_MAX = 150
 ---@class Condition
 ---@field tag string what is typed between the brackets
 ---@field group "sex"|"foodType"|"family"
----@field value any what the situation must hold for that group
+---@field value number|string what the situation must hold for that group: a sex or family ID, a food type
 
 ---Every condition, in the order a saved line lists them: sex, food type, family.
 ---@type Condition[]
@@ -34,13 +34,18 @@ for _, foodType in ipairs({ "bread", "meat", "fish", "cheese", "fruit", "fungus"
     E.Conditions[#E.Conditions + 1] = { tag = foodType, group = "foodType", value = foodType }
 end
 -- The families by ID; the panel sorts them again, by name.
+---@type {tag: string, group: "family", value: number}[]
 local families = {}
 for name, id in pairs(E.Family) do
     families[#families + 1] = { tag = name:lower(), group = "family", value = id }
 end
-table.sort(families, function(a, b)
+---@param a {value: number}
+---@param b {value: number}
+---@return boolean
+local function byID(a, b)
     return a.value < b.value
-end)
+end
+table.sort(families, byID)
 for _, condition in ipairs(families) do
     E.Conditions[#E.Conditions + 1] = condition
 end

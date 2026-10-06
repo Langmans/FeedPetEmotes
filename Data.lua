@@ -3,10 +3,13 @@ local _, E = ...
 -- Locale-independent keys shared by the files in Locales\. Each of those
 -- files adds one entry to E.Locales; Locale.lua then picks the client's one.
 
+---Locale code ("enUS", "deDE", ...) -> that locale's strings and lines.
+---@type table<string, FeedPetEmotesLocale>
 E.Locales = {}
 
 -- Item ID -> food group used as key in each locale's `emotes.food` table:
 -- jokes about one particular food. An item can also have a type (below).
+---@type table<number, string>
 E.FoodGroups = {
     [7974] = "zesty", -- Zesty Clam Meat
     [12037] = "mystery", -- Mystery Meat
@@ -26,6 +29,7 @@ E.FoodGroups = {
 -- says yes or no), so this lists the food sold by vendors on Forever (Wowhead,
 -- forever/items/consumables/food-and-drinks, "Sold by a vendor"), classified
 -- by name. Holiday, faire and unclear items are left out.
+---@type table<number, string>
 E.FoodTypes = {
     -- Bread
     [4540] = "bread", -- Tough Hunk of Bread

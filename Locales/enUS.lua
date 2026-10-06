@@ -7,6 +7,9 @@ local F = E.Family
 E.Locales.enUS = {
     strings = {
         -- The /emote text in front of the random line.
+        ---@param pet string
+        ---@param food string
+        ---@return string
         FEED = function(pet, food)
             -- food is an item link or a plain name; the article follows the name.
             local name = food:match("|h%[(.-)%]|h") or food

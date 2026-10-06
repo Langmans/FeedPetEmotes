@@ -83,6 +83,8 @@ E.Locales.deDE = {
         sein = {
             male = "sein",
             female = "ihr",
+            ---@param name string
+            ---@return string
             unknown = function(name)
                 -- ß apart: a character class would match its two bytes singly.
                 local hissing = name:find("[sxzSXZ]$") or name:find("ß$")

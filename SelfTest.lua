@@ -60,6 +60,8 @@ function E.SelfTest()
     else
         local name = UnitName("pet")
         local family, familyID = UnitCreatureFamily("pet")
+        ---@param value string|number|nil
+        ---@return string
         local function show(value)
             if not Public(value) then return "<secret>" end
             return tostring(value)

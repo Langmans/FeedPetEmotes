@@ -35,9 +35,12 @@ scroll:SetPoint("BOTTOMRIGHT", -28, 4)
 local content = CreateFrame("Frame", nil, scroll)
 content:SetSize(CONTENT_WIDTH, CONTENT_BASE)
 scroll:SetScrollChild(content)
-scroll:SetScript("OnSizeChanged", function(_, width)
+---@param _ ScrollFrame
+---@param width number
+local function fitContent(_, width)
     content:SetWidth(width)
-end)
+end
+scroll:SetScript("OnSizeChanged", fitContent)
 
 -- The template's scroll bar has buttons and a thumb but no track; a dark
 -- strip behind it shows where the thumb can go.
@@ -50,7 +53,7 @@ end
 
 ---Stretches a text anchored at its top left to `inset` pixels from the
 ---content's right edge: a note wraps there, a list row is cut off there.
----@param fontString table
+---@param fontString FontString
 ---@param inset number
 local function toRightEdge(fontString, inset)
     fontString:SetPoint("RIGHT", content, "RIGHT", -inset, 0)
@@ -64,6 +67,8 @@ title.isHeading = true
 
 -- About. C_AddOns has GetAddOnMetadata on newer clients, the global on older ones.
 local GetMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+---@param key string a .toc field, e.g. "Version"
+---@return string
 local function metadata(key)
     return GetMetadata(addonName, key) or "?"
 end
@@ -83,28 +88,45 @@ website:SetAutoFocus(false)
 website:SetFontObject("GameFontHighlightSmall")
 website:SetText(URL)
 website:SetCursorPosition(0)
+-- Edit box handlers, as named functions: the language server gives an
+-- EditBox's script handlers no parameter types of their own.
+
+---@param self EditBox
+local function unfocus(self)
+    self:ClearFocus()
+end
+
 -- Read-only: whatever is typed is put back, and a click selects it all for Ctrl+C.
-website:SetScript("OnTextChanged", function(self, userInput)
+---@param self EditBox
+---@param userInput boolean
+local function restoreURL(self, userInput)
     if not userInput then return end
     self:SetText(URL)
     self:HighlightText()
-end)
-website:SetScript("OnEditFocusGained", function(self)
+end
+---@param self EditBox
+local function selectAll(self)
     self:HighlightText()
-end)
-website:SetScript("OnEditFocusLost", function(self)
+end
+---@param self EditBox
+local function selectNone(self)
     self:HighlightText(0, 0)
-end)
-website:SetScript("OnEscapePressed", function(self)
-    self:ClearFocus()
-end)
-website:SetScript("OnEnterPressed", function(self)
-    self:ClearFocus()
-end)
+end
+website:SetScript("OnTextChanged", restoreURL)
+website:SetScript("OnEditFocusGained", selectAll)
+website:SetScript("OnEditFocusLost", selectNone)
+website:SetScript("OnEscapePressed", unfocus)
+website:SetScript("OnEnterPressed", unfocus)
 E.WebsiteBox = website
 
+---A checkbox of this panel, with the fields it adds.
+---@class FeedPetEmotesCheckbox: UICheckButtonTemplate
+---@field text FontString? the label on older clients; Text on newer ones
+---@field settingKey string? the E.db field it shows (addCheckbox)
+---@field conditionTag string? the condition it ticks (addConditionGroup)
+
 ---Setting key -> its checkbox.
----@type table<string, table>
+---@type table<string, FeedPetEmotesCheckbox>
 local checkboxes = {}
 local below = websiteLabel
 
@@ -114,6 +136,7 @@ local below = websiteLabel
 ---@param description string
 ---@param onChange fun()? called after a click has saved the setting
 local function addCheckbox(key, label, description, onChange)
+    ---@type FeedPetEmotesCheckbox
     local box = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
     -- The box has a few pixels of padding; under a heading it moves left to line up.
     box:SetPoint("TOPLEFT", below, "BOTTOMLEFT", below.isHeading and -2 or 0, -16)
@@ -125,9 +148,9 @@ local function addCheckbox(key, label, description, onChange)
     note:SetPoint("TOPLEFT", text, "BOTTOMLEFT", 0, -2)
     toRightEdge(note, 16)
     note:SetText(description)
-    box:SetScript("OnClick", function(self)
+    box:SetScript("OnClick", function()
         -- GetChecked returns 1/nil on some clients; the saved value must be a boolean.
-        E.db[key] = self:GetChecked() and true or false
+        E.db[key] = box:GetChecked() and true or false
         if onChange then onChange() end
     end)
     box.settingKey = key
@@ -139,6 +162,7 @@ end
 ---@param text string
 ---@param font string
 ---@param gap number
+---@return FontString
 local function addHeading(text, font, gap)
     local heading = content:CreateFontString(nil, "ARTWORK", font)
     heading:SetPoint("TOPLEFT", below, "BOTTOMLEFT", below.isHeading and 0 or 2, -gap)
@@ -177,9 +201,14 @@ slider:SetWidth(300)
 slider:SetMinMaxValues(0, 100)
 slider:SetValueStep(5)
 if slider.SetObeyStepOnDrag then slider:SetObeyStepOnDrag(true) end
-local sliderText = slider.Text or _G[SLIDER_NAME .. "Text"];
-(slider.Low or _G[SLIDER_NAME .. "Low"]):SetText(L.OPTION_CHANCE_EVEN);
-(slider.High or _G[SLIDER_NAME .. "High"]):SetText("100%")
+---@type FontString
+local sliderText = slider.Text or _G[SLIDER_NAME .. "Text"]
+---@type FontString
+local sliderLow = slider.Low or _G[SLIDER_NAME .. "Low"]
+---@type FontString
+local sliderHigh = slider.High or _G[SLIDER_NAME .. "High"]
+sliderLow:SetText(L.OPTION_CHANCE_EVEN)
+sliderHigh:SetText("100%")
 
 ---The slider's title for a value: "Chance of an own line: even" or "...: 35%".
 ---@param percent number
@@ -187,11 +216,16 @@ local function showChance(percent)
     sliderText:SetText(E.Format("OPTION_CHANCE", percent == 0 and L.OPTION_CHANCE_EVEN or percent .. "%"))
 end
 
-slider:SetScript("OnValueChanged", function(_, value)
+---@param _ Slider
+---@param value number
+local function onChanceChanged(_, value)
     local percent = math.floor(value + 0.5)
-    E.db.customChance = percent
+    -- Through a local: see Commands.lua on writing E.db fields.
+    local db = E.db
+    db.customChance = percent
     showChance(percent)
-end)
+end
+slider:SetScript("OnValueChanged", onChanceChanged)
 local sliderNote = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
 sliderNote:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -16)
 toRightEdge(sliderNote, 16)
@@ -248,7 +282,7 @@ conditionsNote:SetText(L.OPTION_COND_NOTE)
 local COLUMNS, COLUMN_WIDTH, GRID_ROW, GRID_LEFT = 4, 122, 22, 70
 
 ---The condition checkboxes, in the order they appear.
----@type table[]
+---@type FeedPetEmotesCheckbox[]
 local conditionBoxes = {}
 local gridRows = 0
 
@@ -261,6 +295,7 @@ local function addConditionGroup(group, conditions)
     label:SetText(L["OPTION_COND_GROUP_" .. group:upper()])
     for i, condition in ipairs(conditions) do
         local column, row = (i - 1) % COLUMNS, math.floor((i - 1) / COLUMNS)
+        ---@type FeedPetEmotesCheckbox
         local box = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
         box:SetSize(22, 22)
         box:SetPoint("TOPLEFT", conditionsNote, "BOTTOMLEFT", GRID_LEFT + column * COLUMN_WIDTH, top - row * GRID_ROW)
@@ -273,15 +308,20 @@ local function addConditionGroup(group, conditions)
     gridRows = gridRows + math.ceil(#conditions / COLUMNS)
 end
 
+---@type table<string, Condition[]>
 local conditionsByGroup = { sex = {}, foodType = {}, family = {} }
 for _, condition in ipairs(E.Conditions) do
     if condition.group ~= "family" or not E.ExoticFamily[condition.value] then
         table.insert(conditionsByGroup[condition.group], condition)
     end
 end
-table.sort(conditionsByGroup.family, function(a, b)
+---@param a Condition
+---@param b Condition
+---@return boolean
+local function byLabel(a, b)
     return E.ConditionLabel(a.tag) < E.ConditionLabel(b.tag)
-end)
+end
+table.sort(conditionsByGroup.family, byLabel)
 addConditionGroup("sex", conditionsByGroup.sex)
 addConditionGroup("foodType", conditionsByGroup.foodType)
 addConditionGroup("family", conditionsByGroup.family)
@@ -305,14 +345,17 @@ local function conditionNames(tags)
     return table.concat(names, ", ")
 end
 
+---@alias FeedPetEmotesRow {text: FontString, editButton: UIPanelButtonTemplate, removeButton: UIPanelCloseButton}
+
 ---One row per line, created when first needed and reused after that.
----@type {text: table, editButton: table, removeButton: table}[]
+---@type FeedPetEmotesRow[]
 local rows = {}
 
 ---The row at a position, made on first use: the line with its conditions in
 ---blue in front, an Edit button, and a small red X that removes it (its
 ---tooltip says so).
 ---@param index number
+---@return FeedPetEmotesRow
 local function rowAt(index)
     if rows[index] then return rows[index] end
     local text = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
@@ -337,8 +380,8 @@ local function rowAt(index)
         edit(nil)
         refresh()
     end)
-    removeButton:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    removeButton:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(removeButton, "ANCHOR_RIGHT")
         GameTooltip:SetText(L.OPTION_CUSTOM_REMOVE)
         GameTooltip:Show()
     end)
@@ -436,9 +479,7 @@ end
 
 saveButton:SetScript("OnClick", save)
 input:SetScript("OnEnterPressed", save)
-input:SetScript("OnEscapePressed", function(self)
-    self:ClearFocus()
-end)
+input:SetScript("OnEscapePressed", unfocus)
 cancelButton:SetScript("OnClick", function()
     edit(nil)
 end)
@@ -447,7 +488,7 @@ panel:SetScript("OnShow", function()
     for key, box in pairs(checkboxes) do
         box:SetChecked(E.db[key])
     end
-    local chance = E.db.customChance --[[@as number]]
+    local chance = E.db.customChance
     slider:SetValue(chance)
     -- SetValue only reports a change; the title must show an unchanged value too.
     showChance(chance)
@@ -455,6 +496,9 @@ panel:SetScript("OnShow", function()
     refresh()
 end)
 
+-- The language server types this Settings table only as `table`; the
+-- category is a SettingsCategoryMixin in Blizzard_Settings_Shared.
+---@type SettingsCategoryMixin
 local category = Settings.RegisterCanvasLayoutCategory(panel, L.OPTIONS_TITLE)
 Settings.RegisterAddOnCategory(category)
 
@@ -463,8 +507,8 @@ Settings.RegisterAddOnCategory(category)
 -- (PLAYER_REGEN_ENABLED) and opens it once; asking again meanwhile changes
 -- nothing.
 local afterCombat = CreateFrame("Frame")
-afterCombat:SetScript("OnEvent", function(self)
-    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+afterCombat:SetScript("OnEvent", function()
+    afterCombat:UnregisterEvent("PLAYER_REGEN_ENABLED")
     Settings.OpenToCategory(category:GetID())
 end)
 

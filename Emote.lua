@@ -4,6 +4,9 @@ local _, E = ...
 -- the sentence in front. No state of its own; it reads the pet, the item, the
 -- locale's tables and the player's own lines.
 
+---Adds the lines of `list`, if there is one, to the end of `pool`.
+---@param pool string[]
+---@param list string[]?
 local function append(pool, list)
     if type(list) ~= "table" then return end
     for _, line in ipairs(list) do
@@ -108,7 +111,7 @@ end
 
 ---"male", "female", or nil when the pet's sex is unknown or the player asked
 ---for the pet's name instead (/fpe name on).
----@return string?
+---@return "male"|"female"|nil
 local function pronounSex()
     if E.db.petName then return nil end
     local sex = E.PetSex()
@@ -131,15 +134,19 @@ end
 ---@return string
 function E.FillPlaceholders(line, pet, food)
     local sex = pronounSex()
-    local filled = line:gsub("{([^}]+)}", function(token)
+    ---What one {token} becomes.
+    ---@param token string
+    ---@return string
+    local function replace(token)
         if token == "food" and food then return food end
         local words = token ~= "pet" and E.Pronouns[token]
         if not words then return pet end
         if sex then return words[sex] end
         local unknown = words.unknown
-        if type(unknown) == "function" then return unknown(pet) end
-        return unknown and string.format(unknown, pet) or pet
-    end)
+        if type(unknown) == "string" then return string.format(unknown, pet) end
+        return unknown and unknown(pet) or pet
+    end
+    local filled = line:gsub("{([^}]+)}", replace)
     return filled
 end
 

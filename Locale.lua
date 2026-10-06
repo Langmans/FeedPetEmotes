@@ -19,6 +19,9 @@ local current = E.Locales[GetLocale()] or enUS
 E.LocaleCode = E.Locales[GetLocale()] and GetLocale() or "enUS"
 
 setmetatable(enUS.strings, {
+    ---@param _ table<string, string>
+    ---@param key string
+    ---@return string
     __index = function(_, key)
         return key
     end,
@@ -26,15 +29,19 @@ setmetatable(enUS.strings, {
 -- enUS must not get itself as __index: the lookup would chain forever.
 if current ~= enUS then setmetatable(current.strings, { __index = enUS.strings }) end
 
+---@type table<string, string>
 E.L = current.strings
+---@type FeedPetEmotesLines
 E.Emotes = current.emotes or enUS.emotes
 -- Pronoun placeholders go with the emote lines they appear in, never through
 -- the enUS fallback: an English "he" in a German line would be wrong, the
 -- pet's name is not.
+---@type table<string, FeedPetEmotesPronoun>
 E.Pronouns = current.emotes and current.pronouns or not current.emotes and enUS.pronouns or {}
 
 ---Formats a locale entry that is either a format string or a function.
 ---@param key string
+---@param ... string|number the values for the format's %s and %d
 ---@return string
 function E.Format(key, ...)
     -- Never nil: the metatables end in a function that returns the key.

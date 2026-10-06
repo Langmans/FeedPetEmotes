@@ -9,9 +9,20 @@ local _, E = ...
 
 E.FEED_PET_SPELL = 6991
 
+-- Set on ADDON_LOADED (E.LoadSettings, FeedPetEmotes.lua). Declared here so
+-- the language server knows their types in every file: a field first
+-- assigned inside a function is untyped to it.
+---@type FeedPetEmotesSettings
+E.db = nil
+---@type FeedPetEmotesAccountSettings
+E.accountDB = nil
+---Whether this character is a hunter, the only class with a pet to feed.
+---@type boolean
+E.isHunter = false
+
 ---False for a secret value (Forever hides some values in combat), true
 ---otherwise, including on clients without secret values.
----@param value any
+---@param value string|number|boolean|table|nil
 ---@return boolean
 function E.Public(value)
     return not issecretvalue or not issecretvalue(value)
@@ -53,8 +64,13 @@ local DEFAULTS = {
     customFallback = true, -- /fpe fallback on|off
 }
 
+---A value as the client reads it back from a SavedVariables file, before the
+---addon has checked it: anything a player or an older version may have left
+---there. One level of table is spelled out, as deep as the checks below look.
+---@alias SavedValue string|number|boolean|table<string|number|boolean, string|number|boolean|table>
+
 ---A list of own lines (CustomLines.lua) as saved: only its strings are kept.
----@param saved any
+---@param saved SavedValue?
 ---@return string[]
 local function cleanLines(saved)
     local lines = {}
@@ -68,7 +84,7 @@ end
 
 ---The per-pet sex choices as saved (/fpe sex): pet number -> 2 (male) or 3
 ---(female). Anything else is dropped; a pet without a choice has no entry.
----@param saved any
+---@param saved SavedValue?
 ---@return table<number, number>
 local function cleanPetSex(saved)
     local choices = {}
@@ -101,6 +117,7 @@ end
 function E.LoadSettings()
     ---@diagnostic disable-next-line: create-global
     if type(FeedPetEmotesDBPC) ~= "table" then FeedPetEmotesDBPC = {} end
+    ---@type FeedPetEmotesSettings
     local db = FeedPetEmotesDBPC
     -- customOnly (own lines only) is now a chance of 100%.
     if db.customOnly == true and db.customChance == nil then db.customChance = 100 end
@@ -118,8 +135,10 @@ function E.LoadSettings()
 
     ---@diagnostic disable-next-line: create-global
     if type(FeedPetEmotesDB) ~= "table" then FeedPetEmotesDB = {} end
-    FeedPetEmotesDB.customLines = cleanLines(FeedPetEmotesDB.customLines)
-    E.accountDB = FeedPetEmotesDB
+    ---@type FeedPetEmotesAccountSettings
+    local accountDB = FeedPetEmotesDB
+    accountDB.customLines = cleanLines(accountDB.customLines)
+    E.accountDB = accountDB
 end
 
 ---Removes the settings that equal their default, so the saved file keeps
