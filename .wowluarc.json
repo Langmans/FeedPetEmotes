@@ -2,6 +2,9 @@
     "flavors": ["forever", "classic_era", "classic"],
     "library": ["annotations/"],
     "ignore": ["tests/", "node_modules/", "coverage/"],
+    "globals": {
+        "write": ["FeedPetEmotesDB", "FeedPetEmotesDBPC"]
+    },
     "diagnostics": {
         "enable": [
             "need-check-nil",

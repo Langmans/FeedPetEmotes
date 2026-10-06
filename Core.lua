@@ -4,8 +4,8 @@ local _, E = ...
 -- needs E.L) and before every module that uses them.
 --
 -- Globals this file writes: FeedPetEmotesDB and FeedPetEmotesDBPC, the
--- SavedVariables from the .toc. The language server only knows them when it
--- reads the .toc, so each write carries a create-global exception.
+-- SavedVariables from the .toc. The WoW Lua LS only knows them when it reads
+-- the .toc, so .wowluarc.json lists them under globals.write as well.
 
 E.FEED_PET_SPELL = 6991
 
@@ -115,7 +115,6 @@ end
 ---shared by every character that ticks sharedLines. Called on ADDON_LOADED,
 ---when the client has filled in the saved tables.
 function E.LoadSettings()
-    ---@diagnostic disable-next-line: create-global
     if type(FeedPetEmotesDBPC) ~= "table" then FeedPetEmotesDBPC = {} end
     ---@type FeedPetEmotesSettings
     local db = FeedPetEmotesDBPC
@@ -133,7 +132,6 @@ function E.LoadSettings()
     db.customChance = math.max(0, math.min(100, math.floor(db.customChance + 0.5)))
     E.db = db
 
-    ---@diagnostic disable-next-line: create-global
     if type(FeedPetEmotesDB) ~= "table" then FeedPetEmotesDB = {} end
     ---@type FeedPetEmotesAccountSettings
     local accountDB = FeedPetEmotesDB
