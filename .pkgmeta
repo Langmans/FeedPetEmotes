@@ -10,6 +10,7 @@ manual-changelog:
 ignore:
   - annotations
   - coverage
+  - docs
   - media
   - node_modules
   - tests
