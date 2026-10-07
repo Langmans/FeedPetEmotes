@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Fixed: the options panel showed none of your settings (boxes unticked, the
+  chance slider without title or position) when it was opened right after
+  another addon's options panel.
+
 ## 1.1.0 - 2026-10-06
 
 - Your own emote lines: add them with `/fpe add <line>` or in the options
