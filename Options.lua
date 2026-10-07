@@ -9,8 +9,9 @@ local addonName, E = ...
 --     /fpe shared checkboxes, an editor
 --     (a text box, the conditions as checkboxes, Add or Save and Cancel), and
 --     the list of lines, each with an Edit button and a red X that removes it.
--- Everything is filled from E.db every time the panel is shown, so a change
--- made with /fpe in the meantime shows up; a click writes straight to E.db.
+-- Everything is filled from E.db every time the panel is shown (the settings
+-- window's OnRefresh, and OnShow), so a change made with /fpe in the meantime
+-- shows up; a click writes straight to E.db.
 -- The whole panel scrolls: the conditions and a long list do not fit the
 -- settings window otherwise. Registered through the Settings API, which every
 -- targeted flavor (Forever, Classic Era, Classic) has.
@@ -484,7 +485,7 @@ cancelButton:SetScript("OnClick", function()
     edit(nil)
 end)
 
-panel:SetScript("OnShow", function()
+local function fill()
     for key, box in pairs(checkboxes) do
         box:SetChecked(E.db[key])
     end
@@ -494,7 +495,16 @@ panel:SetScript("OnShow", function()
     showChance(chance)
     edit(nil)
     refresh()
-end)
+end
+
+-- The settings window calls OnRefresh each time it shows a canvas category
+-- (SettingsPanelMixin:DisplayLayout). OnShow alone is not enough: the window
+-- re-parents and Show()s the panel, but a frame that is already shown does
+-- not fire OnShow again, so opening this category right after another addon's
+-- canvas panel would leave every control empty. OnShow stays for any other
+-- way the panel gets shown.
+panel.OnRefresh = fill
+panel:SetScript("OnShow", fill)
 
 -- The language server types this Settings table only as `table`; the
 -- category is a SettingsCategoryMixin in Blizzard_Settings_Shared.

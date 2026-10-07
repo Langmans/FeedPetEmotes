@@ -212,7 +212,9 @@ In `.toc` order; all share the addon namespace `E`.
 - `Options.lua` — the options panel in the game's settings (`E.OpenOptions`):
   one scroll frame holding the version, author, license and website from the
   .toc (`GetAddOnMetadata`), the settings, the line editor with its condition
-  checkboxes, and the list of lines.
+  checkboxes, and the list of lines. Filled from the saved settings in
+  `panel.OnRefresh`, which the settings window calls every time it shows the
+  category (a frame that is already shown gets no new `OnShow`).
 - `SelfTest.lua` — `/fpe selftest` (`E.SelfTest`).
 - `Commands.lua` — `/fpe`: one function per subcommand in a `Commands`
   table, looked up by the slash handler like the event frame looks up its

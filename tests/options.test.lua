@@ -76,6 +76,23 @@ test("showing the panel fills the checkboxes from the saved settings", function(
     eq(boxes[5]:GetChecked(), 1)
 end)
 
+-- The settings window shows a canvas category with frame:Show() and then calls
+-- frame:OnRefresh(); a panel that is already shown gets no OnShow, so the
+-- controls must be filled from OnRefresh alone.
+test("the settings window's OnRefresh fills the panel without OnShow", function()
+    local client = NewClient({ savedDB = { enabled = true, customChance = 40 } }):login()
+    local slider
+    for _, frame in ipairs(client.frames) do
+        if frame.kind == "Slider" then slider = frame end
+    end
+    local panel = client.optionsPanel
+    eq(type(panel.OnRefresh), "function")
+    panel.OnRefresh(panel)
+    eq(checkboxes(client)[1]:GetChecked(), 1)
+    eq(slider:GetValue(), 40)
+    eq(slider.Text:GetText(), "Chance of an own line: 40%")
+end)
+
 test("a change made with /fpe shows the next time the panel opens", function()
     local client = NewClient():login()
     show(client)
