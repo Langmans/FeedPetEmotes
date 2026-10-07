@@ -1,8 +1,10 @@
 // Static checks: StyLua formatting, then WoW Lua LS diagnostics.
 //
-// WoW Lua LS ships inside its VS Code extension; the newest installed version
-// is used. Without the extension that check is skipped with a warning rather
-// than failing, so `npm run lint` still works on a machine without VS Code.
+// WoW Lua LS is taken from the WOWLUA_LS environment variable when set (CI
+// downloads the standalone binary from TradeSkillMaster/wowlua-ls releases);
+// a missing file there fails the check. Otherwise the binary inside the newest
+// installed VS Code extension is used, and without the extension the check is
+// skipped with a warning, so `npm run lint` still works without VS Code.
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
@@ -36,12 +38,18 @@ const versions = existsSync(extensions)
           .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     : [];
 const platform = { win32: "win32-x64", darwin: "darwin-x64", linux: "linux-x64" }[process.platform];
-const binary = versions.length
-    ? join(extensions, versions.at(-1), "server", platform, process.platform === "win32" ? "wowlua_ls.exe" : "wowlua_ls")
-    : null;
+const fromEnv = process.env.WOWLUA_LS;
+const binary = fromEnv
+    ? fromEnv
+    : versions.length
+      ? join(extensions, versions.at(-1), "server", platform, process.platform === "win32" ? "wowlua_ls.exe" : "wowlua_ls")
+      : null;
 
-if (binary && existsSync(binary)) {
-    const label = `WoW Lua LS (${versions.at(-1)})`;
+if (fromEnv && !existsSync(fromEnv)) {
+    console.log(color.red(`not ok - WoW Lua LS: WOWLUA_LS points at ${fromEnv}, which does not exist`));
+    failed = true;
+} else if (binary && existsSync(binary)) {
+    const label = `WoW Lua LS (${fromEnv ? "WOWLUA_LS" : versions.at(-1)})`;
     console.log(color.bold(`# ${label}`));
     // Captured rather than inherited, to read the type coverage from its summary.
     const result = spawnSync(binary, ["check", "."], { cwd: root, encoding: "utf8" });

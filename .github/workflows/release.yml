@@ -1,12 +1,18 @@
 # Pushing a tag (e.g. v1.0.0) runs the tests, then builds the zip with
 # BigWigsMods/packager, uploads it to CurseForge and attaches it to a GitHub
 # release. The CurseForge upload is skipped while the CF_API_KEY secret is unset.
+# Started by hand (workflow_dispatch) it only runs the checks.
 name: Release
 
 on:
   push:
     tags:
       - "*"
+  workflow_dispatch:
+
+env:
+  # Keep in step with the WoW Lua LS VS Code extension used locally.
+  WOWLUA_LS_VERSION: v0.34.1
 
 jobs:
   check:
@@ -18,9 +24,22 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # The standalone binary carries the WoW API data the extension keeps in server/stubs.
+      - name: Download WoW Lua LS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/wowlua-ls"
+          cd "$RUNNER_TEMP/wowlua-ls"
+          gh release download "$WOWLUA_LS_VERSION" -R TradeSkillMaster/wowlua-ls \
+            -p wowlua_ls-x86_64-unknown-linux-gnu -p checksums.txt
+          grep wowlua_ls-x86_64-unknown-linux-gnu checksums.txt | sha256sum -c -
+          chmod +x wowlua_ls-x86_64-unknown-linux-gnu
+          echo "WOWLUA_LS=$PWD/wowlua_ls-x86_64-unknown-linux-gnu" >> "$GITHUB_ENV"
       - run: npm run check
 
   release:
+    if: github.event_name == 'push'
     needs: check
     runs-on: ubuntu-latest
     permissions:
