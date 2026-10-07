@@ -2,7 +2,7 @@
 ## Title: Feed Pet Emotes
 ## Author: Langmans
 ## Notes: Sends a silly /emote whenever you feed your hunter pet, Feed-O-Matic style.
-## Version: 1.1.0
+## Version: 1.1.1
 ## SavedVariables: FeedPetEmotesDB
 ## SavedVariablesPerCharacter: FeedPetEmotesDBPC
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastTraining

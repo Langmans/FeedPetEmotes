@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.1 - 2026-10-07
 
 - Fixed: the options panel showed none of your settings (boxes unticked, the
   chance slider without title or position) when it was opened right after
