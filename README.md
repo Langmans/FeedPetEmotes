@@ -332,9 +332,12 @@ Needs Node.js. `npm install` once, then:
 - `npm test` — runs `tests/*.test.lua` against a simulated WoW client
   (`tests/wow.lua`) in fengari, a Lua VM in JavaScript, and prints line
   coverage per file; `coverage/lcov.info` is written for editor plugins.
-  `npm test feeding` runs only the files whose name contains `feeding`.
+  A full run fails below 100% line coverage.
+  `npm test feeding` runs only the files whose name contains `feeding`
+  (not held to the coverage minimum).
 - `npm run lint` — StyLua formatting check, then WoW Lua LS diagnostics
-  (taken from its VS Code extension; skipped if that is not installed).
+  (taken from its VS Code extension; skipped if that is not installed). Fails
+  when the LS reports a type coverage below 100%.
 - `npm run format` — formats all Lua with StyLua.
 - `npm run check` — lint, then tests.
 
