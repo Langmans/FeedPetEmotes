@@ -4,7 +4,7 @@
 ---The line after "feeds <pet> ... " in the last emote sent.
 local function sentLine(client)
     local text = client:lastSent().text
-    return text:match("^feeds Fluffy a .-|h|r%. (.*)$") or text:match("^feeds Fluffy%. (.*)$") or text
+    return text:match("^feeds Fluffy %a+ .-|h|r%. (.*)$") or text:match("^feeds Fluffy%. (.*)$") or text
 end
 
 ---Own lines at a chance of 100%, so the emote is predictable.

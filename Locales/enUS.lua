@@ -5,10 +5,42 @@ local F = E.Family
 -- locale without emotes uses these lines (see Locale.lua).
 -- Emote lines from Feed-O-Matic unless marked otherwise.
 
----"a" or "an" for a food's plain name.
+-- Head nouns that take "some": food you do not count (meat, bread, cheese
+-- names, mold). Plurals ("Deep Fried Plantains") take it as well.
+local UNCOUNTED = {
+    meat = true,
+    jerky = true,
+    bread = true,
+    cornbread = true,
+    butter = true,
+    cheese = true,
+    cheddar = true,
+    skycheddar = true,
+    brie = true,
+    bleu = true,
+    swiss = true,
+    sharp = true,
+    mild = true,
+    mold = true,
+    chili = true,
+    sludge = true,
+    boar = true,
+    stew = true,
+    soup = true,
+    jelly = true,
+    rice = true,
+}
+
+---"a", "an" or "some" for a food's plain name. The head noun decides: the
+---word before "of" or "with" ("Haunch of Meat" -> Haunch, "Bread with
+---Butter" -> Bread), else the last word. Uncounted food and plurals take
+---"some"; otherwise the first letter picks "a" or "an".
 ---@param name string
 ---@return string
 local function article(name)
+    local head = (name:match("^(.-) of ") or name:match("^(.-) with ") or name):match("(%S+)$") or name
+    head = head:lower()
+    if UNCOUNTED[head] or (head:match("s$") and not head:match("[su]s$")) then return "some" end
     return name:match("^[AEIOUaeiou]") and "an" or "a"
 end
 

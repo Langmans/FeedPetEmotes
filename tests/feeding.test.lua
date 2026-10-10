@@ -10,7 +10,7 @@ test("feeding sends one emote naming the pet and the food", function()
     client:feed(12037)
     eq(#client.sent, 1)
     eq(client.sent[1].kind, "EMOTE")
-    local line = emoteLine(client, client.sent[1], "feeds Fluffy a " .. ItemLink(12037) .. ". ")
+    local line = emoteLine(client, client.sent[1], "feeds Fluffy some " .. ItemLink(12037) .. ". ")
     -- The pool holds lines with their placeholders ({boy}, {his}) unfilled.
     local filled = {}
     for i, pooled in ipairs(client.E.EmotePool(12037)) do
@@ -45,7 +45,7 @@ test("food picked as Feed Pet's target wins over an earlier dragged item", funct
     client:pickUp(4536)
     client:release()
     client:feed(117)
-    startsWith(client:lastSent().text, "feeds Fluffy a " .. ItemLink(117) .. ". ")
+    startsWith(client:lastSent().text, "feeds Fluffy some " .. ItemLink(117) .. ". ")
 end)
 
 test("a secret item ID on the cursor is ignored", function()
@@ -339,7 +339,7 @@ test("/fpe test previews locally and sends nothing", function()
     local client = NewClient():login()
     client:slash("test")
     eq(#client.sent, 0)
-    ok(client:printedContains("Langmans feeds Fluffy a " .. ItemLink(12037) .. ". "), "no preview printed")
+    ok(client:printedContains("Langmans feeds Fluffy some " .. ItemLink(12037) .. ". "), "no preview printed")
 end)
 
 test("/fpe test without a pet says so", function()

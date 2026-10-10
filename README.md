@@ -4,7 +4,7 @@ Sends a random `/emote` every time you feed your hunter pet, the way
 [Fizzwidget Feed-O-Matic](https://github.com/fizzwidget/feed-o-matic) did in
 2008:
 
-> Langmans feeds Fluffy a Mystery Meat. Tastes like well-aged gnome.
+> Langmans feeds Fluffy some Mystery Meat. Tastes like well-aged gnome.
 
 It works with any way of feeding: Gideon's Feed Pet: Forever button, a macro,
 casting Feed Pet from the spellbook and clicking food, or dragging food onto
@@ -85,8 +85,9 @@ The same settings, and a few extras, are available as chat commands
 
 ## Your own lines
 
-Your own lines come after "feeds Fluffy a Mystery Meat." just like the
-built-in ones.
+Your own lines come after the first sentence ("feeds Fluffy some Mystery
+Meat." or one of the other openings, like "tosses Fluffy some Mystery
+Meat.") just like the built-in ones.
 
 Each character has its own list. Tick **Share my lines with all characters**
 (or `/fpe shared on`) to use one list shared by every character on the
@@ -131,7 +132,7 @@ every line counting the same.
 When an emote wants one of your lines but none fits (say all of them are
 `[wolf]` lines and you are feeding your cat), it uses a built-in line. Untick
 **Use a built-in line when none of mine fits** (or `/fpe fallback off`) and it
-says only "feeds Fluffy a Mystery Meat." instead.
+says only the first sentence ("feeds Fluffy some Mystery Meat.") instead.
 
 ### Conditions
 

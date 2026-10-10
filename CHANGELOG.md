@@ -6,12 +6,15 @@
   game for the summoned pet, the same choice as `/fpe sex`.
 - The sex chosen for a pet you have since released is forgotten at the next
   login.
-- More variety in English and German: instead of always "feeds Fluffy a
-  Mystery Meat.", the emote often starts differently ("tosses Fluffy a ...",
-  "bribes Fluffy with a ..."), and some emotes are a small scene of their own
-  ("turns around for one second. The Mystery Meat is gone, and Fluffy looks
-  very innocent."), including two per pet family ("puts a Mystery Meat on
-  the table. Fluffy knocks it off, then eats it off the floor.").
+- More variety in English and German: instead of always "feeds Fluffy ...",
+  the emote often starts differently ("tosses Fluffy a ...", "bribes Fluffy
+  with a ..."), and some emotes are a small scene of their own ("turns around
+  for one second. The Mystery Meat is gone, and Fluffy looks very
+  innocent."), including two per pet family ("puts some Mystery Meat on the
+  table. Fluffy knocks it off, then eats it off the floor.").
+- English says "some" for food you do not count and plurals: "feeds Fluffy
+  some Mystery Meat", "some Alterac Swiss", "some Deep Fried Plantains",
+  while "a Haunch of Meat" keeps its "a".
 
 ## 1.1.1 - 2026-10-07
 

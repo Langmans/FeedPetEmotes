@@ -53,17 +53,41 @@ end)
 
 test("English picks a or an from the food name", function()
     local E = NewClient().E
-    eq(E.Format("FEED", "Fluffy", "Mystery Meat"), "feeds Fluffy a Mystery Meat. ")
+    eq(E.Format("FEED", "Fluffy", "Rockscale Cod"), "feeds Fluffy a Rockscale Cod. ")
     eq(E.Format("FEED", "Fluffy", "Apple"), "feeds Fluffy an Apple. ")
     eq(E.Format("FEED", "Fluffy", "egg"), "feeds Fluffy an egg. ")
 end)
 
-test("English takes a or an from the name inside an item link", function()
+test("English says some for uncounted food and plurals, going by the head noun", function()
+    local E = NewClient().E
+    local cases = {
+        ["Mystery Meat"] = "some",
+        ["Tough Jerky"] = "some",
+        ["Alterac Swiss"] = "some",
+        ["Delicious Cave Mold"] = "some",
+        ["Deep Fried Plantains"] = "some",
+        ["Bread with Butter"] = "some",
+        ["Haunch of Meat"] = "a",
+        ["Tough Hunk of Bread"] = "a",
+        ["Moon Harvest Pumpkin"] = "a",
+        ["Spongy Morel"] = "a",
+        ["Deeprun Rat Kabob"] = "a",
+        ["Raw Rainbow Fin Albacore"] = "a",
+        ["Tel'Abim Banana"] = "a",
+        ["Glass"] = "a",
+        ["Octopus"] = "an",
+    }
+    for name, expected in pairs(cases) do
+        eq(E.Format("ARTICLE", name), expected, name)
+    end
+end)
+
+test("English takes the article from the name inside an item link", function()
     local E = NewClient().E
     local apple = "|cffffffff|Hitem:4536::::::::60:::::|h[Apple]|h|r"
     local jerky = "|cffffffff|Hitem:117::::::::60:::::|h[Tough Jerky]|h|r"
     eq(E.Format("FEED", "Fluffy", apple), "feeds Fluffy an " .. apple .. ". ")
-    eq(E.Format("FEED", "Fluffy", jerky), "feeds Fluffy a " .. jerky .. ". ")
+    eq(E.Format("FEED", "Fluffy", jerky), "feeds Fluffy some " .. jerky .. ". ")
 end)
 
 test("esMX uses the esES file", function()
