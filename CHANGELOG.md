@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 - 2026-10-10
 
 - Fixed: feeding could give an "AddOn tried to call the protected function"
   error instead of an emote. WoW: Forever only lets an addon send chat as
@@ -12,7 +12,6 @@
 - Optional support for the MessageQueue addon: when it is installed, it
   holds the emote until your next input of any kind (any click, the mouse
   wheel, a gamepad, or a key from its AutoHotkey helper).
-
 - The options panel has a "Your pet's sex" section: male, female or from the
   game for the summoned pet, the same choice as `/fpe sex`.
 - The sex chosen for a pet you have since released is forgotten at the next
