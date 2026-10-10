@@ -20,6 +20,12 @@ local function sendEmote(itemID)
         Debug("no emote: no chat send function")
         return
     end
+    -- An emote that arrives after the fight would be out of place, so it is
+    -- dropped rather than kept for later.
+    if E.ChatLocked() then
+        Debug("no emote: the client blocks addon chat right now (chat messaging lockdown)")
+        return
+    end
     Debug("sending via " .. how)
     sendChat(text, "EMOTE")
 end

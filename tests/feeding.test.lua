@@ -264,6 +264,24 @@ test("without any chat send function nothing is sent and debug says why", functi
     ok(client:printedContains("send function: missing"))
 end)
 
+-- Forever blocks an addon's chat send while chat messaging is locked down
+-- (ADDON_ACTION_BLOCKED); the emote is dropped instead of being attempted.
+test("during chat messaging lockdown no emote is attempted and debug says why", function()
+    local client = NewClient():login()
+    client:slash("debug")
+    client.chatLocked = true
+    client:feed(12037)
+    client:settle()
+    eq(#client.sent, 0)
+    eq(client.blocked, nil, "a send was attempted")
+    ok(client:printedContains("no emote: the client blocks addon chat right now"))
+    client:slash("selftest")
+    ok(client:printedContains("chat locked: yes"))
+    client.chatLocked = false
+    client:feed(12037)
+    eq(#client.sent, 1)
+end)
+
 test("a food whose item ID is secret is not named", function()
     local client = NewClient():login()
     client:slash("debug")
@@ -359,7 +377,7 @@ test("/fpe selftest reports pet, family and the feeding path without sending", f
     local client = NewClient():login()
     client:slash("selftest")
     ok(client:printedContains("Client 1.60.1 (70170), interface 16001, locale enUS, using enUS."))
-    ok(client:printedContains("send function: C_ChatInfo.SendChatMessage; secret values: yes."))
+    ok(client:printedContains("send function: C_ChatInfo.SendChatMessage; chat locked: no; secret values: yes."))
     ok(client:printedContains("Feed Pet known: true"))
     ok(client:printedContains("Pet Fluffy: family Cat, id 2, sex 2."))
     ok(client:printedContains("No food picked since login"))

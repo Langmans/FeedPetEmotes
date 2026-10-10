@@ -51,6 +51,17 @@ function E.SendFunction()
     return nil, "missing"
 end
 
+---Whether the client blocks addons from sending chat right now. Sending
+---chat is a restricted action on Forever: while
+---C_ChatInfo.InChatMessagingLockdown() is true (combat and the like) an
+---addon's send is blocked with ADDON_ACTION_BLOCKED. False on clients
+---without that check.
+---@return boolean
+function E.ChatLocked()
+    local inLockdown = C_ChatInfo and C_ChatInfo.InChatMessagingLockdown
+    return inLockdown and inLockdown() or false
+end
+
 -- Saved per character. The saved file keeps only what the player changed:
 -- E.db reads a missing value from here through a metatable, and
 -- E.StripDefaults removes values equal to their default at logout. A default

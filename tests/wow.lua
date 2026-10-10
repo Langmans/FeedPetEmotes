@@ -198,7 +198,20 @@ function NewClient(opts)
         C_ChatInfo = nil
         SendChatMessage = capture
     else
-        C_ChatInfo = { SendChatMessage = capture }
+        -- client.chatLocked: Forever's chat messaging lockdown; while it is
+        -- on, an addon's send is blocked (recorded in client.blocked).
+        C_ChatInfo = {
+            SendChatMessage = function(text, kind)
+                if client.chatLocked then
+                    client.blocked = (client.blocked or 0) + 1
+                    return
+                end
+                capture(text, kind)
+            end,
+            InChatMessagingLockdown = function()
+                return client.chatLocked == true
+            end,
+        }
         SendChatMessage = nil
     end
     DEFAULT_CHAT_FRAME = {

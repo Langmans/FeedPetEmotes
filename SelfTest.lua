@@ -31,9 +31,10 @@ function E.SelfTest()
     local _, how = E.SendFunction()
     Print(
         string.format(
-            "Emotes %s; send function: %s; secret values: %s.",
+            "Emotes %s; send function: %s; chat locked: %s; secret values: %s.",
             db.enabled and "on" or "off",
             how,
+            E.ChatLocked() and "yes" or "no",
             issecretvalue and "yes" or "no"
         )
     )

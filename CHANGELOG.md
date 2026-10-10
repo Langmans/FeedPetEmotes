@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Fixed: feeding while the game blocks addon chat (in combat, for instance)
+  gave an "AddOn tried to call the protected function" error. The emote is
+  now skipped then; `/fpe debug` says so and `/fpe selftest` shows whether
+  chat is locked.
+
 - The options panel has a "Your pet's sex" section: male, female or from the
   game for the summoned pet, the same choice as `/fpe sex`.
 - The sex chosen for a pet you have since released is forgotten at the next
