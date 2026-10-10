@@ -13,6 +13,16 @@ local _, E = ...
 -- and passes every key on (SetPropagateKeyboardInput), so it never eats a
 -- key; it is only shown while an emote waits. Clicks come from a hook on the
 -- game world's OnMouseDown.
+--
+-- With the MessageQueue addon loaded (an optional dependency), the emote is
+-- handed to MessageQueue.Enqueue instead, and the key frame stays hidden.
+-- MessageQueue catches more kinds of input (any click, the mouse wheel, a
+-- gamepad, or a key sent by its AutoHotkey helper) with a screen-wide frame
+-- that swallows mouse input while something waits; that is its own design.
+-- Its MessageQueue.SendChatMessage only queues SAY, YELL and CHANNEL and
+-- would send an EMOTE at once (and be blocked), hence Enqueue with Flush.
+-- MessageQueue keeps the entry until its next hardware event even after
+-- MAX_WAIT; Flush then finds nothing to send.
 
 local Debug = E.Debug
 
@@ -78,14 +88,28 @@ function Sender:Flush(how)
     sendChat(text, "EMOTE")
 end
 
+---MessageQueue's Enqueue when that addon is loaded, else nil.
+---@return fun(f: fun())?
+local function messageQueue()
+    return MessageQueue and MessageQueue.Enqueue
+end
+
 ---Holds `text` until the next key press or click; a newer emote replaces one
 ---still waiting.
 ---@param text string
 function Sender:Queue(text)
     local queuedAt = GetTime()
     self.text, self.queuedAt = text, queuedAt
-    if propagating then keys:Show() end
-    Debug("emote ready; it is sent on your next key press or click")
+    local enqueue = messageQueue()
+    if enqueue then
+        enqueue(function()
+            self:Flush("MessageQueue")
+        end)
+        Debug("emote ready; MessageQueue sends it on your next input")
+    else
+        if propagating then keys:Show() end
+        Debug("emote ready; it is sent on your next key press or click")
+    end
     -- Expiry without a key press: hide the frame again so it does not stay
     -- in the keyboard chain.
     C_Timer.After(MAX_WAIT + 0.5, function()

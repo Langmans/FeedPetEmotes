@@ -20,7 +20,10 @@ Forever rather than a replacement, and both can be installed side by side.
 - The emote goes out on your next key press or click after the feeding, not
   the moment the cast lands: WoW: Forever only lets an addon send chat as
   part of something you do. Moving, or any other key, is enough; without one
-  within ten seconds the emote is skipped.
+  within ten seconds the emote is skipped. With the
+  [MessageQueue](https://github.com/LenweSaralonde/MessageQueue) addon
+  installed, it does the waiting instead: any click, the mouse wheel or a
+  gamepad counts too, and its AutoHotkey helper can press a key for you.
 - Lines fit the situation: some for every pet, some for the kind of food
   (bread, meat, fish, cheese, fruit, mushrooms, and a few special foods), and
   some for each of the 17 pet families you can tame, from "Nice kitty!" to
@@ -225,6 +228,9 @@ In `.toc` order; all share the addon namespace `E`.
   an emote waits, passing every key on with `SetPropagateKeyboardInput`) or
   click in the game world (`WorldFrame` `OnMouseDown`). It is dropped after
   10 seconds, or when `C_ChatInfo.InChatMessagingLockdown()` is true then.
+  With MessageQueue loaded (`## OptionalDeps`), `Queue` hands
+  `MessageQueue.Enqueue` a function that calls `Flush`, and the key frame
+  stays hidden; its `SendChatMessage` would not queue an EMOTE.
 - `Options.lua` — the options panel in the game's settings (`E.OpenOptions`):
   one scroll frame holding the version, author, license and website from the
   .toc (`GetAddOnMetadata`), the settings, the line editor with its condition

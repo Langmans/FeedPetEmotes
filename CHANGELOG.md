@@ -9,6 +9,9 @@
   comes within ten seconds. It is also skipped while the game blocks addon
   chat altogether (in combat, for instance); `/fpe debug` says why, and
   `/fpe selftest` shows whether chat is locked.
+- Optional support for the MessageQueue addon: when it is installed, it
+  holds the emote until your next input of any kind (any click, the mouse
+  wheel, a gamepad, or a key from its AutoHotkey helper).
 
 - The options panel has a "Your pet's sex" section: male, female or from the
   game for the summoned pet, the same choice as `/fpe sex`.

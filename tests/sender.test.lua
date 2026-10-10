@@ -87,6 +87,40 @@ test("a newer feeding replaces an emote still waiting", function()
     ok(client.sent[1].text:find("Second%.$"), client.sent[1].text)
 end)
 
+test("with MessageQueue loaded the emote goes through its queue", function()
+    local client = NewClient({ messageQueue = true }):login()
+    client:slash("debug")
+    local keys
+    for _, frame in ipairs(client.frames) do
+        if frame.scripts.OnKeyDown then keys = frame end
+    end
+    client:feed(12037)
+    eq(#client.messageQueue, 1)
+    eq(keys:IsShown(), false, "MessageQueue watches the input, not the key frame")
+    ok(client:printedContains("MessageQueue sends it on your next input"))
+    client:runMessageQueue()
+    eq(#client.sent, 1)
+    eq(client.sent[1].kind, "EMOTE")
+    ok(client:printedContains("sending on MessageQueue via C_ChatInfo.SendChatMessage"))
+end)
+
+test("with MessageQueue, a late run after the timeout sends nothing", function()
+    local client = NewClient({ messageQueue = true }):login()
+    client:feed(12037)
+    client:advance(11)
+    client:runMessageQueue()
+    eq(#client.sent, 0)
+end)
+
+test("with MessageQueue, two feedings send only the newer emote", function()
+    local client = NewClient({ messageQueue = true }):login()
+    client:feed(12037)
+    client:feed(117)
+    client:runMessageQueue()
+    eq(#client.sent, 1)
+    ok(client.sent[1].text:find(ItemLink(117), 1, true), client.sent[1].text)
+end)
+
 test("chat locked at the key press drops the emote without trying", function()
     local client = NewClient():login()
     client:slash("debug")

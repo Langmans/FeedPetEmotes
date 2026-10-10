@@ -5,6 +5,7 @@
 ## Version: 1.1.1
 ## SavedVariables: FeedPetEmotesDB
 ## SavedVariablesPerCharacter: FeedPetEmotesDBPC
+## OptionalDeps: MessageQueue
 ## IconTexture: Interface\Icons\Ability_Hunter_BeastTraining
 ## X-License: MIT
 ## X-Website: https://www.curseforge.com/wow/addons/feedpetemotes

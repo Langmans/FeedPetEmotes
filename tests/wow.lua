@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?, variety: boolean?, inCombat: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?, variety: boolean?, inCombat: boolean?, messageQueue: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -338,6 +338,19 @@ function NewClient(opts)
         return frame
     end
 
+    -- opts.messageQueue: the MessageQueue addon is loaded; its queue runs on
+    -- client:runMessageQueue(), as on the player's next input.
+    client.messageQueue = {}
+    if opts.messageQueue then
+        MessageQueue = {
+            Enqueue = function(f)
+                client.messageQueue[#client.messageQueue + 1] = f
+            end,
+        }
+    else
+        MessageQueue = nil
+    end
+
     -- The game world: Sender.lua hooks its clicks (client:clickWorld).
     UIParent = newRegion()
     WorldFrame = newRegion()
@@ -514,6 +527,13 @@ function NewClient(opts)
     function client:pressKey(key)
         for _, frame in ipairs(self.frames) do
             if frame.shown and frame.scripts.OnKeyDown then frame.scripts.OnKeyDown(frame, key or "W") end
+        end
+    end
+
+    ---MessageQueue's run on a hardware event: every queued function, in order.
+    function client:runMessageQueue()
+        while #self.messageQueue > 0 do
+            table.remove(self.messageQueue, 1)()
         end
     end
 
