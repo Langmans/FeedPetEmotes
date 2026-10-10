@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?, variety: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -359,6 +359,16 @@ function NewClient(opts)
         chunk("FeedPetEmotes", E)
     end
     client.E = E
+    -- The openings and whole sentences are picked at random; most tests read
+    -- the plain FEED sentence and a line, so they are off unless a test asks
+    -- for them (opts.variety).
+    if not opts.variety then
+        for _, locale in pairs(E.Locales) do
+            if locale.emotes then
+                locale.emotes.openings, locale.emotes.whole = nil, nil
+            end
+        end
+    end
 
     ---Delivers an event to every frame registered for it.
     function client:fire(event, ...)

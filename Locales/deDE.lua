@@ -122,6 +122,36 @@ E.Locales.deDE = {
             "Treue: gekauft und bezahlt.",
             "Mahlzeit!",
         },
+        -- The food's name stands after a colon or in brackets: an item name in
+        -- the middle of a German sentence would need its case and article,
+        -- which the game does not give. Each opening ends with the pet having
+        -- its food, so any line can follow.
+        openings = {
+            "wirft {pet} einen Happen zu: {food}.",
+            "legt {pet} etwas in den Napf: {food}.",
+            "reicht {pet} eine Belohnung: {food}.",
+            "lässt {pet} etwas aus der Tasche stibitzen: {food}.",
+            "steckt {pet} heimlich etwas zu: {food}.",
+            "wirft etwas in die Luft, und {pet} fängt es: {food}.",
+            "belohnt {pet} mit etwas Feinem: {food}.",
+            "füttert {pet} aus der Hand: {food}.",
+            "serviert {pet} das Tagesmenü: {food}.",
+            "besticht {pet} mit einem Leckerbissen: {food}.",
+            "hält {pet} etwas vor die Nase, und schon ist es weg: {food}.",
+            "gönnt {pet} einen verdienten Snack: {food}.",
+        },
+        whole = {
+            "und {pet} liefern sich ein Blickduell. Der Preis: {food}. {pet} gewinnt.",
+            "will mit {pet} teilen ({food}). {pet} hält nichts vom Teilen.",
+            "dreht sich eine Sekunde um. {food}: weg. {pet}: völlig unschuldig.",
+            "hält {pet} etwas hin ({food}). {pet} nimmt es, samt halbem Handschuh.",
+            "lässt etwas fallen ({food}). Es berührt nie den Boden: {pet} ist schneller.",
+            "gibt {pet} etwas ({food}) und erntet einen Blick: Das war's?",
+            "versteckt etwas in der Tasche ({food}). {pet} findet es in zwei Sekunden.",
+            "zählt bis drei, bevor {pet} etwas bekommt ({food}). {pet} zählt schneller.",
+            "schneidet etwas in kleine Happen ({food}). {pet} schluckt alles am Stück.",
+            "sagt {pet}, {er} soll Sitz machen ({food}). {pet} springt direkt zum Fressen.",
+        },
         male = { "Guter Junge!", "Braver Junge!", "Schluss mit Herrn Griesgram!" },
         female = { "Gutes Mädchen!", "Braves Mädchen!", "Schluss mit Frau Griesgram!" },
         food = {

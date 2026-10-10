@@ -4,18 +4,27 @@ local F = E.Family
 -- The fallback locale: every other locale falls back to these strings, and a
 -- locale without emotes uses these lines (see Locale.lua).
 -- Emote lines from Feed-O-Matic unless marked otherwise.
+
+---"a" or "an" for a food's plain name.
+---@param name string
+---@return string
+local function article(name)
+    return name:match("^[AEIOUaeiou]") and "an" or "a"
+end
+
 E.Locales.enUS = {
     strings = {
-        -- The /emote text in front of the random line.
+        -- The /emote text in front of the random line; one of the openings
+        -- below takes its place now and then.
         ---@param pet string
         ---@param food string
         ---@return string
         FEED = function(pet, food)
             -- food is an item link or a plain name; the article follows the name.
-            local name = food:match("|h%[(.-)%]|h") or food
-            local article = name:match("^[AEIOUaeiou]") and "an" or "a"
-            return string.format("feeds %s %s %s. ", pet, article, food)
+            return string.format("feeds %s %s %s. ", pet, article(food:match("|h%[(.-)%]|h") or food), food)
         end,
+        -- {a} in the openings and whole sentences.
+        ARTICLE = article,
         FEED_NO_FOOD = "feeds %s. ",
 
         CHAT_PREFIX = "Feed Pet Emotes:",
@@ -170,6 +179,40 @@ E.Locales.enUS = {
             "That one comes out of your loot share.",
             "Another satisfied customer.",
             "Loyalty: bought and paid for.",
+        },
+        -- Openings and whole sentences were written for this addon. An opening
+        -- takes FEED's place: {a} {food} is the article and the item link.
+        -- Each ends with the pet having its food, so any line can follow.
+        openings = {
+            "tosses {pet} {a} {food}.",
+            "drops {a} {food} into {pet}'s bowl.",
+            "hands {pet} {a} {food}.",
+            "lets {pet} snatch {a} {food} right out of the bag.",
+            "slips {pet} {a} {food} when nobody is looking.",
+            "throws {a} {food} in the air, and {pet} catches it.",
+            "rewards {pet} with {a} {food}.",
+            "feeds {pet} {a} {food} by hand.",
+            "puts down {a} {food}, and {pet} pounces on it.",
+            "offers {pet} {a} {food} with a little bow.",
+            "serves {pet} {a} {food}, fresh from the bag.",
+            "bribes {pet} with {a} {food}.",
+            "treats {pet} to {a} {food}.",
+            "waves {a} {food} under {pet}'s nose, just long enough for a grab.",
+            "gives {pet} {a} {food} as a well-earned snack.",
+        },
+        -- A whole emote on its own, no FEED and no line after it.
+        whole = {
+            "and {pet} have a staring contest over {a} {food}. {pet} wins.",
+            "tries to share {a} {food} with {pet}. {pet} does not believe in sharing.",
+            "turns around for one second. The {food} is gone, and {pet} looks very innocent.",
+            "holds out {a} {food}. {pet} takes it, and most of the glove.",
+            "asks {pet} to sit for {a} {food}. {pet} skips straight to the eating part.",
+            "drops {a} {food}. It never touches the ground: {pet} is faster.",
+            "gives {pet} {a} {food} and gets a look that says: that's it?",
+            "hides {a} {food} in a pocket. {pet} finds it in two seconds.",
+            "counts to three before giving {pet} {a} {food}. {pet} counts faster.",
+            "cuts {a} {food} into neat little bites. {pet} swallows it whole.",
+            "watches {pet} wolf down {a} {food} before {he} even sniffs it.",
         },
         male = { "Good boy!", "Atta boy!", "No more Mister Grumpy!" },
         female = { "Good girl!", "Atta girl!", "No more Miss Grumpy!" },

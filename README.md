@@ -14,7 +14,9 @@ Forever rather than a replacement, and both can be installed side by side.
 ## What it says
 
 - The emote names the food your pet ate (as a clickable item link) and adds a
-  random line.
+  random line. In English and German it does not always start with "feeds
+  Fluffy a ...": it may toss, hand or bribe instead, and now and then the
+  whole emote is a small scene of its own.
 - Lines fit the situation: some for every pet, some for the kind of food
   (bread, meat, fish, cheese, fruit, mushrooms, and a few special foods), and
   some for each of the 17 pet families you can tame, from "Nice kitty!" to
@@ -271,6 +273,13 @@ strings are dropped. A line is saved as one string, its conditions first:
   then just the "feeds ..." sentence). A saved line with a tag the addon
   does not know is skipped. If the food is not known the emote just says
   "feeds <pet>.", and own lines with `{food}` are left out.
+- The sentence in front (`E.BuildEmote`) is the locale's `FEED`, or one of
+  its `emotes.openings` ("tosses Fluffy a ..."), picked at random with `FEED`
+  counting as one of them. Every opening ends with the pet having its food,
+  so any line can follow it. A locale's `emotes.whole` sentences ("turns
+  around for one second. The ... is gone") join the built-in lines when the
+  food is known; when one is picked it is the whole emote, with no sentence
+  in front. Only enUS and deDE have openings and whole sentences.
 - Pet families are matched on the CreatureFamily ID (second return of
   `UnitCreatureFamily`), which is the same on every client language.
 - The pet's sex (`E.PetSex`) is the player's `/fpe sex` choice when there is
@@ -306,8 +315,11 @@ the chat messages) and `emotes`.
   never mixes in English, it just has fewer lines.
 - Placeholders in emote lines (`E.FillPlaceholders`):
   - `{pet}` is always the pet's name.
-  - `{food}` is the food's plain name (not the link, which is already in
-    the sentence in front). Only the player's own lines use it.
+  - `{food}` is the food's plain name in a line (not the link, which is
+    already in the sentence in front); the player's own lines use it. In an
+    opening or whole sentence it is the item link, and `{a}` the article for
+    the food's name (`ARTICLE`, enUS only; deDE puts the link after a colon
+    or in brackets, since a German item name would need its case).
   - Any other `{token}` is a pronoun from the locale's own `pronouns` table,
     e.g. enUS `{he}` → he/she, `{boy}` → boy/girl and `{his}` → his/her
     (its `unknown` field, a format or a function of the name, gives

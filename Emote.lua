@@ -45,7 +45,9 @@ end
 
 ---The lines that apply to feeding the current pet this item, in two lists:
 ---the player's own lines whose conditions hold (without their conditions),
----and the built-in ones. A line with {food} needs the food's name.
+---and the built-in ones. A line with {food} needs the food's name; so do
+---the locale's whole sentences (emotes.whole), which join the built-in
+---lines when the food is known (see E.BuildEmote).
 ---@param itemID number?
 ---@param foodName string? the food's name, nil when it is not known
 ---@return string[] own
@@ -70,6 +72,7 @@ function E.LinePools(itemID, foodName)
     if group then append(builtIn, emotes.food[group]) end
     if situation.foodType and emotes.foodType then append(builtIn, emotes.foodType[situation.foodType]) end
     if situation.family then append(builtIn, emotes.family[situation.family]) end
+    if foodName then append(builtIn, emotes.whole) end
     return own, builtIn
 end
 
@@ -128,17 +131,21 @@ end
 ---%s for the name, or a function of the name when one format is not enough
 ---(German "Fluffys" but "Boris'"). Function replacements, so a % in a name
 ---is never read as a capture reference.
+---An opening or whole sentence (E.BuildEmote) passes the item link as `food`
+---and the article for the food's name as `article`, which fills {a}.
 ---@param line string
 ---@param pet string
 ---@param food string?
+---@param article string?
 ---@return string
-function E.FillPlaceholders(line, pet, food)
+function E.FillPlaceholders(line, pet, food, article)
     local sex = pronounSex()
     ---What one {token} becomes.
     ---@param token string
     ---@return string
     local function replace(token)
         if token == "food" and food then return food end
+        if token == "a" and article then return article end
         local words = token ~= "pet" and E.Pronouns[token]
         if not words then return pet end
         if sex then return words[sex] end
@@ -150,7 +157,36 @@ function E.FillPlaceholders(line, pet, food)
     return filled
 end
 
----The full /emote text, or nil when the pet's name is unavailable.
+---True when `line` is one of the locale's whole sentences.
+---@param line string
+---@return boolean
+local function isWhole(line)
+    for _, whole in ipairs(E.Emotes.whole or {}) do
+        if whole == line then return true end
+    end
+    return false
+end
+
+---The sentence in front of the line: FEED or one of the locale's openings
+---(emotes.openings), picked at random with FEED counting as one of them.
+---Every opening ends with the pet having its food, so any line can follow.
+---Without a known food it is always FEED_NO_FOOD.
+---@param pet string
+---@param food string? the item link, or the plain name without one
+---@param article string? for {a}
+---@return string
+local function opening(pet, food, article)
+    if not food then return E.Format("FEED_NO_FOOD", pet) end
+    local openings = E.Emotes.openings or {}
+    local pick = #openings > 0 and math.random(#openings + 1) or 1
+    local chosen = openings[pick]
+    if not chosen then return E.Format("FEED", pet, food) end
+    return E.FillPlaceholders(chosen, pet, food, article) .. " "
+end
+
+---The full /emote text, or nil when the pet's name is unavailable. Usually
+---an opening followed by a line; a whole sentence (emotes.whole), when that
+---is the line picked, stands alone.
 ---@param itemID number?
 ---@return string?
 function E.BuildEmote(itemID)
@@ -162,9 +198,11 @@ function E.BuildEmote(itemID)
         name, link = C_Item.GetItemInfo(itemID)
     end
     local food = link or name
-    local text = food and E.Format("FEED", pet, food) or E.Format("FEED_NO_FOOD", pet)
+    local article = name and E.Format("ARTICLE", name)
     local line = E.PickLine(itemID, name)
-    -- No line: the sentence alone, without the space the FEED strings end in.
+    if line and isWhole(line) then return E.FillPlaceholders(line, pet, food, article) end
+    local text = opening(pet, food, article)
+    -- No line: the sentence alone, without the space the openings end in.
     if not line then return (text:gsub("%s+$", "")) end
     return text .. E.FillPlaceholders(line, pet, name)
 end

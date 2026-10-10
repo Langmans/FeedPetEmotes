@@ -6,6 +6,11 @@
   game for the summoned pet, the same choice as `/fpe sex`.
 - The sex chosen for a pet you have since released is forgotten at the next
   login.
+- More variety in English and German: instead of always "feeds Fluffy a
+  Mystery Meat.", the emote often starts differently ("tosses Fluffy a ...",
+  "bribes Fluffy with a ..."), and some emotes are a small scene of their own
+  ("turns around for one second. The Mystery Meat is gone, and Fluffy looks
+  very innocent.").
 
 ## 1.1.1 - 2026-10-07
 
