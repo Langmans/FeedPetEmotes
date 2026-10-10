@@ -94,7 +94,10 @@ test("a whole sentence stands alone, with the item link", function()
     )
     withRandom(first, function()
         client:feed(12037)
-        eq(client:lastSent().text, "and Fluffy have a staring contest over some " .. ItemLink(12037) .. ". Fluffy wins.")
+        eq(
+            client:lastSent().text,
+            "and Fluffy have a staring contest over some " .. ItemLink(12037) .. ". Fluffy wins."
+        )
     end)
 end)
 
