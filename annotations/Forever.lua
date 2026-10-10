@@ -4,8 +4,8 @@
 -- the game never loads this file.
 --
 -- Forever moved the Classic globals GetPetHappiness/GetPetFoodTypes into
--- C_PetInfo. The signatures follow how Feed Pet: Forever and EllesmereUI call
--- them; Blizzard's generated documentation for these is not public.
+-- C_PetInfo. The signatures follow Blizzard_APIDocumentationGenerated/
+-- PetInfoDocumentation.lua from the client's `exportInterfaceFiles code`.
 
 ---Happiness of the current hunter pet: 1 = unhappy, 2 = content, 3 = happy.
 ---Can be a secret value; check with issecretvalue before comparing.
@@ -20,5 +20,5 @@ function C_PetInfo.GetPetHappiness() end
 function C_PetInfo.CanPetEatItem(itemID) end
 
 ---Localized diet names of the current pet ("Meat", "Fish", ...).
----@return string[]? diet
+---@return string[] diet
 function C_PetInfo.GetPetFoodTypes() end
