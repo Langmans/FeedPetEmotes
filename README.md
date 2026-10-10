@@ -23,8 +23,8 @@ Forever rather than a replacement, and both can be installed side by side.
 - Lines that talk about your pet say "he"/"she", "his"/"her" or "boy"/"girl"
   when the pet's sex is known, and use the pet's name otherwise ("Who's a
   good Fluffy?"). WoW: Forever does not tell the sex of hunter pets, so tell
-  the addon yourself with `/fpe sex male` or `/fpe sex female`; it remembers
-  this for each pet.
+  the addon yourself with `/fpe sex male` or `/fpe sex female`, or in the
+  options panel; it remembers this for each pet.
 - You can add lines of your own, mixed in with the built-in ones or used
   instead of them (see [Your own lines](#your-own-lines)).
 
@@ -56,6 +56,8 @@ can be shared by all characters on the account.
 - **Always use the pet's name**: name the pet instead of saying he or she.
 - **Debug trace**: print in chat what the addon sees while you feed (see
   [Reporting a problem](#reporting-a-problem)).
+- **Your pet's sex**: male, female or from the game, for the pet you have
+  summoned (the same as `/fpe sex`).
 - **Your own lines**: add, edit and remove lines of your own, **Chance of an
   own line**, **Use a built-in line when none of mine fits** and **Share my
   lines with all characters** (see below).
@@ -276,6 +278,10 @@ strings are dropped. A line is saved as one string, its conditions first:
   `FeedPetEmotesDBPC.petSex`, keyed on the pet number (`E.PetNumber`, the low
   32 bits of `UnitGUID("pet")`'s last field, equal to `C_StableInfo`'s
   `petNumber`); see [docs/pet-id.md](docs/pet-id.md) for why that is the key.
+  At `PLAYER_ENTERING_WORLD` (`E.PrunePetSex`) a choice is dropped when its
+  pet number is in neither `C_StableInfo.GetActivePetList()` nor
+  `GetStabledPetList()`: that pet was released. Empty lists or a secret pet
+  number prune nothing.
 - `/fpe selftest` prints build, locale, the chat send function, whether Feed
   Pet is known, the pet's family ID, sex and pet number, and the last food and cast the
   addon saw. It is always English, since it is meant for bug reports.

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- The options panel has a "Your pet's sex" section: male, female or from the
+  game for the summoned pet, the same choice as `/fpe sex`.
+- The sex chosen for a pet you have since released is forgotten at the next
+  login.
+
 ## 1.1.1 - 2026-10-07
 
 - Fixed: the options panel showed none of your settings (boxes unticked, the

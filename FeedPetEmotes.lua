@@ -54,6 +54,13 @@ function frame:ADDON_LOADED(name)
     self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
     self:RegisterEvent("CURSOR_CHANGED")
     self:RegisterEvent("BAG_UPDATE_DELAYED")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
+end
+
+-- The stable lists are filled by now; a pet released since the last login
+-- loses its saved sex choice here.
+function frame:PLAYER_ENTERING_WORLD()
+    E.PrunePetSex()
 end
 
 function frame:PLAYER_LOGOUT()

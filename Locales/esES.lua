@@ -15,6 +15,12 @@ E.Locales.esES = {
         OPTION_PET_NAME_NOTE = "Nombra a la mascota en lugar de decir él o ella. Igual que /fpe name on y off.",
         OPTION_DEBUG = "Registro de depuración",
         OPTION_DEBUG_NOTE = "Muestra en el chat lo que ve el addon mientras alimentas. Igual que /fpe debug.",
+        OPTION_PET_SEX_TITLE = "Sexo de tu mascota",
+        OPTION_PET_SEX_NOTE = "Elige él o ella y las frases para machos o hembras. El juego no indica el sexo de "
+            .. "una mascota de cazador, así que lo eliges para cada mascota. Igual que /fpe sex.",
+        OPTION_PET_SEX_FOR = "Para %s:",
+        OPTION_PET_SEX_NONE = "Invoca a tu mascota para elegir su sexo.",
+        OPTION_PET_SEX_GAME = "Según el juego",
         OPTION_ABOUT = "Versión %s de %s, licencia %s.",
         OPTION_WEBSITE = "Sitio web (Ctrl+C para copiar):",
         OPTION_CUSTOM_TITLE = "Tus propias frases",

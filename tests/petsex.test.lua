@@ -122,6 +122,129 @@ test("broken saved choices are dropped, valid ones kept", function()
     eq(next(Saved().petSex), nil)
 end)
 
+-- Pruning: a choice for a pet in neither stable list goes on login.
+
+local OTHER_PET = 3242513 -- 0x317A11
+
+test("login drops the choices of pets in neither stable list", function()
+    local client = NewClient({ savedDB = { petSex = { [PET_NUMBER] = 3, [OTHER_PET] = 2, [77] = 3 } } })
+    client.stable.stabled = { OTHER_PET }
+    client:login()
+    eq(Saved().petSex[PET_NUMBER], 3)
+    eq(Saved().petSex[OTHER_PET], 2)
+    eq(Saved().petSex[77], nil)
+end)
+
+test("nothing is dropped with empty stable lists, a secret pet number or no C_StableInfo", function()
+    local saved = function()
+        return { petSex = { [PET_NUMBER] = 3, [77] = 3 } }
+    end
+    local client = NewClient({ savedDB = saved() })
+    client.stable.active = {}
+    client:login()
+    eq(Saved().petSex[77], 3)
+
+    client = NewClient({ savedDB = saved() })
+    client.stable.stabled = { 88 }
+    client.secret[88] = true
+    client:login()
+    eq(Saved().petSex[77], 3)
+
+    NewClient({ savedDB = saved(), noStableInfo = true }):login()
+    eq(Saved().petSex[77], 3)
+end)
+
+test("a non-hunter's saved choices are left alone", function()
+    NewClient({ class = "MAGE", savedDB = { petSex = { [77] = 3 } } }):login()
+    eq(Saved().petSex[77], 3)
+end)
+
+-- The options panel's "Your pet's sex" section.
+
+---The three sex boxes in order: male, female, from the game.
+local function sexBoxes(client)
+    local boxes = {}
+    for _, frame in ipairs(client.frames) do
+        if frame.sexChoice ~= nil then boxes[#boxes + 1] = frame end
+    end
+    return boxes
+end
+
+local function showPanel(client)
+    client.optionsPanel.scripts.OnShow(client.optionsPanel)
+end
+
+local function panelShows(client, text)
+    for _, region in ipairs(client.fontStrings) do
+        if region:GetText() == text then return true end
+    end
+    return false
+end
+
+local function ticked(client)
+    local states = {}
+    for i, box in ipairs(sexBoxes(client)) do
+        states[i] = box:GetChecked() and "x" or "-"
+    end
+    return table.concat(states)
+end
+
+test("the panel ticks the summoned pet's choice, or 'from the game'", function()
+    local client = NewClient():login()
+    eq(#sexBoxes(client), 3)
+    showPanel(client)
+    ok(panelShows(client, "For Fluffy:"))
+    eq(ticked(client), "--x")
+    client:slash("sex female")
+    showPanel(client)
+    eq(ticked(client), "-x-")
+end)
+
+test("a tick in the panel saves the choice like /fpe sex", function()
+    local client = NewClient():login()
+    showPanel(client)
+    local boxes = sexBoxes(client)
+    boxes[1]:SetChecked(true)
+    boxes[1].scripts.OnClick(boxes[1])
+    eq(Saved().petSex[PET_NUMBER], 2)
+    eq(ticked(client), "x--")
+    -- Clicking the ticked box again keeps it ticked.
+    boxes[1]:SetChecked(false)
+    boxes[1].scripts.OnClick(boxes[1])
+    eq(ticked(client), "x--")
+    boxes[3]:SetChecked(true)
+    boxes[3].scripts.OnClick(boxes[3])
+    eq(Saved().petSex[PET_NUMBER], nil)
+    eq(ticked(client), "--x")
+end)
+
+test("without a pet the panel hides the ticks and asks for one", function()
+    local client = NewClient():login()
+    client.pet = nil
+    showPanel(client)
+    ok(panelShows(client, "Summon your pet to choose its sex."))
+    for _, box in ipairs(sexBoxes(client)) do
+        eq(box:IsShown(), false)
+    end
+end)
+
+test("a summon or dismiss while the panel is open refills the section", function()
+    local client = NewClient():login()
+    showPanel(client)
+    client.pet = nil
+    client:fire("UNIT_PET", "player")
+    ok(panelShows(client, "Summon your pet to choose its sex."))
+    -- A closed panel waits for its next OnShow.
+    client.optionsPanel:Hide()
+    client.pet = { name = "Kaldor", sex = 1, guid = "Pet-0-1-1-1-165189-0100317A11" }
+    client:fire("UNIT_PET", "player")
+    ok(not panelShows(client, "For Kaldor:"))
+    client.optionsPanel:Show()
+    client:fire("UNIT_PET", "player")
+    ok(panelShows(client, "For Kaldor:"))
+    eq(sexBoxes(client)[1]:IsShown(), true)
+end)
+
 test("/fpe selftest shows the pet number and where the sex comes from", function()
     local client = NewClient():login()
     client:slash("selftest")

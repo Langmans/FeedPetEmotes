@@ -5,6 +5,8 @@ local addonName, E = ...
 --   - the version, author and license from the .toc, and the website in a
 --     box to copy it from (a link in the game cannot open a browser);
 --   - checkboxes for the same settings as /fpe on|off, /fpe name, /fpe debug;
+--   - "Your pet's sex": male, female or from the game for the summoned pet,
+--     the same choice as /fpe sex;
 --   - "Your own lines": the /fpe chance slider, the /fpe fallback and
 --     /fpe shared checkboxes, an editor
 --     (a text box, the conditions as checkboxes, Add or Save and Cancel), and
@@ -29,7 +31,7 @@ E.OptionsPanel = panel
 -- wrap or end there instead of running past what the scroll frame shows.
 -- UIPanelScrollFrameTemplate puts its scroll bar just outside the frame's
 -- right edge, hence the room on the right.
-local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 880, 24
+local CONTENT_WIDTH, CONTENT_BASE, ROW_HEIGHT = 600, 1010, 24
 local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
 scroll:SetPoint("TOPLEFT", 0, -4)
 scroll:SetPoint("BOTTOMRIGHT", -28, 4)
@@ -125,6 +127,7 @@ E.WebsiteBox = website
 ---@field text FontString? the label on older clients; Text on newer ones
 ---@field settingKey string? the E.db field it shows (addCheckbox)
 ---@field conditionTag string? the condition it ticks (addConditionGroup)
+---@field sexChoice number|false|nil the pet sex it picks: 2, 3, or false for the game's
 
 ---Setting key -> its checkbox.
 ---@type table<string, FeedPetEmotesCheckbox>
@@ -176,6 +179,72 @@ end
 addCheckbox("enabled", L.OPTION_ENABLED, L.OPTION_ENABLED_NOTE)
 addCheckbox("petName", L.OPTION_PET_NAME, L.OPTION_PET_NAME_NOTE)
 addCheckbox("debug", L.OPTION_DEBUG, L.OPTION_DEBUG_NOTE)
+
+-- The summoned pet's sex (/fpe sex): three ticks that work as one choice,
+-- saved under the pet's number. Without a pet the ticks are hidden and the
+-- line above them says to summon one; UNIT_PET refills the section while the
+-- panel is open, so a summon or dismiss shows at once.
+addHeading(L.OPTION_PET_SEX_TITLE, "GameFontNormalLarge", 32)
+local petSexNote = content:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+petSexNote:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 0, -4)
+toRightEdge(petSexNote, 16)
+petSexNote:SetText(L.OPTION_PET_SEX_NOTE)
+-- "For Kaldor:", or the request to summon a pet.
+local petSexFor = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+petSexFor:SetPoint("TOPLEFT", petSexNote, "BOTTOMLEFT", 0, -10)
+
+local SEX_COLUMN = 150
+---@type FeedPetEmotesCheckbox[]
+local sexBoxes = {}
+---Ticks the box of the summoned pet's choice; defined below.
+local fillPetSex
+for i, choice in ipairs({
+    { sex = 2, label = L.OPTION_COND_MALE },
+    { sex = 3, label = L.OPTION_COND_FEMALE },
+    { sex = false, label = L.OPTION_PET_SEX_GAME },
+}) do
+    ---@type FeedPetEmotesCheckbox
+    local box = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
+    box:SetPoint("TOPLEFT", petSexFor, "BOTTOMLEFT", -2 + (i - 1) * SEX_COLUMN, -4)
+    local text = box.Text or box.text
+    text:SetFontObject("GameFontHighlight")
+    text:SetText(choice.label)
+    -- Clicking the ticked box would untick it; the refill ticks it again.
+    box:SetScript("OnClick", function()
+        E.ChoosePetSex(choice.sex)
+        fillPetSex()
+    end)
+    box.sexChoice = choice.sex
+    sexBoxes[i] = box
+end
+below = sexBoxes[1]
+
+function fillPetSex()
+    local petNumber = E.PetNumber()
+    local chosen = petNumber and E.db.petSex[petNumber] or false
+    petSexFor:SetText(petNumber and E.Format("OPTION_PET_SEX_FOR", E.PetDisplayName()) or L.OPTION_PET_SEX_NONE)
+    for _, box in ipairs(sexBoxes) do
+        box:SetChecked(box.sexChoice == chosen)
+        if petNumber then
+            box:Show()
+        else
+            box:Hide()
+        end
+    end
+end
+
+-- The panel's one event, as a method named after it like the event frame in
+-- FeedPetEmotes.lua.
+function panel:UNIT_PET()
+    if self:IsShown() then fillPetSex() end
+end
+---@param self Frame
+---@param event string
+local function onPanelEvent(self, event)
+    self[event](self)
+end
+panel:SetScript("OnEvent", onPanelEvent)
+panel:RegisterUnitEvent("UNIT_PET", "player")
 
 -- Your own lines.
 
@@ -493,6 +562,7 @@ local function fill()
     slider:SetValue(chance)
     -- SetValue only reports a change; the title must show an unchanged value too.
     showChance(chance)
+    fillPetSex()
     edit(nil)
     refresh()
 end

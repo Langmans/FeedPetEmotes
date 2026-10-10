@@ -15,6 +15,13 @@ E.Locales.ruRU = {
         OPTION_PET_NAME_NOTE = "Называть питомца по имени вместо «он» или «она». То же, что /fpe name on и off.",
         OPTION_DEBUG = "Отладка",
         OPTION_DEBUG_NOTE = "Показывать в чате, что видит аддон во время кормления. То же, что /fpe debug.",
+        OPTION_PET_SEX_TITLE = "Пол питомца",
+        OPTION_PET_SEX_NOTE = "Определяет «он» или «она» и фразы для самцов или самок. Игра не сообщает пол "
+            .. "питомца охотника, поэтому он выбирается для каждого питомца. То же, что /fpe sex.",
+        -- The name alone: "Для" would need it in the genitive.
+        OPTION_PET_SEX_FOR = "%s:",
+        OPTION_PET_SEX_NONE = "Призовите питомца, чтобы выбрать его пол.",
+        OPTION_PET_SEX_GAME = "Из игры",
         OPTION_ABOUT = "Версия %s, автор %s, лицензия %s.",
         OPTION_WEBSITE = "Сайт (Ctrl+C, чтобы скопировать):",
         OPTION_CUSTOM_TITLE = "Свои фразы",

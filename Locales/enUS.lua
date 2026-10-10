@@ -68,6 +68,13 @@ E.Locales.enUS = {
         OPTION_PET_NAME_NOTE = "Name the pet instead of saying he or she. Same as /fpe name on and off.",
         OPTION_DEBUG = "Debug trace",
         OPTION_DEBUG_NOTE = "Print in chat what the addon sees while you feed. Same as /fpe debug.",
+        OPTION_PET_SEX_TITLE = "Your pet's sex",
+        OPTION_PET_SEX_NOTE = "Picks he or she and the lines for males or females. The game does not tell a "
+            .. "hunter pet's sex, so you choose it per pet. Same as /fpe sex.",
+        -- %s is the summoned pet's name.
+        OPTION_PET_SEX_FOR = "For %s:",
+        OPTION_PET_SEX_NONE = "Summon your pet to choose its sex.",
+        OPTION_PET_SEX_GAME = "From the game",
         -- Version, author and license from the .toc.
         OPTION_ABOUT = "Version %s by %s, %s license.",
         OPTION_WEBSITE = "Website (Ctrl+C to copy):",

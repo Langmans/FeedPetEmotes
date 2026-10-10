@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -89,6 +89,29 @@ function NewClient(opts)
     function UnitGUID(unit)
         if unit ~= "pet" or not client.pet then return nil end
         return client.pet.guid
+    end
+    -- client.stable: the pet numbers of the hunter's active and stabled pets,
+    -- the summoned one (3069428) among them. opts.noStableInfo: a client
+    -- without C_StableInfo.
+    client.stable = { active = { 3069428 }, stabled = {} }
+    local function petInfos(numbers)
+        local infos = {}
+        for slot, petNumber in ipairs(numbers) do
+            infos[slot] = { petNumber = petNumber, slotID = slot }
+        end
+        return infos
+    end
+    if opts.noStableInfo then
+        C_StableInfo = nil
+    else
+        C_StableInfo = {
+            GetActivePetList = function()
+                return petInfos(client.stable.active)
+            end,
+            GetStabledPetList = function()
+                return petInfos(client.stable.stabled)
+            end,
+        }
     end
     function UnitCreatureFamily()
         if not client.pet then return nil end
@@ -346,10 +369,12 @@ function NewClient(opts)
         end
     end
 
-    ---What the client does after the addon files ran: ADDON_LOADED for each addon.
+    ---What the client does after the addon files ran: ADDON_LOADED for each
+    ---addon, then PLAYER_ENTERING_WORLD.
     function client:login()
         self:fire("ADDON_LOADED", "SomeOtherAddon")
         self:fire("ADDON_LOADED", "FeedPetEmotes")
+        self:fire("PLAYER_ENTERING_WORLD", true, false)
         return self
     end
 

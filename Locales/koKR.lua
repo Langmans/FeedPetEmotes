@@ -14,6 +14,12 @@ E.Locales.koKR = {
         OPTION_PET_NAME_NOTE = "그/그녀 대신 소환수의 이름을 부릅니다. /fpe name on, off와 같습니다.",
         OPTION_DEBUG = "디버그 추적",
         OPTION_DEBUG_NOTE = "먹이를 줄 때 애드온이 보는 내용을 대화창에 표시합니다. /fpe debug와 같습니다.",
+        OPTION_PET_SEX_TITLE = "소환수 성별",
+        OPTION_PET_SEX_NOTE = "그/그녀와 수컷 또는 암컷용 문구를 정합니다. 게임은 사냥꾼 소환수의 성별을 알려주지 "
+            .. "않으므로 소환수마다 직접 고릅니다. /fpe sex와 같습니다.",
+        OPTION_PET_SEX_FOR = "%s:",
+        OPTION_PET_SEX_NONE = "성별을 고르려면 소환수를 부르세요.",
+        OPTION_PET_SEX_GAME = "게임 기준",
         OPTION_ABOUT = "버전 %s, 제작자 %s, %s 라이선스.",
         OPTION_WEBSITE = "웹사이트 (Ctrl+C로 복사):",
         OPTION_CUSTOM_TITLE = "나만의 문구",

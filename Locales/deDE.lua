@@ -15,6 +15,12 @@ E.Locales.deDE = {
         OPTION_PET_NAME_NOTE = "Den Begleiter beim Namen nennen statt er oder sie. Wie /fpe name on und off.",
         OPTION_DEBUG = "Debug-Ausgabe",
         OPTION_DEBUG_NOTE = "Im Chat zeigen, was das Addon beim Füttern sieht. Wie /fpe debug.",
+        OPTION_PET_SEX_TITLE = "Geschlecht deines Begleiters",
+        OPTION_PET_SEX_NOTE = "Bestimmt er oder sie und die Zeilen für Männchen oder Weibchen. Das Spiel nennt das "
+            .. "Geschlecht eines Jägerbegleiters nicht, darum wählst du es pro Begleiter. Wie /fpe sex.",
+        OPTION_PET_SEX_FOR = "Für %s:",
+        OPTION_PET_SEX_NONE = "Rufe deinen Begleiter herbei, um sein Geschlecht zu wählen.",
+        OPTION_PET_SEX_GAME = "Vom Spiel",
         OPTION_ABOUT = "Version %s von %s, Lizenz: %s.",
         OPTION_WEBSITE = "Webseite (Strg+C zum Kopieren):",
         OPTION_CUSTOM_TITLE = "Eigene Zeilen",

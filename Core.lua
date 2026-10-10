@@ -109,6 +109,56 @@ function E.PetNumber()
     return spawnUID and tonumber(spawnUID:sub(-8), 16) or nil
 end
 
+---The summoned pet's name for the addon's own messages and panel, "Your pet"
+---when there is none or it is secret.
+---@return string
+function E.PetDisplayName()
+    local pet = UnitName("pet")
+    if not pet or not E.Public(pet) then return E.L.YOUR_PET end
+    return pet
+end
+
+---Saves the player's choice of sex for the summoned pet (/fpe sex, the
+---options panel): 2 male, 3 female, or false to drop the choice so the
+---game's value counts again. Returns the pet number it was saved under, or
+---nil when there is no pet to save it for.
+---@param sex number|false
+---@return number?
+function E.ChoosePetSex(sex)
+    local petNumber = E.PetNumber()
+    if not petNumber then return nil end
+    local db = E.db
+    db.petSex[petNumber] = sex or nil
+    return petNumber
+end
+
+---Drops the sex choices of pets this hunter no longer has: a released pet's
+---number is in neither of C_StableInfo's lists (both work away from a stable
+---master and at PLAYER_ENTERING_WORLD; see docs/pet-id.md). Nothing is
+---dropped when both lists are empty, as they could be before the client has
+---the pets, when a pet number is secret, or on a client without these lists.
+function E.PrunePetSex()
+    -- Forever has both lists; Classic Era and Classic do not.
+    local getActive = C_StableInfo and C_StableInfo.GetActivePetList
+    local getStabled = C_StableInfo and C_StableInfo.GetStabledPetList
+    if not (getActive and getStabled) then return end
+    ---@type table<number, true>
+    local owned = {}
+    local any = false
+    for _, list in ipairs({ getActive(), getStabled() }) do
+        for _, pet in ipairs(list) do
+            if not E.Public(pet.petNumber) then return end
+            owned[pet.petNumber] = true
+            any = true
+        end
+    end
+    if not any then return end
+    local db = E.db
+    for petNumber in pairs(db.petSex) do
+        if not owned[petNumber] then db.petSex[petNumber] = nil end
+    end
+end
+
 ---Creates or repairs the saved settings and makes them E.db (per character,
 ---FeedPetEmotesDBPC) and E.accountDB (account-wide, FeedPetEmotesDB); both
 ---names are declared in the .toc. The account table only holds the own lines

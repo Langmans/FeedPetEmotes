@@ -16,6 +16,12 @@ E.Locales.frFR = {
         OPTION_PET_NAME_NOTE = "Nomme le familier au lieu de dire il ou elle. Comme /fpe name on et off.",
         OPTION_DEBUG = "Trace de débogage",
         OPTION_DEBUG_NOTE = "Affiche dans le chat ce que l'addon voit pendant que vous nourrissez. Comme /fpe debug.",
+        OPTION_PET_SEX_TITLE = "Sexe de votre familier",
+        OPTION_PET_SEX_NOTE = "Choisit il ou elle et les phrases pour mâles ou femelles. Le jeu n'indique pas le "
+            .. "sexe d'un familier de chasseur, vous le choisissez donc pour chaque familier. Comme /fpe sex.",
+        OPTION_PET_SEX_FOR = "Pour %s :",
+        OPTION_PET_SEX_NONE = "Invoquez votre familier pour choisir son sexe.",
+        OPTION_PET_SEX_GAME = "Selon le jeu",
         OPTION_ABOUT = "Version %s par %s, licence %s.",
         OPTION_WEBSITE = "Site web (Ctrl+C pour copier) :",
         OPTION_CUSTOM_TITLE = "Vos propres phrases",

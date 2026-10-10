@@ -66,7 +66,7 @@ end
 local SEX_WORDS = { male = 2, female = 3, auto = false }
 
 ---/fpe sex male|female|auto: the summoned pet's sex, saved under its pet
----number (E.PetNumber); auto drops the choice so the game's value counts.
+---number (E.ChoosePetSex); auto drops the choice so the game's value counts.
 ---@param rest string
 function Commands.sex(rest)
     local sex = SEX_WORDS[firstWord(rest)]
@@ -74,15 +74,11 @@ function Commands.sex(rest)
         Print(L.SEX_BAD)
         return
     end
-    local petNumber = E.PetNumber()
-    if not petNumber then
+    if not E.ChoosePetSex(sex) then
         Print(L.NO_PET)
         return
     end
-    local db = E.db
-    db.petSex[petNumber] = sex or nil
-    local pet = UnitName("pet")
-    if not pet or not E.Public(pet) then pet = L.YOUR_PET end
+    local pet = E.PetDisplayName()
     if sex then
         Print(E.Format("SEX_SET", pet, sex == 2 and L.SEX_MALE or L.SEX_FEMALE))
     else
