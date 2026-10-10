@@ -360,6 +360,11 @@ Needs Node.js. `npm install` once, then:
   when the LS reports a type coverage below 100%.
 - `npm run format` — formats all Lua with StyLua.
 - `npm run check` — lint, then tests.
+- `node tests/fetch-food.mjs` — refreshes `tests/data/forever-food.lua`, every
+  item on Wowhead's Forever food-and-drinks and meat lists with the English
+  article it should get ("a", "an", "some"). `tests/food-names.test.lua`
+  checks enUS's `ARTICLE` against it. Existing rows keep their reviewed
+  article; new items are printed so their article can be checked.
 
 Releases: pushing a tag runs `.github/workflows/release.yml`, which runs
 `npm run check` and then BigWigsMods/packager. The packager builds the zip

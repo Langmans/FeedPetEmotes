@@ -7,10 +7,8 @@ local F = E.Family
 
 -- Head nouns that take "some": food you do not count (meat, bread, cheese
 -- names, dishes from a pot). Plurals ("Deep Fried Plantains") take it as
--- well. Taken from the food names on Wowhead's Forever food list
--- (wowhead.com/forever/items/consumables/food-and-drinks) and Data.lua; raw
--- meat and fish are trade goods there, and their names end in Meat or a
--- countable fish.
+-- well. Taken from the item names in tests/data/forever-food.lua (Wowhead's
+-- Forever food and meat lists); tests/food-names.test.lua checks every one.
 local UNCOUNTED = {
     -- meat
     meat = true,
@@ -18,10 +16,21 @@ local UNCOUNTED = {
     boar = true,
     brisket = true,
     venison = true,
+    flesh = true,
+    ichor = true,
+    raptor = true,
+    hachee = true,
+    bruscitti = true,
+    rouladen = true,
+    mandu = true,
     -- bread
     bread = true,
     cornbread = true,
     butter = true,
+    flour = true,
+    rye = true,
+    pumpernickel = true,
+    sourdough = true,
     -- cheese
     cheddar = true,
     skycheddar = true,
@@ -47,9 +56,35 @@ local UNCOUNTED = {
     mold = true,
     sludge = true,
     fruit = true,
+    pulp = true,
     taffy = true,
     cream = true,
     feed = true,
+    -- Drinks: no pet drinks them, but Wowhead lists them with the food.
+    water = true,
+    tea = true,
+    juice = true,
+    milk = true,
+    nog = true,
+    nectar = true,
+    dew = true,
+    smoothie = true,
+    punch = true,
+    brew = true,
+    beer = true,
+    ale = true,
+    lager = true,
+    stout = true,
+    malt = true,
+    wine = true,
+    grog = true,
+    rum = true,
+    brandy = true,
+    applejack = true,
+    moonshine = true,
+    firewater = true,
+    reserve = true,
+    gold = true,
 }
 
 ---"a", "an" or "some" for a food's plain name. The head noun decides: the
