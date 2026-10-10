@@ -8,7 +8,9 @@ local F = E.Family
 -- Head nouns that take "some": food you do not count (meat, bread, cheese
 -- names, dishes from a pot). Plurals ("Deep Fried Plantains") take it as
 -- well. Taken from the item names in tests/data/forever-food.lua (Wowhead's
--- Forever food and meat lists); tests/food-names.test.lua checks every one.
+-- Forever food and meat lists) and tests/data/forever-scan.lua (what the
+-- client lets a pet eat beyond those); tests/food-names.test.lua checks
+-- every one.
 local UNCOUNTED = {
     -- meat
     meat = true,
@@ -60,6 +62,9 @@ local UNCOUNTED = {
     taffy = true,
     cream = true,
     feed = true,
+    seaweed = true,
+    corn = true,
+    breath = true,
     -- Drinks: no pet drinks them, but Wowhead lists them with the food.
     water = true,
     tea = true,

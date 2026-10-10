@@ -377,6 +377,9 @@ Needs Node.js. `npm install` once, then:
   article it should get ("a", "an", "some"). `tests/food-names.test.lua`
   checks enUS's `ARTICLE` against it. Existing rows keep their reviewed
   article; new items are printed so their article can be checked.
+  `tests/data/forever-scan.lua` holds the edible items that are on neither
+  Wowhead list (junk fish, battleground rations, quest items), found with the
+  DevProbes PetFoodScan probe; the same test checks those.
 
 Releases: pushing a tag runs `.github/workflows/release.yml`, which runs
 `npm run check` and then BigWigsMods/packager. The packager builds the zip
