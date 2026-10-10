@@ -33,7 +33,7 @@ end
 ---@field optionsPanel table? the panel registered with the game's settings
 ---@field optionsOpened number how often the settings were opened on that panel
 
----@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?, variety: boolean?}?
+---@param opts {locale: string?, class: string?, savedDB: table?, savedAccountDB: table?,noChatInfo: boolean?, noChat: boolean?, noSecretValues: boolean?, noAddOnsAPI: boolean?, noStableInfo: boolean?, variety: boolean?, inCombat: boolean?}?
 ---@return TestClient
 function NewClient(opts)
     opts = opts or {}
@@ -48,6 +48,8 @@ function NewClient(opts)
         bag = {},
         timers = {},
         frames = {},
+        -- opts.inCombat: the addon loads in combat (a /reload mid-fight).
+        inCombat = opts.inCombat,
     }
 
     function GetLocale()
@@ -249,6 +251,8 @@ function NewClient(opts)
             "ClearFocus",
             "HighlightText",
             "SetCursorPosition",
+            "EnableKeyboard",
+            "SetPropagateKeyboardInput",
         }) do
             region[method] = noop
         end
@@ -332,6 +336,14 @@ function NewClient(opts)
         end
         client.frames[#client.frames + 1] = frame
         return frame
+    end
+
+    -- The game world: Sender.lua hooks its clicks (client:clickWorld).
+    UIParent = newRegion()
+    WorldFrame = newRegion()
+    WorldFrame.hooks = {}
+    function WorldFrame:HookScript(script, hook)
+        self.hooks[script] = hook
     end
 
     -- The shared tooltip: who owns it, its text, and whether it is shown.
@@ -497,10 +509,24 @@ function NewClient(opts)
         SlashCmdList.FEEDPETEMOTES(message)
     end
 
-    ---Lets pending timers run out first: a cast with unknown food waits up to a
-    ---second for the bags before it sends.
+    ---A key press: every shown frame with an OnKeyDown script gets it, as the
+    ---client hands keys down the keyboard chain.
+    function client:pressKey(key)
+        for _, frame in ipairs(self.frames) do
+            if frame.shown and frame.scripts.OnKeyDown then frame.scripts.OnKeyDown(frame, key or "W") end
+        end
+    end
+
+    ---A mouse click in the game world.
+    function client:clickWorld()
+        if WorldFrame.hooks.OnMouseDown then WorldFrame.hooks.OnMouseDown(WorldFrame, "LeftButton") end
+    end
+
+    ---Lets pending timers run out first (a cast with unknown food waits up to
+    ---a second for the bags), then presses a key: the emote waits for one.
     function client:settle()
         self:advance(1.1)
+        self:pressKey()
     end
 
     function client:lastSent()

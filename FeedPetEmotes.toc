@@ -22,6 +22,7 @@ Core.lua
 CustomLines.lua
 Emote.lua
 FoodTracker.lua
+Sender.lua
 Options.lua
 SelfTest.lua
 Commands.lua

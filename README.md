@@ -17,6 +17,10 @@ Forever rather than a replacement, and both can be installed side by side.
   random line. In English and German it does not always start with "feeds
   Fluffy a ...": it may toss, hand or bribe instead, and now and then the
   whole emote is a small scene of its own.
+- The emote goes out on your next key press or click after the feeding, not
+  the moment the cast lands: WoW: Forever only lets an addon send chat as
+  part of something you do. Moving, or any other key, is enough; without one
+  within ten seconds the emote is skipped.
 - Lines fit the situation: some for every pet, some for the kind of food
   (bread, meat, fish, cheese, fruit, mushrooms, and a few special foods), and
   some for each of the 17 pet families you can tame, from "Nice kitty!" to
@@ -214,6 +218,13 @@ In `.toc` order; all share the addon namespace `E`.
   `E.FillPlaceholders`, `E.BuildEmote`. No state.
 - `FoodTracker.lua` — `E.FoodTracker`, the one object with state: which food
   a Feed Pet cast used (see below).
+- `Sender.lua` — `E.Sender`: Forever only lets an addon send chat inside a
+  hardware event (`ADDON_ACTION_BLOCKED` otherwise, even out of combat), and
+  the emote is built on a server event. So `E.Sender:Queue` holds it and
+  `E.Sender:Flush` sends it on the next key press (a frame shown only while
+  an emote waits, passing every key on with `SetPropagateKeyboardInput`) or
+  click in the game world (`WorldFrame` `OnMouseDown`). It is dropped after
+  10 seconds, or when `C_ChatInfo.InChatMessagingLockdown()` is true then.
 - `Options.lua` — the options panel in the game's settings (`E.OpenOptions`):
   one scroll frame holding the version, author, license and website from the
   .toc (`GetAddOnMetadata`), the settings, the line editor with its condition
@@ -225,7 +236,8 @@ In `.toc` order; all share the addon namespace `E`.
   table, looked up by the slash handler like the event frame looks up its
   event methods; anything unknown shows the status line.
 - `FeedPetEmotes.lua` — wiring: the event frame (one method per event)
-  and the `UseContainerItem` hook feed the tracker; a cast sends the emote.
+  and the `UseContainerItem` hook feed the tracker; a cast builds the emote
+  and hands it to `E.Sender`.
 
 The settings are saved per character in `FeedPetEmotesDBPC`: `enabled`,
 `petName`, `debug`, `customFallback` and `sharedLines`, all booleans,

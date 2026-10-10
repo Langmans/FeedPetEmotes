@@ -2,11 +2,13 @@ local addonName, E = ...
 
 -- Wiring: the events and the hook feed E.FoodTracker, and a Feed Pet cast
 -- turns the food it claims into an emote. How food is recognised lives in
--- FoodTracker.lua, how the text is built in Emote.lua, /fpe in Commands.lua.
+-- FoodTracker.lua, how the text is built in Emote.lua, when it is sent in
+-- Sender.lua, /fpe in Commands.lua.
 
 local Debug, Public, Tracker = E.Debug, E.Public, E.FoodTracker
 
----Sends the emote for one feeding, unless emotes are off.
+---Builds the emote for one feeding and hands it to E.Sender, unless emotes
+---are off.
 ---@param itemID number?
 local function sendEmote(itemID)
     if not E.db.enabled then return end
@@ -15,19 +17,7 @@ local function sendEmote(itemID)
         Debug("no emote: the pet's name is unavailable")
         return
     end
-    local sendChat, how = E.SendFunction()
-    if not sendChat then
-        Debug("no emote: no chat send function")
-        return
-    end
-    -- An emote that arrives after the fight would be out of place, so it is
-    -- dropped rather than kept for later.
-    if E.ChatLocked() then
-        Debug("no emote: the client blocks addon chat right now (chat messaging lockdown)")
-        return
-    end
-    Debug("sending via " .. how)
-    sendChat(text, "EMOTE")
+    E.Sender:Queue(text)
 end
 
 -- Targeted food: clicking food while Feed Pet waits for its target.
