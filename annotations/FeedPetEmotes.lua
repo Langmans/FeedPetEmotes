@@ -32,6 +32,7 @@
 ---@field any string[] every feeding
 ---@field openings? string[] sentences that take FEED's place now and then; {food} is the item link, {a} its article
 ---@field whole? string[] whole emotes with no FEED or line, used when the food is known
+---@field wholeFamily? table<number, string[]> pet family ID -> whole emotes for that family
 ---@field male string[]
 ---@field female string[]
 ---@field food table<string, string[]> food group (E.FoodGroups) -> lines

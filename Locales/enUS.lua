@@ -214,6 +214,77 @@ E.Locales.enUS = {
             "cuts {a} {food} into neat little bites. {pet} swallows it whole.",
             "watches {pet} wolf down {a} {food} before {he} even sniffs it.",
         },
+        -- Whole emotes for one family, mixed in with the ones above.
+        wholeFamily = {
+            [F.WOLF] = {
+                "throws {a} {food} like a stick. {pet} fetches it straight into {his} belly.",
+                "says 'sit' and holds up {a} {food}. {pet} sits, howls once, and the {food} is gone.",
+            },
+            [F.CAT] = {
+                "puts {a} {food} on the table. {pet} knocks it off, then eats it off the floor.",
+                "offers {pet} {a} {food}. {pet} sniffs it, walks away, and eats it once nobody is looking.",
+            },
+            [F.SPIDER] = {
+                "drops {a} {food} near {pet}. A moment later it is neatly wrapped in silk.",
+                "tosses {a} {food} into the web. {pet} wraps it up for later. Later is now.",
+            },
+            [F.BEAR] = {
+                "opens the bag for {a} {food}. {pet} helps by sticking {his} whole head in.",
+                "hands {pet} {a} {food}. {pet} looks for the honey first, then eats it anyway.",
+            },
+            [F.BOAR] = {
+                "hides {a} {food} under a pile of leaves. {pet} snouts it out in two snorts.",
+                "sets down {a} {food}. {pet} charges it at full speed. The {food} loses.",
+            },
+            [F.CROCOLISK] = {
+                "holds {a} {food} over the water on a stick. Snap. The {food} is gone, and so is half the stick.",
+                "tosses {a} {food} to {pet}, who swallows it and lies very still, waiting for more.",
+            },
+            [F.CARRION_BIRD] = {
+                "leaves {a} {food} out in the sun for a while, just the way {pet} likes it.",
+                "puts down {a} {food}. {pet} circles it three times before landing on it.",
+            },
+            [F.CRAB] = {
+                "holds out {a} {food}. {pet} takes it with one claw and pinches the hand with the other.",
+                "drops {a} {food} on the sand. {pet} scuttles over sideways and snips it to bits.",
+            },
+            [F.GORILLA] = {
+                "hands {pet} {a} {food}. {pet} beats {his} chest, then eats it very politely.",
+                "peels {a} {food} for {pet}. {pet} eats the peel too.",
+            },
+            [F.RAPTOR] = {
+                "holds out {a} {food}. {pet} takes it, then checks whether the hand is next.",
+                "tosses {a} {food} to {pet}, who snaps it out of the air. Clever {boy}.",
+            },
+            [F.TALLSTRIDER] = {
+                "holds {a} {food} up high. {pet} does not even need to stretch.",
+                "puts {a} {food} on the ground. {pet} pecks at it until it is gone, staring at nothing.",
+            },
+            [F.SCORPID] = {
+                "puts down {a} {food}. {pet} stings it first, just to be sure.",
+                "offers {pet} {a} {food} from a very safe distance.",
+            },
+            [F.TURTLE] = {
+                "puts {a} {food} in front of {pet}. {pet} gets there eventually.",
+                "waits while {pet} eats {a} {food}. And waits. And waits.",
+            },
+            [F.BAT] = {
+                "throws {a} {food} into the air. {pet} catches it upside down.",
+                "feeds {pet} {a} {food} at midnight, the only proper mealtime for a bat.",
+            },
+            [F.HYENA] = {
+                "drops {a} {food}. {pet} laughs at it, then eats it.",
+                "hands {pet} {a} {food}. {pet} giggles all the way through it.",
+            },
+            [F.BIRD_OF_PREY] = {
+                "holds up a gloved hand with {a} {food}. {pet} swoops down and takes it in one pass.",
+                "tosses {a} {food} high. {pet} is a feathered blur, and the {food} is gone.",
+            },
+            [F.WIND_SERPENT] = {
+                "throws {a} {food} into the wind. {pet} catches it with a crackle of lightning.",
+                "holds out {a} {food}. {pet} coils around the arm and takes it gently.",
+            },
+        },
         male = { "Good boy!", "Atta boy!", "No more Mister Grumpy!" },
         female = { "Good girl!", "Atta girl!", "No more Miss Grumpy!" },
         food = {

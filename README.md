@@ -277,9 +277,10 @@ strings are dropped. A line is saved as one string, its conditions first:
   its `emotes.openings` ("tosses Fluffy a ..."), picked at random with `FEED`
   counting as one of them. Every opening ends with the pet having its food,
   so any line can follow it. A locale's `emotes.whole` sentences ("turns
-  around for one second. The ... is gone") join the built-in lines when the
-  food is known; when one is picked it is the whole emote, with no sentence
-  in front. Only enUS and deDE have openings and whole sentences.
+  around for one second. The ... is gone"), and its `emotes.wholeFamily`
+  ones for the pet's family ("puts a ... on the table. Fluffy knocks it
+  off"), join the built-in lines when the food is known; when one is picked
+  it is the whole emote, with no sentence in front. Only enUS and deDE have openings and whole sentences.
 - Pet families are matched on the CreatureFamily ID (second return of
   `UnitCreatureFamily`), which is the same on every client language.
 - The pet's sex (`E.PetSex`) is the player's `/fpe sex` choice when there is

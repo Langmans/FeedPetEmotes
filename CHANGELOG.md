@@ -10,7 +10,8 @@
   Mystery Meat.", the emote often starts differently ("tosses Fluffy a ...",
   "bribes Fluffy with a ..."), and some emotes are a small scene of their own
   ("turns around for one second. The Mystery Meat is gone, and Fluffy looks
-  very innocent.").
+  very innocent."), including two per pet family ("puts a Mystery Meat on
+  the table. Fluffy knocks it off, then eats it off the floor.").
 
 ## 1.1.1 - 2026-10-07
 

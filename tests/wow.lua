@@ -365,7 +365,7 @@ function NewClient(opts)
     if not opts.variety then
         for _, locale in pairs(E.Locales) do
             if locale.emotes then
-                locale.emotes.openings, locale.emotes.whole = nil, nil
+                locale.emotes.openings, locale.emotes.whole, locale.emotes.wholeFamily = nil, nil, nil
             end
         end
     end

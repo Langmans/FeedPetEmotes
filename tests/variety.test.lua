@@ -30,9 +30,26 @@ local function clientWith(openings, whole, line)
     client.pet.familyID = 999
     emotes.any, emotes.male, emotes.female = { line }, {}, {}
     emotes.food, emotes.foodType = {}, {}
-    emotes.openings, emotes.whole = openings, whole
+    emotes.openings, emotes.whole, emotes.wholeFamily = openings, whole, {}
     return client
 end
+
+test("a family's whole sentences join for that family only", function()
+    local client = clientWith({}, {}, "Yum!")
+    local F = client.E.Family
+    client.E.Emotes.wholeFamily = { [F.CAT] = { "puts {a} {food} on the table. {pet} knocks it off." } }
+    eq(#client.E.EmotePool(12037, "Mystery Meat"), 1, "not for another family")
+    client.pet.familyID = F.CAT
+    contains(client.E.EmotePool(12037, "Mystery Meat"), "puts {a} {food} on the table. {pet} knocks it off.")
+    for _, line in ipairs(client.E.EmotePool(nil)) do
+        ok(line:sub(1, 4) ~= "puts", "not without a known food")
+    end
+    client.E.Emotes.any, client.E.Emotes.family = {}, {}
+    withRandom(first, function()
+        client:feed(12037)
+        eq(client:lastSent().text, "puts a " .. ItemLink(12037) .. " on the table. Fluffy knocks it off.")
+    end)
+end)
 
 test("an opening takes FEED's place, with the article and the item link", function()
     local client = clientWith({ "tosses {pet} {a} {food}." }, {}, "Yum!")
@@ -115,7 +132,15 @@ test("enUS and deDE openings and whole sentences fill every placeholder", functi
             local emotes = client.E.Emotes
             ok(#emotes.openings >= 10, code .. " openings")
             ok(#emotes.whole >= 10, code .. " whole")
-            for _, list in ipairs({ emotes.openings, emotes.whole }) do
+            local lists = { emotes.openings, emotes.whole }
+            for name, id in pairs(client.E.Family) do
+                if not client.E.ExoticFamily[id] then
+                    local list = emotes.wholeFamily[id]
+                    ok(list and #list >= 2, code .. " whole lines for " .. name)
+                    lists[#lists + 1] = list
+                end
+            end
+            for _, list in ipairs(lists) do
                 local seen = {}
                 for _, line in ipairs(list) do
                     ok(not seen[line], code .. " twice: " .. line)

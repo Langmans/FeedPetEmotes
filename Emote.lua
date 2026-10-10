@@ -46,8 +46,9 @@ end
 ---The lines that apply to feeding the current pet this item, in two lists:
 ---the player's own lines whose conditions hold (without their conditions),
 ---and the built-in ones. A line with {food} needs the food's name; so do
----the locale's whole sentences (emotes.whole), which join the built-in
----lines when the food is known (see E.BuildEmote).
+---the locale's whole sentences (emotes.whole, and emotes.wholeFamily for the
+---pet's family), which join the built-in lines when the food is known (see
+---E.BuildEmote).
 ---@param itemID number?
 ---@param foodName string? the food's name, nil when it is not known
 ---@return string[] own
@@ -72,7 +73,10 @@ function E.LinePools(itemID, foodName)
     if group then append(builtIn, emotes.food[group]) end
     if situation.foodType and emotes.foodType then append(builtIn, emotes.foodType[situation.foodType]) end
     if situation.family then append(builtIn, emotes.family[situation.family]) end
-    if foodName then append(builtIn, emotes.whole) end
+    if foodName then
+        append(builtIn, emotes.whole)
+        if situation.family and emotes.wholeFamily then append(builtIn, emotes.wholeFamily[situation.family]) end
+    end
     return own, builtIn
 end
 
@@ -157,12 +161,19 @@ function E.FillPlaceholders(line, pet, food, article)
     return filled
 end
 
----True when `line` is one of the locale's whole sentences.
+---True when `line` is one of the locale's whole sentences, for any pet or
+---for one family.
 ---@param line string
 ---@return boolean
 local function isWhole(line)
-    for _, whole in ipairs(E.Emotes.whole or {}) do
-        if whole == line then return true end
+    local lists = { E.Emotes.whole }
+    for _, list in pairs(E.Emotes.wholeFamily or {}) do
+        lists[#lists + 1] = list
+    end
+    for _, list in pairs(lists) do
+        for _, whole in ipairs(list) do
+            if whole == line then return true end
+        end
     end
     return false
 end

@@ -152,6 +152,76 @@ E.Locales.deDE = {
             "schneidet etwas in kleine Happen ({food}). {pet} schluckt alles am Stück.",
             "sagt {pet}, {er} soll Sitz machen ({food}). {pet} springt direkt zum Fressen.",
         },
+        wholeFamily = {
+            [F.WOLF] = {
+                "wirft etwas wie einen Stock ({food}). {pet} apportiert es direkt in {sein} Bäuchlein.",
+                "sagt „Sitz“ und hält etwas hoch ({food}). {pet} sitzt, heult einmal, und weg ist es.",
+            },
+            [F.CAT] = {
+                "legt etwas auf den Tisch ({food}). {pet} wirft es herunter und frisst es vom Boden.",
+                "bietet {pet} etwas an ({food}). {pet} schnuppert, geht weg und frisst es, sobald keiner hinsieht.",
+            },
+            [F.SPIDER] = {
+                "legt etwas neben {pet} ({food}). Einen Moment später ist es sauber in Seide gewickelt.",
+                "wirft etwas ins Netz ({food}). {pet} wickelt es für später ein. Später ist jetzt.",
+            },
+            [F.BEAR] = {
+                "öffnet die Tasche ({food}). {pet} hilft, indem {er} den ganzen Kopf hineinsteckt.",
+                "gibt {pet} etwas ({food}). {pet} sucht erst nach Honig und frisst es dann trotzdem.",
+            },
+            [F.BOAR] = {
+                "versteckt etwas unter Laub ({food}). {pet} schnüffelt es mit zwei Grunzern heraus.",
+                "legt etwas hin ({food}). {pet} stürmt mit voller Wucht darauf zu. Das Essen verliert.",
+            },
+            [F.CROCOLISK] = {
+                "hält etwas an einem Stock über das Wasser ({food}). Schnapp. Weg ist es, und der halbe Stock auch.",
+                "wirft {pet} etwas zu ({food}). {pet} schluckt es und liegt dann ganz still, wartend auf mehr.",
+            },
+            [F.CARRION_BIRD] = {
+                "lässt etwas eine Weile in der Sonne liegen ({food}), genau wie {pet} es mag.",
+                "legt etwas hin ({food}). {pet} kreist dreimal darüber, bevor {er} landet.",
+            },
+            [F.CRAB] = {
+                "hält etwas hin ({food}). {pet} nimmt es mit einer Schere und zwickt mit der anderen.",
+                "lässt etwas in den Sand fallen ({food}). {pet} krabbelt seitwärts heran und zerschnippelt es.",
+            },
+            [F.GORILLA] = {
+                "gibt {pet} etwas ({food}). {pet} trommelt sich auf die Brust und isst dann sehr manierlich.",
+                "schält etwas für {pet} ({food}). {pet} isst die Schale gleich mit.",
+            },
+            [F.RAPTOR] = {
+                "hält etwas hin ({food}). {pet} nimmt es und prüft, ob die Hand als Nächstes kommt.",
+                "wirft {pet} etwas zu ({food}). {pet} schnappt es aus der Luft. Kluges Tier.",
+            },
+            [F.TALLSTRIDER] = {
+                "hält etwas hoch ({food}). {pet} muss sich nicht einmal strecken.",
+                "legt etwas auf den Boden ({food}). {pet} pickt daran, bis es weg ist, und starrt dabei ins Leere.",
+            },
+            [F.SCORPID] = {
+                "legt etwas hin ({food}). {pet} sticht erst hinein, sicher ist sicher.",
+                "bietet {pet} etwas an ({food}), aus sehr sicherer Entfernung.",
+            },
+            [F.TURTLE] = {
+                "legt {pet} etwas hin ({food}). {pet} kommt irgendwann an.",
+                "wartet, während {pet} frisst ({food}). Und wartet. Und wartet.",
+            },
+            [F.BAT] = {
+                "wirft etwas in die Luft ({food}). {pet} fängt es kopfüber.",
+                "füttert {pet} um Mitternacht ({food}), die einzig richtige Essenszeit für eine Fledermaus.",
+            },
+            [F.HYENA] = {
+                "lässt etwas fallen ({food}). {pet} lacht es aus und frisst es dann.",
+                "gibt {pet} etwas ({food}). {pet} kichert die ganze Zeit beim Fressen.",
+            },
+            [F.BIRD_OF_PREY] = {
+                "hält einen Handschuh mit etwas darauf hoch ({food}). {pet} stößt herab und nimmt es im Flug.",
+                "wirft etwas hoch ({food}). {pet} ist ein gefiederter Blitz, und weg ist es.",
+            },
+            [F.WIND_SERPENT] = {
+                "wirft etwas in den Wind ({food}). {pet} fängt es mit knisternden Blitzen.",
+                "hält etwas hin ({food}). {pet} windet sich um den Arm und nimmt es sanft.",
+            },
+        },
         male = { "Guter Junge!", "Braver Junge!", "Schluss mit Herrn Griesgram!" },
         female = { "Gutes Mädchen!", "Braves Mädchen!", "Schluss mit Frau Griesgram!" },
         food = {
