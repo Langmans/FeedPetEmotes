@@ -6,14 +6,23 @@ local F = E.Family
 -- Emote lines from Feed-O-Matic unless marked otherwise.
 
 -- Head nouns that take "some": food you do not count (meat, bread, cheese
--- names, mold). Plurals ("Deep Fried Plantains") take it as well.
+-- names, dishes from a pot). Plurals ("Deep Fried Plantains") take it as
+-- well. Taken from the food names on Wowhead's Forever food list
+-- (wowhead.com/forever/items/consumables/food-and-drinks) and Data.lua; raw
+-- meat and fish are trade goods there, and their names end in Meat or a
+-- countable fish.
 local UNCOUNTED = {
+    -- meat
     meat = true,
     jerky = true,
+    boar = true,
+    brisket = true,
+    venison = true,
+    -- bread
     bread = true,
     cornbread = true,
     butter = true,
-    cheese = true,
+    -- cheese
     cheddar = true,
     skycheddar = true,
     brie = true,
@@ -21,14 +30,26 @@ local UNCOUNTED = {
     swiss = true,
     sharp = true,
     mild = true,
-    mold = true,
-    chili = true,
-    sludge = true,
-    boar = true,
+    -- from a pot or a bowl
     stew = true,
     soup = true,
-    jelly = true,
-    rice = true,
+    chowder = true,
+    gumbo = true,
+    goulash = true,
+    broth = true,
+    bisque = true,
+    chili = true,
+    linguine = true,
+    salad = true,
+    kimchi = true,
+    jam = true,
+    -- the rest
+    mold = true,
+    sludge = true,
+    fruit = true,
+    taffy = true,
+    cream = true,
+    feed = true,
 }
 
 ---"a", "an" or "some" for a food's plain name. The head noun decides: the
