@@ -1,5 +1,6 @@
 ## Interface: 16001
 ## Title: Feed Pet Emotes
+## Category: Hunter
 ## Author: Langmans
 ## Notes: Sends a silly /emote whenever you feed your hunter pet, Feed-O-Matic style.
 ## Version: 1.2.0
