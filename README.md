@@ -1,5 +1,9 @@
 # Feed Pet Emotes
 
+[![Release](https://img.shields.io/github/v/release/Langmans/FeedPetEmotes?include_prereleases&sort=semver)](https://github.com/Langmans/FeedPetEmotes/releases)
+![WoW: Forever](https://img.shields.io/badge/WoW-Forever%20%2816001%29-c79c6e)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://github.com/Langmans/FeedPetEmotes/blob/main/LICENSE)
+
 Sends a random `/emote` every time you feed your hunter pet, the way
 [Fizzwidget Feed-O-Matic](https://github.com/fizzwidget/feed-o-matic) did in
 2008:
